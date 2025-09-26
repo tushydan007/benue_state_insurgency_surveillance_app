@@ -232,7 +232,7 @@ const CommandCenter = () => {
   const getSeverityColor = (severity: keyof SeverityColorMap): string => {
     switch (severity) {
       case "critical":
-        return "bg-red-600 text-white";
+        return "bg-red-800 text-white";
       case "high":
         return "bg-red-500 text-white";
       case "medium":
