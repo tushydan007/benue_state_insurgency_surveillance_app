@@ -53,8 +53,6 @@ const CommandCenter = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   // const wsRef = useRef<WebSocket | null>(null); Reopen this when you are ready for backend integration
 
-
-
   // Mock data for demonstration
   useEffect(() => {
     const mockSensors = [
@@ -691,15 +689,6 @@ const CommandCenter = () => {
 };
 
 export default CommandCenter;
-
-
-
-
-
-
-
-
-
 
 // MODIFICATION OF THE ORIGINAL CODE GIVEN TO ME BY CLAUDE AI MODIFIED BY GROK
 // import { useState, useEffect, useRef } from 'react';
