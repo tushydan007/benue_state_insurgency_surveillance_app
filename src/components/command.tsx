@@ -277,7 +277,9 @@ const CommandCenter = () => {
           <div className="flex items-center space-x-4">
             <Shield className="w-8 h-8 text-blue-400" />
             <div>
-              <h1 className="text-2xl font-bold">Benue State Command Center</h1>
+              <h1 className="text-2xl font-bold">
+                Benue State Border Surveillance
+              </h1>
               <p className="text-slate-400">
                 Border Security & Threat Monitoring
               </p>
