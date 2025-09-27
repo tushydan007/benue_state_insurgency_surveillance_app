@@ -22,14 +22,14 @@ import { Virtuoso } from "react-virtuoso";
 import "leaflet/dist/leaflet.css";
 
 const benueBoundaryData: FeatureCollection = {
-  "type": "FeatureCollection",
-  "features": [
+  type: "FeatureCollection",
+  features: [
     {
-      "type": "Feature",
-      "id": 13,
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
+      type: "Feature",
+      id: 13,
+      geometry: {
+        type: "Polygon",
+        coordinates: [
           [
             [9.4673701996575268, 6.4558320002516822, 0],
             [9.4719238001741797, 6.4541689002366711, 0],
@@ -976,25 +976,25 @@ const benueBoundaryData: FeatureCollection = {
             [9.4672861003100603, 6.473245099702071, 0],
             [9.4672346001120449, 6.466357199632891, 0],
             [9.4660348996873651, 6.4583278001437066, 0],
-            [9.4673701996575268, 6.4558320002516822, 0]
-          ]
-        ]
+            [9.4673701996575268, 6.4558320002516822, 0],
+          ],
+        ],
       },
-      "properties": {
-        "OBJECTID": 13,
-        "Name": "Benue",
-        "FolderPath": "overpass-turbo.eu export",
-        "SymbolID": 0,
-        "AltMode": 0,
-        "Base": 0,
-        "Clamped": -1,
-        "Snippet": "",
-        "PopupInfo": "",
-        "Shape_Length": 999780.03367754538,
-        "Shape_Area": 31059488133.141129
-      }
-    }
-  ]
+      properties: {
+        OBJECTID: 13,
+        Name: "Benue",
+        FolderPath: "overpass-turbo.eu export",
+        SymbolID: 0,
+        AltMode: 0,
+        Base: 0,
+        Clamped: -1,
+        Snippet: "",
+        PopupInfo: "",
+        Shape_Length: 999780.03367754538,
+        Shape_Area: 31059488133.141129,
+      },
+    },
+  ],
 };
 
 interface Sensor {
@@ -1019,7 +1019,10 @@ interface Threat {
   status: string;
 }
 
-function getRandomBoundaryPoint(coords: number[][]): { lat: number; lng: number } {
+function getRandomBoundaryPoint(coords: number[][]): {
+  lat: number;
+  lng: number;
+} {
   const lengths: number[] = [];
   let totalLength = 0;
 
@@ -1060,9 +1063,7 @@ const CommandCenter = () => {
 
   const geometry = benueBoundaryData.features[0].geometry;
   const boundaryCoords = useMemo(() => {
-    return geometry.type === "Polygon"
-      ? geometry.coordinates[0]
-      : [];
+    return geometry.type === "Polygon" ? geometry.coordinates[0] : [];
   }, [geometry]);
 
   // Mock data for demonstration
@@ -1122,7 +1123,10 @@ const CommandCenter = () => {
         sensorId: "S002",
         type: "armed_group",
         severity: "critical",
-        location: { ...getRandomBoundaryPoint(boundaryCoords), name: "Border Perimeter North" },
+        location: {
+          ...getRandomBoundaryPoint(boundaryCoords),
+          name: "Border Perimeter North",
+        },
         timestamp: new Date(Date.now() - 120000),
         description:
           "Armed group of 8-10 individuals detected approaching checkpoint. Heavy weapons visible.",
@@ -1134,7 +1138,10 @@ const CommandCenter = () => {
         sensorId: "S001",
         type: "vehicle_movement",
         severity: "medium",
-        location: { ...getRandomBoundaryPoint(boundaryCoords), name: "Border Perimeter West" },
+        location: {
+          ...getRandomBoundaryPoint(boundaryCoords),
+          name: "Border Perimeter West",
+        },
         timestamp: new Date(Date.now() - 300000),
         description:
           "Convoy of 3 unmarked vehicles moving towards border crossing at unusual hour.",
@@ -1146,7 +1153,10 @@ const CommandCenter = () => {
         sensorId: "S003",
         type: "intrusion",
         severity: "high",
-        location: { ...getRandomBoundaryPoint(boundaryCoords), name: "Border Perimeter East" },
+        location: {
+          ...getRandomBoundaryPoint(boundaryCoords),
+          name: "Border Perimeter East",
+        },
         timestamp: new Date(Date.now() - 600000),
         description:
           "Unauthorized border crossing detected. Multiple individuals attempting to bypass checkpoint.",
@@ -1426,7 +1436,7 @@ const CommandCenter = () => {
               <MapContainer
                 center={[7.4, 8.6]}
                 zoom={8}
-                style={{ height: "100%", width: "100%" }}
+                style={{ height: "100%", width: "100%", zIndex: 0 }}
                 preferCanvas={true}
               >
                 <TileLayer
@@ -1532,15 +1542,19 @@ const CommandCenter = () => {
             <span>Active Threats</span>
           </h2>
 
-          <div className="mb-6" style={{ height: '50vh' }}>
+          <div className="mb-6" style={{ height: "50vh" }}>
             <Virtuoso
-              style={{ height: '100%' }}
+              style={{ height: "100%" }}
               data={threats}
               itemContent={(_, threat) => (
                 <div
                   key={threat.id}
                   className={`bg-slate-700 rounded-lg p-3 cursor-pointer transition-colors
-                    ${selectedThreat?.id === threat.id ? "ring-2 ring-blue-400" : ""}
+                    ${
+                      selectedThreat?.id === threat.id
+                        ? "ring-2 ring-blue-400"
+                        : ""
+                    }
                     hover:bg-slate-600`}
                   onClick={() => setSelectedThreat(threat)}
                 >
@@ -1630,13 +1644,13 @@ const CommandCenter = () => {
 
       {/* Threat Detail Modal */}
       {selectedThreat && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
           <div className="fixed bg-slate-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold">Threat Details</h2>
               <button
                 onClick={() => setSelectedThreat(null)}
-                className="text-slate-400 hover:text-white"
+                className="text-slate-400 hover:text-white border rounded-full w-4 h-4 flex items-center justify-center cursor-pointer"
               >
                 ×
               </button>
@@ -1705,22 +1719,6 @@ const CommandCenter = () => {
 };
 
 export default CommandCenter;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // THIS IS THE DEFAULT CODE
 // import { useState, useEffect, useRef } from "react";
@@ -2418,24 +2416,6 @@ export default CommandCenter;
 
 // export default CommandCenter;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // THE MAP WITH BENUE STATE BOUNDARY
 // import { useState, useEffect, useRef } from "react";
 // import {
@@ -3129,23 +3109,6 @@ export default CommandCenter;
 // };
 
 // export default CommandCenter;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // MODIFICATION OF THE ORIGINAL CODE GIVEN TO ME BY CLAUDE AI MODIFIED BY GROK
 // import { useState, useEffect, useRef } from 'react';
