@@ -1720,2448 +1720,4225 @@
 
 // export default CommandCenter;
 
-
-
-
-
-
-
-
-
-
-
-// // THIS IS THE DEFAULT CODE
-// // import { useState, useEffect, useRef } from "react";
-// // import {
-// //   AlertTriangle,
-// //   Shield,
-// //   MapPin,
-// //   Camera,
-// //   Users,
-// //   Clock,
-// //   Volume2,
-// //   VolumeX,
-// //   Eye,
-// //   Zap,
-// //   Target,
-// //   Bell,
-// //   Activity,
-// // } from "lucide-react";
-// // import { Alert, AlertDescription } from "@/components/ui/alert";
-// // import { GeoJSON } from "react-leaflet";
-// // import benueBoundaryData from "../data/benue1.geojson.json";
-// // import type { FeatureCollection } from "geojson";
-// // import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
-// // import { Virtuoso } from "react-virtuoso";
-// // import "leaflet/dist/leaflet.css";
-
-// // interface Sensor {
-// //   id: string;
-// //   name: string;
-// //   lat: number;
-// //   lng: number;
-// //   status: string;
-// //   lastUpdate: Date;
-// //   batteryLevel: number;
-// // }
-
-// // interface Threat {
-// //   id: string;
-// //   sensorId: string;
-// //   type: string;
-// //   severity: string;
-// //   location: { lat: number; lng: number; name: string };
-// //   timestamp: Date;
-// //   description: string;
-// //   personnel: number;
-// //   status: string;
-// // }
-
-// // const CommandCenter = () => {
-// //   const [sensors, setSensors] = useState<Sensor[]>([]);
-// //   const [threats, setThreats] = useState<Threat[]>([]);
-// //   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
-// //   const [soundEnabled, setSoundEnabled] = useState(true);
-// //   const [connectionStatus, setConnectionStatus] = useState("disconnected");
-// //   const audioRef = useRef<HTMLAudioElement>(null);
-// //   // const wsRef = useRef<WebSocket | null>(null); Reopen this when you are ready for backend integration
-
-// //   // Mock data for demonstration
-// //   useEffect(() => {
-// //     const mockSensors = [
-// //       {
-// //         id: "S001",
-// //         name: "Makurdi Border North",
-// //         lat: 7.7319,
-// //         lng: 8.5211,
-// //         status: "active",
-// //         lastUpdate: new Date(),
-// //         batteryLevel: 85,
-// //       },
-// //       {
-// //         id: "S002",
-// //         name: "Gboko Checkpoint",
-// //         lat: 7.3239,
-// //         lng: 9.0043,
-// //         status: "alert",
-// //         lastUpdate: new Date(),
-// //         batteryLevel: 92,
-// //       },
-// //       {
-// //         id: "S003",
-// //         name: "Otukpo Border East",
-// //         lat: 7.1905,
-// //         lng: 8.1301,
-// //         status: "active",
-// //         lastUpdate: new Date(),
-// //         batteryLevel: 78,
-// //       },
-// //       {
-// //         id: "S004",
-// //         name: "Katsina-Ala West",
-// //         lat: 7.1667,
-// //         lng: 9.2833,
-// //         status: "inactive",
-// //         lastUpdate: new Date(Date.now() - 300000),
-// //         batteryLevel: 45,
-// //       },
-// //       {
-// //         id: "S005",
-// //         name: "Vandeikya South",
-// //         lat: 6.7833,
-// //         lng: 9.0667,
-// //         status: "active",
-// //         lastUpdate: new Date(),
-// //         batteryLevel: 95,
-// //       },
-// //     ];
-
-// //     const mockThreats = [
-// //       {
-// //         id: "T001",
-// //         sensorId: "S002",
-// //         type: "armed_group",
-// //         severity: "critical",
-// //         location: { lat: 7.3239, lng: 9.0043, name: "Gboko Checkpoint" },
-// //         timestamp: new Date(Date.now() - 120000),
-// //         description:
-// //           "Armed group of 8-10 individuals detected approaching checkpoint. Heavy weapons visible.",
-// //         personnel: 10,
-// //         status: "active",
-// //       },
-// //       {
-// //         id: "T002",
-// //         sensorId: "S001",
-// //         type: "vehicle_movement",
-// //         severity: "medium",
-// //         location: { lat: 7.7319, lng: 8.5211, name: "Makurdi Border North" },
-// //         timestamp: new Date(Date.now() - 300000),
-// //         description:
-// //           "Convoy of 3 unmarked vehicles moving towards border crossing at unusual hour.",
-// //         personnel: 5,
-// //         status: "investigating",
-// //       },
-// //       {
-// //         id: "T003",
-// //         sensorId: "S003",
-// //         type: "intrusion",
-// //         severity: "high",
-// //         location: { lat: 7.1905, lng: 8.1301, name: "Otukpo Border East" },
-// //         timestamp: new Date(Date.now() - 600000),
-// //         description:
-// //           "Unauthorized border crossing detected. Multiple individuals attempting to bypass checkpoint.",
-// //         personnel: 6,
-// //         status: "active",
-// //       },
-// //     ];
-
-// //     setSensors(mockSensors);
-// //     setThreats(mockThreats);
-// //   }, []);
-
-// //   // WebSocket connection simulation
-// //   useEffect(() => {
-// //     const connectWebSocket = () => {
-// //       setConnectionStatus("reconnecting");
-
-// //       // Simulate WebSocket connection
-// //       setTimeout(() => {
-// //         setConnectionStatus("connected");
-
-// //         // Simulate real-time updates
-// //         const interval = setInterval(() => {
-// //           const now = new Date();
-
-// //           // Update sensor data
-// //           setSensors((prev) =>
-// //             prev.map((sensor) => ({
-// //               ...sensor,
-// //               lastUpdate: now,
-// //               batteryLevel: Math.max(
-// //                 20,
-// //                 sensor.batteryLevel - Math.random() * 0.5
-// //               ),
-// //             }))
-// //           );
-
-// //           // Occasionally add new threats
-// //           if (Math.random() < 0.1) {
-// //             const newThreat = {
-// //               id: `T${Date.now()}`,
-// //               sensorId:
-// //                 sensors[Math.floor(Math.random() * sensors.length)]?.id ||
-// //                 "S001",
-// //               type: [
-// //                 "intrusion",
-// //                 "suspicious_activity",
-// //                 "armed_group",
-// //                 "vehicle_movement",
-// //               ][Math.floor(Math.random() * 4)],
-// //               severity: ["low", "medium", "high", "critical"][
-// //                 Math.floor(Math.random() * 4)
-// //               ],
-// //               location: {
-// //                 lat: 7 + Math.random(),
-// //                 lng: 8 + Math.random(),
-// //                 name: "New Location",
-// //               },
-// //               timestamp: now,
-// //               description:
-// //                 "New threat detected by automated surveillance system.",
-// //               personnel: Math.floor(Math.random() * 15) + 1,
-// //               status: "active",
-// //             };
-
-// //             setThreats((prev) => [newThreat, ...prev]);
-
-// //             // Play alert sound for critical threats
-// //             if (
-// //               newThreat.severity === "critical" &&
-// //               soundEnabled &&
-// //               audioRef.current
-// //             ) {
-// //               audioRef.current
-// //                 .play()
-// //                 .catch((e) => console.log("Audio play failed:", e));
-// //             }
-// //           }
-// //         }, 5000);
-
-// //         return () => {
-// //           clearInterval(interval);
-// //         };
-// //       }, 1000);
-// //     };
-
-// //     connectWebSocket();
-// //   }, [sensors, soundEnabled]);
-
-// //   interface SeverityColorMap {
-// //     [key: string]: string;
-// //   }
-
-// //   const getSeverityColor = (severity: keyof SeverityColorMap): string => {
-// //     switch (severity) {
-// //       case "critical":
-// //         return "bg-red-800 text-white";
-// //       case "high":
-// //         return "bg-red-500 text-white";
-// //       case "medium":
-// //         return "bg-yellow-500 text-white";
-// //       case "low":
-// //         return "bg-green-500 text-white";
-// //       default:
-// //         return "bg-gray-500 text-white";
-// //     }
-// //   };
-
-// //   interface StatusColorMap {
-// //     [key: string]: string;
-// //   }
-
-// //   type SensorStatus = "active" | "inactive" | "alert";
-
-// //   const getStatusColor = (status: SensorStatus): string => {
-// //     const colorMap: StatusColorMap = {
-// //       active: "text-green-400",
-// //       inactive: "text-red-400",
-// //       alert: "text-orange-400",
-// //     };
-// //     return colorMap[status] ?? "text-gray-400";
-// //   };
-
-// //   const activeCriticalThreats = threats.filter(
-// //     (t) => t.severity === "critical" && t.status === "active"
-// //   );
-
-// //   return (
-// //     <div className="min-h-screen bg-slate-900 text-white">
-// //       {/* Audio element for alerts */}
-// //       <audio ref={audioRef} preload="auto">
-// //         <source
-// //           src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYdAkWRzO+8bSMELH7I79+STApSou7gylUfBhNztu/7uWsFLXjK7dyGOhgWSa/q2qBNCAhxue7/ol4GFWq37LiALgcVdMvq7rliFQZGoOs1t2QNCW+z6v5vKwgacaTt8LpgByl6yO1yMxYNUrHq87RsDBR4p+n5oVIGDW6y69x7NIYOUbLqzZA6BQ93s/Psp1MDBnSo5NqBOAYVaqTp67VhBSp8xs+GNwgSb7Ps6bVhBChxw++wYBoGIneqw/K8YhQFLXvK5dB7MgwPcqHq5q5WEQNZ0n7N50QdCk1pSKq9aUdBgT1nTh2JDQxhsjN7Y"
-// //           type="audio/wav"
-// //         />
-// //       </audio>
-
-// //       {/* Header */}
-// //       <div className="bg-slate-800 border-b border-slate-700 px-6 py-4">
-// //         <div className="flex items-center justify-between">
-// //           <div className="flex items-center space-x-4">
-// //             <Shield className="w-8 h-8 text-blue-400" />
-// //             <div>
-// //               <h1 className="text-2xl font-bold">
-// //                 Benue State Border Surveillance
-// //               </h1>
-// //               <p className="text-slate-400">
-// //                 Border Security & Threat Monitoring
-// //               </p>
-// //             </div>
-// //           </div>
-
-// //           <div className="flex items-center space-x-4">
-// //             <div className="flex items-center space-x-2">
-// //               <div
-// //                 className={`w-3 h-3 rounded-full ${
-// //                   connectionStatus === "connected"
-// //                     ? "bg-green-400 animate-pulse"
-// //                     : "bg-red-400"
-// //                 }`}
-// //               />
-// //               <span className="text-sm text-slate-400 capitalize">
-// //                 {connectionStatus}
-// //               </span>
-// //             </div>
-
-// //             <button
-// //               onClick={() => setSoundEnabled(!soundEnabled)}
-// //               className={`p-2 rounded-lg ${
-// //                 soundEnabled
-// //                   ? "bg-blue-600 text-white"
-// //                   : "bg-slate-600 text-slate-300"
-// //               }`}
-// //             >
-// //               {soundEnabled ? (
-// //                 <Volume2 className="w-5 h-5" />
-// //               ) : (
-// //                 <VolumeX className="w-5 h-5" />
-// //               )}
-// //             </button>
-
-// //             <div className="text-right">
-// //               <div className="text-sm font-medium">
-// //                 {new Date().toLocaleTimeString()}
-// //               </div>
-// //               <div className="text-xs text-slate-400">
-// //                 {new Date().toLocaleDateString()}
-// //               </div>
-// //             </div>
-// //           </div>
-// //         </div>
-// //       </div>
-
-// //       {/* Critical Alert Banner */}
-// //       {activeCriticalThreats.length > 0 && (
-// //         <Alert variant="destructive" className="px-6 py-3 animate-pulse">
-// //           <AlertTriangle className="h-4 w-4" />
-// //           <AlertDescription>
-// //             <div className="flex items-center space-x-2">
-// //               <span className="font-semibold">
-// //                 CRITICAL ALERT: {activeCriticalThreats.length} active critical
-// //                 threat{activeCriticalThreats.length > 1 ? "s" : ""} detected
-// //               </span>
-// //               <Bell className="w-5 h-5 animate-bounce" />
-// //             </div>
-// //           </AlertDescription>
-// //         </Alert>
-// //       )}
-
-// //       <div className="flex flex-1">
-// //         {/* Main Content */}
-// //         <div className="flex-1 p-6">
-// //           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-// //             {/* Statistics Cards */}
-// //             <div className="bg-slate-800 rounded-lg p-4">
-// //               <div className="flex items-center justify-between">
-// //                 <div>
-// //                   <p className="text-slate-400 text-sm">Active Sensors</p>
-// //                   <p className="text-2xl font-bold text-green-400">
-// //                     {sensors.filter((s) => s.status === "active").length}
-// //                   </p>
-// //                 </div>
-// //                 <Activity className="w-8 h-8 text-green-400" />
-// //               </div>
-// //             </div>
-
-// //             <div className="bg-slate-800 rounded-lg p-4">
-// //               <div className="flex items-center justify-between">
-// //                 <div>
-// //                   <p className="text-slate-400 text-sm">Active Threats</p>
-// //                   <p className="text-2xl font-bold text-red-400">
-// //                     {threats.filter((t) => t.status === "active").length}
-// //                   </p>
-// //                 </div>
-// //                 <Target className="w-8 h-8 text-red-400" />
-// //               </div>
-// //             </div>
-
-// //             <div className="bg-slate-800 rounded-lg p-4">
-// //               <div className="flex items-center justify-between">
-// //                 <div>
-// //                   <p className="text-slate-400 text-sm">Personnel Deployed</p>
-// //                   <p className="text-2xl font-bold text-blue-400">
-// //                     {threats.reduce((sum, t) => sum + t.personnel, 0)}
-// //                   </p>
-// //                 </div>
-// //                 <Users className="w-8 h-8 text-blue-400" />
-// //               </div>
-// //             </div>
-// //           </div>
-
-// //           {/* Map Area */}
-// //           <div className="bg-slate-800 rounded-lg p-4 mb-6">
-// //             <div className="flex items-center justify-between mb-4">
-// //               <h2 className="text-lg font-semibold flex items-center space-x-2">
-// //                 <MapPin className="w-5 h-5" />
-// //                 <span>Benue State Border Map</span>
-// //               </h2>
-// //               <div className="flex space-x-4">
-// //                 <div className="flex items-center space-x-1 text-sm text-blue-400">
-// //                   <div className="w-3 h-3 bg-blue-400 rounded"></div>
-// //                   <span>Sensors</span>
-// //                 </div>
-// //                 <div className="flex items-center space-x-1 text-sm text-red-400">
-// //                   <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-// //                   <span>Threats</span>
-// //                 </div>
-// //                 <div className="flex items-center space-x-1 text-sm text-purple-400">
-// //                   <Eye className="w-3 h-3" />
-// //                   <span>Surveillance</span>
-// //                 </div>
-// //               </div>
-// //             </div>
-
-// //             <div className="rounded-lg h-[90vh]">
-// //               <MapContainer
-// //                 center={[7.4, 8.6]}
-// //                 zoom={8}
-// //                 style={{ height: "100%", width: "100%" }}
-// //                 preferCanvas={true}
-// //               >
-// //                 <TileLayer
-// //                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-// //                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-// //                 />
-// //                 {/* Benue State Border */}
-// //                 {/* Benue State GeoJSON Boundary */}
-// //                 <GeoJSON
-// //                   data={benueBoundaryData as FeatureCollection}
-// //                   style={() => ({
-// //                     color: "blue",
-// //                     weight: 2,
-// //                     fillOpacity: 0.2,
-// //                     fillColor: "blue",
-// //                   })}
-// //                 />
-
-// //                 {/* Sensors */}
-// //                 {sensors.map((sensor) => (
-// //                   <Marker position={[sensor.lat, sensor.lng]} key={sensor.id}>
-// //                     <Popup>
-// //                       {sensor.name}
-// //                       <br />
-// //                       Status: {sensor.status}
-// //                       <br />
-// //                       Battery: {sensor.batteryLevel}%
-// //                     </Popup>
-// //                   </Marker>
-// //                 ))}
-// //                 {threats
-// //                   .filter((t) => t.status === "active")
-// //                   .map((threat) => (
-// //                     <Circle
-// //                       key={threat.id}
-// //                       center={[threat.location.lat, threat.location.lng]}
-// //                       radius={1000}
-// //                       pathOptions={{
-// //                         color:
-// //                           threat.severity === "critical"
-// //                             ? "red"
-// //                             : threat.severity === "high"
-// //                             ? "orange"
-// //                             : threat.severity === "medium"
-// //                             ? "yellow"
-// //                             : "green",
-// //                         fillOpacity: 0.5,
-// //                       }}
-// //                       eventHandlers={{
-// //                         click: () => {
-// //                           setSelectedThreat(threat);
-// //                         },
-// //                       }}
-// //                     >
-// //                       <Popup>
-// //                         {threat.type.replace("_", " ").toUpperCase()}
-// //                         <br />
-// //                         {threat.description}
-// //                         <br />
-// //                         Severity: {threat.severity.toUpperCase()}
-// //                       </Popup>
-// //                     </Circle>
-// //                   ))}
-// //               </MapContainer>
-// //             </div>
-// //           </div>
-
-// //           {/* Video Feeds */}
-// //           <div className="bg-slate-800 rounded-lg p-4">
-// //             <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-// //               <Camera className="w-5 h-5" />
-// //               <span>Live Video Feeds</span>
-// //             </h2>
-// //             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-// //               {sensors.slice(0, 6).map((sensor) => (
-// //                 <div key={sensor.id} className="bg-slate-700 rounded-lg p-3">
-// //                   <div className="bg-black rounded aspect-video mb-2 flex items-center justify-center">
-// //                     <div className="text-slate-400 text-center">
-// //                       <Camera className="w-8 h-8 mx-auto mb-2" />
-// //                       <div className="text-xs">Camera {sensor.id}</div>
-// //                       <div className="text-xs">{sensor.name}</div>
-// //                     </div>
-// //                   </div>
-// //                   <div className="flex justify-between items-center text-xs">
-// //                     <span
-// //                       className={getStatusColor(sensor.status as SensorStatus)}
-// //                     >
-// //                       {sensor.status}
-// //                     </span>
-// //                     <span className="text-slate-400">
-// //                       Battery: {sensor.batteryLevel}%
-// //                     </span>
-// //                   </div>
-// //                 </div>
-// //               ))}
-// //             </div>
-// //           </div>
-// //         </div>
-
-// //         {/* Sidebar - Threat List */}
-// //         <div className="w-80 bg-slate-800 border-l border-slate-700 p-4 overflow-y-auto">
-// //           <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-// //             <AlertTriangle className="w-5 h-5" />
-// //             <span>Active Threats</span>
-// //           </h2>
-
-// //           <div className="mb-6" style={{ height: '50vh' }}>
-// //             <Virtuoso
-// //               style={{ height: '100%' }}
-// //               data={threats}
-// //               itemContent={(_, threat) => (
-// //                 <div
-// //                   key={threat.id}
-// //                   className={`bg-slate-700 rounded-lg p-3 cursor-pointer transition-colors
-// //                     ${selectedThreat?.id === threat.id ? "ring-2 ring-blue-400" : ""}
-// //                     hover:bg-slate-600`}
-// //                   onClick={() => setSelectedThreat(threat)}
-// //                 >
-// //                   <div className="flex items-center justify-between mb-2">
-// //                     <span
-// //                       className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(
-// //                         threat.severity
-// //                       )}`}
-// //                     >
-// //                       {threat.severity.toUpperCase()}
-// //                     </span>
-// //                     <div className="flex items-center space-x-1 text-xs text-slate-400">
-// //                       <Clock className="w-3 h-3" />
-// //                       <span>
-// //                         {new Date(threat.timestamp).toLocaleTimeString()}
-// //                       </span>
-// //                     </div>
-// //                   </div>
-
-// //                   <h3 className="font-medium mb-1">
-// //                     {threat.type.replace("_", " ").toUpperCase()}
-// //                   </h3>
-// //                   <p className="text-sm text-slate-300 mb-2">
-// //                     {threat.description}
-// //                   </p>
-
-// //                   <div className="flex items-center justify-between text-xs text-slate-400">
-// //                     <span className="flex items-center space-x-1">
-// //                       <MapPin className="w-3 h-3" />
-// //                       <span>{threat.location.name}</span>
-// //                     </span>
-// //                     <span className="flex items-center space-x-1">
-// //                       <Users className="w-3 h-3" />
-// //                       <span>{threat.personnel}</span>
-// //                     </span>
-// //                   </div>
-
-// //                   <div className="mt-2 flex space-x-2">
-// //                     <button className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-500">
-// //                       Deploy
-// //                     </button>
-// //                     <button className="px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500">
-// //                       Investigate
-// //                     </button>
-// //                   </div>
-// //                 </div>
-// //               )}
-// //             />
-// //           </div>
-
-// //           {/* Sensor Status */}
-// //           <div className="mt-6">
-// //             <h3 className="text-md font-semibold mb-3 flex items-center space-x-2">
-// //               <Zap className="w-4 h-4" />
-// //               <span>Sensor Status</span>
-// //             </h3>
-
-// //             <div className="space-y-2">
-// //               {sensors.map((sensor) => (
-// //                 <div key={sensor.id} className="bg-slate-700 rounded p-2">
-// //                   <div className="flex items-center justify-between mb-1">
-// //                     <span className="text-sm font-medium">{sensor.name}</span>
-// //                     <span
-// //                       className={`text-xs ${getStatusColor(
-// //                         sensor.status as SensorStatus
-// //                       )}`}
-// //                     >
-// //                       {sensor.status}
-// //                     </span>
-// //                   </div>
-// //                   <div className="flex items-center justify-between text-xs text-slate-400">
-// //                     <span>ID: {sensor.id}</span>
-// //                     <span>Battery: {sensor.batteryLevel.toFixed(1)}%</span>
-// //                   </div>
-// //                   <div className="w-full bg-slate-600 rounded-full h-1 mt-1">
-// //                     <div
-// //                       className="bg-green-400 h-1 rounded-full"
-// //                       style={{ width: `${sensor.batteryLevel}%` }}
-// //                     />
-// //                   </div>
-// //                 </div>
-// //               ))}
-// //             </div>
-// //           </div>
-// //         </div>
-// //       </div>
-
-// //       {/* Threat Detail Modal */}
-// //       {selectedThreat && (
-// //         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-// //           <div className="bg-slate-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-// //             <div className="flex items-center justify-between mb-4">
-// //               <h2 className="text-xl font-bold">Threat Details</h2>
-// //               <button
-// //                 onClick={() => setSelectedThreat(null)}
-// //                 className="text-slate-400 hover:text-white"
-// //               >
-// //                 ×
-// //               </button>
-// //             </div>
-
-// //             <div className="space-y-4">
-// //               <div className="grid grid-cols-2 gap-4">
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">Threat ID</label>
-// //                   <p className="font-medium">{selectedThreat.id}</p>
-// //                 </div>
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">Severity</label>
-// //                   <span
-// //                     className={`inline-block px-2 py-1 rounded text-sm font-medium ${getSeverityColor(
-// //                       selectedThreat.severity
-// //                     )}`}
-// //                   >
-// //                     {selectedThreat.severity.toUpperCase()}
-// //                   </span>
-// //                 </div>
-// //               </div>
-
-// //               <div>
-// //                 <label className="text-sm text-slate-400">Description</label>
-// //                 <p className="text-slate-200">{selectedThreat.description}</p>
-// //               </div>
-
-// //               <div className="grid grid-cols-2 gap-4">
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">Location</label>
-// //                   <p className="font-medium">{selectedThreat.location.name}</p>
-// //                 </div>
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">
-// //                     Personnel Deployed
-// //                   </label>
-// //                   <p className="font-medium">{selectedThreat.personnel}</p>
-// //                 </div>
-// //               </div>
-
-// //               <div>
-// //                 <label className="text-sm text-slate-400">Timestamp</label>
-// //                 <p className="font-medium">
-// //                   {selectedThreat.timestamp.toLocaleString()}
-// //                 </p>
-// //               </div>
-
-// //               <div className="flex space-x-3 mt-6">
-// //                 <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500">
-// //                   Deploy Emergency Response
-// //                 </button>
-// //                 <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">
-// //                   Request Backup
-// //                 </button>
-// //                 <button className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500">
-// //                   Mark Investigating
-// //                 </button>
-// //               </div>
-// //             </div>
-// //           </div>
-// //         </div>
-// //       )}
-// //     </div>
-// //   );
-// // };
-
-// // export default CommandCenter;
-
-// // THE MAP WITH BENUE STATE BOUNDARY
-// // import { useState, useEffect, useRef } from "react";
-// // import {
-// //   AlertTriangle,
-// //   Shield,
-// //   MapPin,
-// //   Camera,
-// //   Users,
-// //   Clock,
-// //   Volume2,
-// //   VolumeX,
-// //   Eye,
-// //   Zap,
-// //   Target,
-// //   Bell,
-// //   Activity,
-// // } from "lucide-react";
-// // import { Alert, AlertDescription } from "@/components/ui/alert";
-// // import { GeoJSON } from "react-leaflet";
-// // import benueBoundaryData from "../data/benue1.geojson.json";
-// // import type { FeatureCollection } from "geojson";
-// // import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
-// // import "leaflet/dist/leaflet.css";
-
-// // interface Sensor {
-// //   id: string;
-// //   name: string;
-// //   lat: number;
-// //   lng: number;
-// //   status: string;
-// //   lastUpdate: Date;
-// //   batteryLevel: number;
-// // }
-
-// // interface Threat {
-// //   id: string;
-// //   sensorId: string;
-// //   type: string;
-// //   severity: string;
-// //   location: { lat: number; lng: number; name: string };
-// //   timestamp: Date;
-// //   description: string;
-// //   personnel: number;
-// //   status: string;
-// // }
-
-// // const CommandCenter = () => {
-// //   const [sensors, setSensors] = useState<Sensor[]>([]);
-// //   const [threats, setThreats] = useState<Threat[]>([]);
-// //   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
-// //   const [soundEnabled, setSoundEnabled] = useState(true);
-// //   const [connectionStatus, setConnectionStatus] = useState("disconnected");
-// //   const audioRef = useRef<HTMLAudioElement>(null);
-// //   // const wsRef = useRef<WebSocket | null>(null); Reopen this when you are ready for backend integration
-
-// //   // Mock data for demonstration
-// //   useEffect(() => {
-// //     const mockSensors = [
-// //       {
-// //         id: "S001",
-// //         name: "Makurdi Border North",
-// //         lat: 7.7319,
-// //         lng: 8.5211,
-// //         status: "active",
-// //         lastUpdate: new Date(),
-// //         batteryLevel: 85,
-// //       },
-// //       {
-// //         id: "S002",
-// //         name: "Gboko Checkpoint",
-// //         lat: 7.3239,
-// //         lng: 9.0043,
-// //         status: "alert",
-// //         lastUpdate: new Date(),
-// //         batteryLevel: 92,
-// //       },
-// //       {
-// //         id: "S003",
-// //         name: "Otukpo Border East",
-// //         lat: 7.1905,
-// //         lng: 8.1301,
-// //         status: "active",
-// //         lastUpdate: new Date(),
-// //         batteryLevel: 78,
-// //       },
-// //       {
-// //         id: "S004",
-// //         name: "Katsina-Ala West",
-// //         lat: 7.1667,
-// //         lng: 9.2833,
-// //         status: "inactive",
-// //         lastUpdate: new Date(Date.now() - 300000),
-// //         batteryLevel: 45,
-// //       },
-// //       {
-// //         id: "S005",
-// //         name: "Vandeikya South",
-// //         lat: 6.7833,
-// //         lng: 9.0667,
-// //         status: "active",
-// //         lastUpdate: new Date(),
-// //         batteryLevel: 95,
-// //       },
-// //     ];
-
-// //     const mockThreats = [
-// //       {
-// //         id: "T001",
-// //         sensorId: "S002",
-// //         type: "armed_group",
-// //         severity: "critical",
-// //         location: { lat: 7.3239, lng: 9.0043, name: "Gboko Checkpoint" },
-// //         timestamp: new Date(Date.now() - 120000),
-// //         description:
-// //           "Armed group of 8-10 individuals detected approaching checkpoint. Heavy weapons visible.",
-// //         personnel: 10,
-// //         status: "active",
-// //       },
-// //       {
-// //         id: "T002",
-// //         sensorId: "S001",
-// //         type: "vehicle_movement",
-// //         severity: "medium",
-// //         location: { lat: 7.7319, lng: 8.5211, name: "Makurdi Border North" },
-// //         timestamp: new Date(Date.now() - 300000),
-// //         description:
-// //           "Convoy of 3 unmarked vehicles moving towards border crossing at unusual hour.",
-// //         personnel: 5,
-// //         status: "investigating",
-// //       },
-// //       {
-// //         id: "T003",
-// //         sensorId: "S003",
-// //         type: "intrusion",
-// //         severity: "high",
-// //         location: { lat: 7.1905, lng: 8.1301, name: "Otukpo Border East" },
-// //         timestamp: new Date(Date.now() - 600000),
-// //         description:
-// //           "Unauthorized border crossing detected. Multiple individuals attempting to bypass checkpoint.",
-// //         personnel: 6,
-// //         status: "active",
-// //       },
-// //     ];
-
-// //     setSensors(mockSensors);
-// //     setThreats(mockThreats);
-// //   }, []);
-
-// //   // WebSocket connection simulation
-// //   useEffect(() => {
-// //     const connectWebSocket = () => {
-// //       setConnectionStatus("reconnecting");
-
-// //       // Simulate WebSocket connection
-// //       setTimeout(() => {
-// //         setConnectionStatus("connected");
-
-// //         // Simulate real-time updates
-// //         const interval = setInterval(() => {
-// //           const now = new Date();
-
-// //           // Update sensor data
-// //           setSensors((prev) =>
-// //             prev.map((sensor) => ({
-// //               ...sensor,
-// //               lastUpdate: now,
-// //               batteryLevel: Math.max(
-// //                 20,
-// //                 sensor.batteryLevel - Math.random() * 0.5
-// //               ),
-// //             }))
-// //           );
-
-// //           // Occasionally add new threats
-// //           if (Math.random() < 0.1) {
-// //             const newThreat = {
-// //               id: `T${Date.now()}`,
-// //               sensorId:
-// //                 sensors[Math.floor(Math.random() * sensors.length)]?.id ||
-// //                 "S001",
-// //               type: [
-// //                 "intrusion",
-// //                 "suspicious_activity",
-// //                 "armed_group",
-// //                 "vehicle_movement",
-// //               ][Math.floor(Math.random() * 4)],
-// //               severity: ["low", "medium", "high", "critical"][
-// //                 Math.floor(Math.random() * 4)
-// //               ],
-// //               location: {
-// //                 lat: 7 + Math.random(),
-// //                 lng: 8 + Math.random(),
-// //                 name: "New Location",
-// //               },
-// //               timestamp: now,
-// //               description:
-// //                 "New threat detected by automated surveillance system.",
-// //               personnel: Math.floor(Math.random() * 15) + 1,
-// //               status: "active",
-// //             };
-
-// //             setThreats((prev) => [newThreat, ...prev.slice(0, 9)]);
-
-// //             // Play alert sound for critical threats
-// //             if (
-// //               newThreat.severity === "critical" &&
-// //               soundEnabled &&
-// //               audioRef.current
-// //             ) {
-// //               audioRef.current
-// //                 .play()
-// //                 .catch((e) => console.log("Audio play failed:", e));
-// //             }
-// //           }
-// //         }, 5000);
-
-// //         return () => {
-// //           clearInterval(interval);
-// //         };
-// //       }, 1000);
-// //     };
-
-// //     connectWebSocket();
-// //   }, [sensors, soundEnabled]);
-
-// //   interface SeverityColorMap {
-// //     [key: string]: string;
-// //   }
-
-// //   const getSeverityColor = (severity: keyof SeverityColorMap): string => {
-// //     switch (severity) {
-// //       case "critical":
-// //         return "bg-red-800 text-white";
-// //       case "high":
-// //         return "bg-red-500 text-white";
-// //       case "medium":
-// //         return "bg-yellow-500 text-white";
-// //       case "low":
-// //         return "bg-green-500 text-white";
-// //       default:
-// //         return "bg-gray-500 text-white";
-// //     }
-// //   };
-
-// //   interface StatusColorMap {
-// //     [key: string]: string;
-// //   }
-
-// //   type SensorStatus = "active" | "inactive" | "alert";
-
-// //   const getStatusColor = (status: SensorStatus): string => {
-// //     const colorMap: StatusColorMap = {
-// //       active: "text-green-400",
-// //       inactive: "text-red-400",
-// //       alert: "text-orange-400",
-// //     };
-// //     return colorMap[status] ?? "text-gray-400";
-// //   };
-
-// //   const activeCriticalThreats = threats.filter(
-// //     (t) => t.severity === "critical" && t.status === "active"
-// //   );
-
-// //   return (
-// //     <div className="min-h-screen bg-slate-900 text-white">
-// //       {/* Audio element for alerts */}
-// //       <audio ref={audioRef} preload="auto">
-// //         <source
-// //           src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYdAkWRzO+8bSMELH7I79+STApSou7gylUfBhNztu/7uWsFLXjK7dyGOhgWSa/q2qBNCAhxue7/ol4GFWq37LiALgcVdMvq7rliFQZGoOs1t2QNCW+z6v5vKwgacaTt8LpgByl6yO1yMxYNUrHq87RsDBR4p+n5oVIGDW6y69x7NIYOUbLqzZA6BQ93s/Psp1MDBnSo5NqBOAYVaqTp67VhBSp8xs+GNwgSb7Ps6bVhBChxw++wYBoGIneqw/K8YhQFLXvK5dB7MgwPcqHq5q5WEQNZ0n7N50QdCk1pSKq9aUdBgT1nTh2JDQxhsjN7Y"
-// //           type="audio/wav"
-// //         />
-// //       </audio>
-
-// //       {/* Header */}
-// //       <div className="bg-slate-800 border-b border-slate-700 px-6 py-4">
-// //         <div className="flex items-center justify-between">
-// //           <div className="flex items-center space-x-4">
-// //             <Shield className="w-8 h-8 text-blue-400" />
-// //             <div>
-// //               <h1 className="text-2xl font-bold">
-// //                 Benue State Border Surveillance
-// //               </h1>
-// //               <p className="text-slate-400">
-// //                 Border Security & Threat Monitoring
-// //               </p>
-// //             </div>
-// //           </div>
-
-// //           <div className="flex items-center space-x-4">
-// //             <div className="flex items-center space-x-2">
-// //               <div
-// //                 className={`w-3 h-3 rounded-full ${
-// //                   connectionStatus === "connected"
-// //                     ? "bg-green-400 animate-pulse"
-// //                     : "bg-red-400"
-// //                 }`}
-// //               />
-// //               <span className="text-sm text-slate-400 capitalize">
-// //                 {connectionStatus}
-// //               </span>
-// //             </div>
-
-// //             <button
-// //               onClick={() => setSoundEnabled(!soundEnabled)}
-// //               className={`p-2 rounded-lg ${
-// //                 soundEnabled
-// //                   ? "bg-blue-600 text-white"
-// //                   : "bg-slate-600 text-slate-300"
-// //               }`}
-// //             >
-// //               {soundEnabled ? (
-// //                 <Volume2 className="w-5 h-5" />
-// //               ) : (
-// //                 <VolumeX className="w-5 h-5" />
-// //               )}
-// //             </button>
-
-// //             <div className="text-right">
-// //               <div className="text-sm font-medium">
-// //                 {new Date().toLocaleTimeString()}
-// //               </div>
-// //               <div className="text-xs text-slate-400">
-// //                 {new Date().toLocaleDateString()}
-// //               </div>
-// //             </div>
-// //           </div>
-// //         </div>
-// //       </div>
-
-// //       {/* Critical Alert Banner */}
-// //       {activeCriticalThreats.length > 0 && (
-// //         <Alert variant="destructive" className="px-6 py-3 animate-pulse">
-// //           <AlertTriangle className="h-4 w-4" />
-// //           <AlertDescription>
-// //             <div className="flex items-center space-x-2">
-// //               <span className="font-semibold">
-// //                 CRITICAL ALERT: {activeCriticalThreats.length} active critical
-// //                 threat{activeCriticalThreats.length > 1 ? "s" : ""} detected
-// //               </span>
-// //               <Bell className="w-5 h-5 animate-bounce" />
-// //             </div>
-// //           </AlertDescription>
-// //         </Alert>
-// //       )}
-
-// //       <div className="flex flex-1">
-// //         {/* Main Content */}
-// //         <div className="flex-1 p-6">
-// //           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-// //             {/* Statistics Cards */}
-// //             <div className="bg-slate-800 rounded-lg p-4">
-// //               <div className="flex items-center justify-between">
-// //                 <div>
-// //                   <p className="text-slate-400 text-sm">Active Sensors</p>
-// //                   <p className="text-2xl font-bold text-green-400">
-// //                     {sensors.filter((s) => s.status === "active").length}
-// //                   </p>
-// //                 </div>
-// //                 <Activity className="w-8 h-8 text-green-400" />
-// //               </div>
-// //             </div>
-
-// //             <div className="bg-slate-800 rounded-lg p-4">
-// //               <div className="flex items-center justify-between">
-// //                 <div>
-// //                   <p className="text-slate-400 text-sm">Active Threats</p>
-// //                   <p className="text-2xl font-bold text-red-400">
-// //                     {threats.filter((t) => t.status === "active").length}
-// //                   </p>
-// //                 </div>
-// //                 <Target className="w-8 h-8 text-red-400" />
-// //               </div>
-// //             </div>
-
-// //             <div className="bg-slate-800 rounded-lg p-4">
-// //               <div className="flex items-center justify-between">
-// //                 <div>
-// //                   <p className="text-slate-400 text-sm">Personnel Deployed</p>
-// //                   <p className="text-2xl font-bold text-blue-400">
-// //                     {threats.reduce((sum, t) => sum + t.personnel, 0)}
-// //                   </p>
-// //                 </div>
-// //                 <Users className="w-8 h-8 text-blue-400" />
-// //               </div>
-// //             </div>
-// //           </div>
-
-// //           {/* Map Area */}
-// //           <div className="bg-slate-800 rounded-lg p-4 mb-6">
-// //             <div className="flex items-center justify-between mb-4">
-// //               <h2 className="text-lg font-semibold flex items-center space-x-2">
-// //                 <MapPin className="w-5 h-5" />
-// //                 <span>Benue State Border Map</span>
-// //               </h2>
-// //               <div className="flex space-x-4">
-// //                 <div className="flex items-center space-x-1 text-sm text-blue-400">
-// //                   <div className="w-3 h-3 bg-blue-400 rounded"></div>
-// //                   <span>Sensors</span>
-// //                 </div>
-// //                 <div className="flex items-center space-x-1 text-sm text-red-400">
-// //                   <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-// //                   <span>Threats</span>
-// //                 </div>
-// //                 <div className="flex items-center space-x-1 text-sm text-purple-400">
-// //                   <Eye className="w-3 h-3" />
-// //                   <span>Surveillance</span>
-// //                 </div>
-// //               </div>
-// //             </div>
-
-// //             <div className="rounded-lg h-[90vh]">
-// //               <MapContainer
-// //                 center={[7.4, 8.6]}
-// //                 zoom={8}
-// //                 style={{ height: "100%", width: "100%" }}
-// //               >
-// //                 <TileLayer
-// //                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-// //                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-// //                 />
-// //                 {/* Benue State Border */}
-// //                 {/* Benue State GeoJSON Boundary */}
-// //                 <GeoJSON
-// //                   data={benueBoundaryData as FeatureCollection}
-// //                   style={() => ({
-// //                     color: "blue",
-// //                     weight: 2,
-// //                     fillOpacity: 0.2,
-// //                     fillColor: "blue",
-// //                   })}
-// //                 />
-
-// //                 {/* Sensors */}
-// //                 {sensors.map((sensor) => (
-// //                   <Marker position={[sensor.lat, sensor.lng]} key={sensor.id}>
-// //                     <Popup>
-// //                       {sensor.name}
-// //                       <br />
-// //                       Status: {sensor.status}
-// //                       <br />
-// //                       Battery: {sensor.batteryLevel}%
-// //                     </Popup>
-// //                   </Marker>
-// //                 ))}
-// //                 {threats
-// //                   .filter((t) => t.status === "active")
-// //                   .map((threat) => (
-// //                     <Circle
-// //                       key={threat.id}
-// //                       center={[threat.location.lat, threat.location.lng]}
-// //                       radius={1000}
-// //                       pathOptions={{
-// //                         color:
-// //                           threat.severity === "critical"
-// //                             ? "red"
-// //                             : threat.severity === "high"
-// //                             ? "orange"
-// //                             : threat.severity === "medium"
-// //                             ? "yellow"
-// //                             : "green",
-// //                         fillOpacity: 0.5,
-// //                       }}
-// //                       eventHandlers={{
-// //                         click: () => {
-// //                           setSelectedThreat(threat);
-// //                         },
-// //                       }}
-// //                     >
-// //                       <Popup>
-// //                         {threat.type.replace("_", " ").toUpperCase()}
-// //                         <br />
-// //                         {threat.description}
-// //                         <br />
-// //                         Severity: {threat.severity.toUpperCase()}
-// //                       </Popup>
-// //                     </Circle>
-// //                   ))}
-// //               </MapContainer>
-// //             </div>
-// //           </div>
-
-// //           {/* Video Feeds */}
-// //           <div className="bg-slate-800 rounded-lg p-4">
-// //             <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-// //               <Camera className="w-5 h-5" />
-// //               <span>Live Video Feeds</span>
-// //             </h2>
-// //             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-// //               {sensors.slice(0, 6).map((sensor) => (
-// //                 <div key={sensor.id} className="bg-slate-700 rounded-lg p-3">
-// //                   <div className="bg-black rounded aspect-video mb-2 flex items-center justify-center">
-// //                     <div className="text-slate-400 text-center">
-// //                       <Camera className="w-8 h-8 mx-auto mb-2" />
-// //                       <div className="text-xs">Camera {sensor.id}</div>
-// //                       <div className="text-xs">{sensor.name}</div>
-// //                     </div>
-// //                   </div>
-// //                   <div className="flex justify-between items-center text-xs">
-// //                     <span
-// //                       className={getStatusColor(sensor.status as SensorStatus)}
-// //                     >
-// //                       {sensor.status}
-// //                     </span>
-// //                     <span className="text-slate-400">
-// //                       Battery: {sensor.batteryLevel}%
-// //                     </span>
-// //                   </div>
-// //                 </div>
-// //               ))}
-// //             </div>
-// //           </div>
-// //         </div>
-
-// //         {/* Sidebar - Threat List */}
-// //         <div className="w-80 bg-slate-800 border-l border-slate-700 p-4 overflow-y-auto">
-// //           <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-// //             <AlertTriangle className="w-5 h-5" />
-// //             <span>Active Threats</span>
-// //           </h2>
-
-// //           <div className="space-y-3">
-// //             {threats.map((threat) => (
-// //               <div
-// //                 key={threat.id}
-// //                 className={`bg-slate-700 rounded-lg p-3 cursor-pointer transition-colors
-// //                   ${
-// //                     selectedThreat?.id === threat.id
-// //                       ? "ring-2 ring-blue-400"
-// //                       : ""
-// //                   }
-// //                   hover:bg-slate-600`}
-// //                 onClick={() => setSelectedThreat(threat)}
-// //               >
-// //                 <div className="flex items-center justify-between mb-2">
-// //                   <span
-// //                     className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(
-// //                       threat.severity
-// //                     )}`}
-// //                   >
-// //                     {threat.severity.toUpperCase()}
-// //                   </span>
-// //                   <div className="flex items-center space-x-1 text-xs text-slate-400">
-// //                     <Clock className="w-3 h-3" />
-// //                     <span>
-// //                       {new Date(threat.timestamp).toLocaleTimeString()}
-// //                     </span>
-// //                   </div>
-// //                 </div>
-
-// //                 <h3 className="font-medium mb-1">
-// //                   {threat.type.replace("_", " ").toUpperCase()}
-// //                 </h3>
-// //                 <p className="text-sm text-slate-300 mb-2">
-// //                   {threat.description}
-// //                 </p>
-
-// //                 <div className="flex items-center justify-between text-xs text-slate-400">
-// //                   <span className="flex items-center space-x-1">
-// //                     <MapPin className="w-3 h-3" />
-// //                     <span>{threat.location.name}</span>
-// //                   </span>
-// //                   <span className="flex items-center space-x-1">
-// //                     <Users className="w-3 h-3" />
-// //                     <span>{threat.personnel}</span>
-// //                   </span>
-// //                 </div>
-
-// //                 <div className="mt-2 flex space-x-2">
-// //                   <button className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-500">
-// //                     Deploy
-// //                   </button>
-// //                   <button className="px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500">
-// //                     Investigate
-// //                   </button>
-// //                 </div>
-// //               </div>
-// //             ))}
-// //           </div>
-
-// //           {/* Sensor Status */}
-// //           <div className="mt-6">
-// //             <h3 className="text-md font-semibold mb-3 flex items-center space-x-2">
-// //               <Zap className="w-4 h-4" />
-// //               <span>Sensor Status</span>
-// //             </h3>
-
-// //             <div className="space-y-2">
-// //               {sensors.map((sensor) => (
-// //                 <div key={sensor.id} className="bg-slate-700 rounded p-2">
-// //                   <div className="flex items-center justify-between mb-1">
-// //                     <span className="text-sm font-medium">{sensor.name}</span>
-// //                     <span
-// //                       className={`text-xs ${getStatusColor(
-// //                         sensor.status as SensorStatus
-// //                       )}`}
-// //                     >
-// //                       {sensor.status}
-// //                     </span>
-// //                   </div>
-// //                   <div className="flex items-center justify-between text-xs text-slate-400">
-// //                     <span>ID: {sensor.id}</span>
-// //                     <span>Battery: {sensor.batteryLevel.toFixed(1)}%</span>
-// //                   </div>
-// //                   <div className="w-full bg-slate-600 rounded-full h-1 mt-1">
-// //                     <div
-// //                       className="bg-green-400 h-1 rounded-full"
-// //                       style={{ width: `${sensor.batteryLevel}%` }}
-// //                     />
-// //                   </div>
-// //                 </div>
-// //               ))}
-// //             </div>
-// //           </div>
-// //         </div>
-// //       </div>
-
-// //       {/* Threat Detail Modal */}
-// //       {selectedThreat && (
-// //         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-// //           <div className="bg-slate-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-// //             <div className="flex items-center justify-between mb-4">
-// //               <h2 className="text-xl font-bold">Threat Details</h2>
-// //               <button
-// //                 onClick={() => setSelectedThreat(null)}
-// //                 className="text-slate-400 hover:text-white"
-// //               >
-// //                 ×
-// //               </button>
-// //             </div>
-
-// //             <div className="space-y-4">
-// //               <div className="grid grid-cols-2 gap-4">
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">Threat ID</label>
-// //                   <p className="font-medium">{selectedThreat.id}</p>
-// //                 </div>
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">Severity</label>
-// //                   <span
-// //                     className={`inline-block px-2 py-1 rounded text-sm font-medium ${getSeverityColor(
-// //                       selectedThreat.severity
-// //                     )}`}
-// //                   >
-// //                     {selectedThreat.severity.toUpperCase()}
-// //                   </span>
-// //                 </div>
-// //               </div>
-
-// //               <div>
-// //                 <label className="text-sm text-slate-400">Description</label>
-// //                 <p className="text-slate-200">{selectedThreat.description}</p>
-// //               </div>
-
-// //               <div className="grid grid-cols-2 gap-4">
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">Location</label>
-// //                   <p className="font-medium">{selectedThreat.location.name}</p>
-// //                 </div>
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">
-// //                     Personnel Deployed
-// //                   </label>
-// //                   <p className="font-medium">{selectedThreat.personnel}</p>
-// //                 </div>
-// //               </div>
-
-// //               <div>
-// //                 <label className="text-sm text-slate-400">Timestamp</label>
-// //                 <p className="font-medium">
-// //                   {selectedThreat.timestamp.toLocaleString()}
-// //                 </p>
-// //               </div>
-
-// //               <div className="flex space-x-3 mt-6">
-// //                 <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500">
-// //                   Deploy Emergency Response
-// //                 </button>
-// //                 <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">
-// //                   Request Backup
-// //                 </button>
-// //                 <button className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500">
-// //                   Mark Investigating
-// //                 </button>
-// //               </div>
-// //             </div>
-// //           </div>
-// //         </div>
-// //       )}
-// //     </div>
-// //   );
-// // };
-
-// // export default CommandCenter;
-
-// // MODIFICATION OF THE ORIGINAL CODE GIVEN TO ME BY CLAUDE AI MODIFIED BY GROK
-// // import { useState, useEffect, useRef } from 'react';
-// // import {
-// //   AlertTriangle,
-// //   Shield,
-// //   MapPin,
-// //   Camera,
-// //   Users,
-// //   Clock,
-// //   Volume2,
-// //   VolumeX,
-// //   Eye,
-// //   Zap,
-// //   Target,
-// //   Bell,
-// //   Activity
-// // } from 'lucide-react';
-// // import { Alert, AlertDescription } from '@/components/ui/alert';
-// // import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
-// // import 'leaflet/dist/leaflet.css';
-
-// // interface Sensor {
-// //   id: string;
-// //   name: string;
-// //   lat: number;
-// //   lng: number;
-// //   status: 'active' | 'inactive' | 'alert';
-// //   lastUpdate: Date;
-// //   batteryLevel: number;
-// // }
-
-// // interface Threat {
-// //   id: string;
-// //   sensorId: string;
-// //   type: 'intrusion' | 'suspicious_activity' | 'armed_group' | 'vehicle_movement';
-// //   severity: 'low' | 'medium' | 'high' | 'critical';
-// //   location: { lat: number; lng: number; name: string };
-// //   timestamp: Date;
-// //   description: string;
-// //   personnel: number;
-// //   status: 'active' | 'investigating' | 'resolved';
-// // }
-
-// // const CommandCenter = () => {
-// //   const [sensors, setSensors] = useState<Sensor[]>([]);
-// //   const [threats, setThreats] = useState<Threat[]>([]);
-// //   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
-// //   const [soundEnabled, setSoundEnabled] = useState(true);
-// //   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('disconnected');
-// //   const audioRef = useRef<HTMLAudioElement>(null);
-// //   const wsRef = useRef<WebSocket | null>(null);
-
-// //   // Mock data for demonstration
-// //   useEffect(() => {
-// //     const mockSensors: Sensor[] = [
-// //       { id: 'S001', name: 'Makurdi Border North', lat: 7.7319, lng: 8.5211, status: 'active', lastUpdate: new Date(), batteryLevel: 85 },
-// //       { id: 'S002', name: 'Gboko Checkpoint', lat: 7.3239, lng: 9.0043, status: 'alert', lastUpdate: new Date(), batteryLevel: 92 },
-// //       { id: 'S003', name: 'Otukpo Border East', lat: 7.1905, lng: 8.1301, status: 'active', lastUpdate: new Date(), batteryLevel: 78 },
-// //       { id: 'S004', name: 'Katsina-Ala West', lat: 7.1667, lng: 9.2833, status: 'inactive', lastUpdate: new Date(Date.now() - 300000), batteryLevel: 45 },
-// //       { id: 'S005', name: 'Vandeikya South', lat: 6.7833, lng: 9.0667, status: 'active', lastUpdate: new Date(), batteryLevel: 95 },
-// //     ];
-
-// //     const mockThreats: Threat[] = [
-// //       {
-// //         id: 'T001',
-// //         sensorId: 'S002',
-// //         type: 'armed_group',
-// //         severity: 'critical',
-// //         location: { lat: 7.3239, lng: 9.0043, name: 'Gboko Checkpoint' },
-// //         timestamp: new Date(Date.now() - 120000),
-// //         description: 'Armed group of 8-10 individuals detected approaching checkpoint. Heavy weapons visible.',
-// //         personnel: 10,
-// //         status: 'active'
-// //       },
-// //       {
-// //         id: 'T002',
-// //         sensorId: 'S001',
-// //         type: 'vehicle_movement',
-// //         severity: 'medium',
-// //         location: { lat: 7.7319, lng: 8.5211, name: 'Makurdi Border North' },
-// //         timestamp: new Date(Date.now() - 300000),
-// //         description: 'Convoy of 3 unmarked vehicles moving towards border crossing at unusual hour.',
-// //         personnel: 5,
-// //         status: 'investigating'
-// //       },
-// //       {
-// //         id: 'T003',
-// //         sensorId: 'S003',
-// //         type: 'intrusion',
-// //         severity: 'high',
-// //         location: { lat: 7.1905, lng: 8.1301, name: 'Otukpo Border East' },
-// //         timestamp: new Date(Date.now() - 600000),
-// //         description: 'Unauthorized border crossing detected. Multiple individuals attempting to bypass checkpoint.',
-// //         personnel: 6,
-// //         status: 'active'
-// //       }
-// //     ];
-
-// //     setSensors(mockSensors);
-// //     setThreats(mockThreats);
-// //   }, []);
-
-// //   // WebSocket connection simulation
-// //   useEffect(() => {
-// //     const connectWebSocket = () => {
-// //       setConnectionStatus('reconnecting');
-
-// //       // Simulate WebSocket connection
-// //             setTimeout(() => {
-// //               setConnectionStatus('connected');
-
-// //               // Simulate real-time updates
-// //               const interval = setInterval(() => {
-// //                 const now = new Date();
-
-// //                 // Update sensor data
-// //                 setSensors(prev => prev.map(sensor => ({
-// //                   ...sensor,
-// //                   lastUpdate: now,
-// //                   batteryLevel: Math.max(20, sensor.batteryLevel - Math.random() * 0.5)
-// //                 })));
-
-// //                 // Occasionally add new threats
-// //                 if (Math.random() < 0.1) {
-// //                   const newThreat: Threat = {
-// //                     id: `T${Date.now()}`,
-// //                     sensorId: sensors[Math.floor(Math.random() * sensors.length)]?.id || 'S001',
-// //                     type: ['intrusion', 'suspicious_activity', 'armed_group', 'vehicle_movement'][Math.floor(Math.random() * 4)] as Threat['type'],
-// //                     severity: ['low', 'medium', 'high', 'critical'][Math.floor(Math.random() * 4)] as Threat['severity'],
-// //                     location: { lat: 7 + Math.random(), lng: 8 + Math.random(), name: 'New Location' },
-// //                     timestamp: now,
-// //                     description: 'New threat detected by automated surveillance system.',
-// //                     personnel: Math.floor(Math.random() * 15) + 1,
-// //                     status: 'active'
-// //                   };
-
-// //                   setThreats(prev => [newThreat, ...prev.slice(0, 9)]);
-
-// //                   // Play alert sound for critical threats
-// //                   if (newThreat.severity === 'critical' && soundEnabled && audioRef.current) {
-// //                     audioRef.current.play().catch(e => console.log('Audio play failed:', e));
-// //                   }
-// //                 }
-// //               }, 5000);
-
-// //               return () => {
-// //                 clearInterval(interval);
-// //               };
-// //             }, 1000);
-// //     };
-
-// //     connectWebSocket();
-// //   }, [sensors, soundEnabled]);
-
-// // interface SeverityColorMap {
-// //     [key: string]: string;
-// // }
-
-// // const getSeverityColor = (severity: keyof SeverityColorMap): string => {
-// //     const colorMap: SeverityColorMap = {
-// //         critical: 'bg-red-600 text-white',
-// //         high: 'bg-red-500 text-white',
-// //         medium: 'bg-yellow-500 text-white',
-// //         low: 'bg-green-500 text-white',
-// //     };
-// //     return colorMap[severity] ?? 'bg-gray-500 text-white';
-// // };
-
-// // interface StatusColorMap {
-// //     [key: string]: string;
-// // }
-
-// // type SensorStatus = 'active' | 'inactive' | 'alert';
-
-// // const getStatusColor = (status: SensorStatus): string => {
-// //     const colorMap: StatusColorMap = {
-// //         active: 'text-green-400',
-// //         inactive: 'text-red-400',
-// //         alert: 'text-orange-400',
-// //     };
-// //     return colorMap[status] ?? 'text-gray-400';
-// // };
-
-// //   const activeCriticalThreats = threats.filter(t => t.severity === 'critical' && t.status === 'active');
-
-// //   return (
-// //     <div className="min-h-screen bg-slate-900 text-white">
-// //       {/* Audio element for alerts */}
-// //       <audio ref={audioRef} preload="auto">
-// //         <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYdAkWRzO+8bSMELH7I79+STApSou7gylUfBhNztu/7uWsFLXjK7dyGOhgWSa/q2qBNCAhxue7/ol4GFWq37LiALgcVdMvq7rliFQZGoOs1t2QNCW+z6v5vKwgacaTt8LpgByl6yO1yMxYNUrHq87RsDBR4p+n5oVIGDW6y69x7NIYOUbLqzZA6BQ93s/Psp1MDBnSo5NqBOAYVaqTp67VhBSp8xs+GNwgSb7Ps6bVhBChxw++wYBoGIneqw/K8YhQFLXvK5dB7MgwPcqHq5q5WEQNZ0n7N50QdCk1pSKq9aUdBgT1nTh2JDQxhsjN7Y" type="audio/wav" />
-// //       </audio>
-
-// //       {/* Header */}
-// //       <div className="bg-slate-800 border-b border-slate-700 px-6 py-4">
-// //         <div className="flex items-center justify-between">
-// //           <div className="flex items-center space-x-4">
-// //             <Shield className="w-8 h-8 text-blue-400" />
-// //             <div>
-// //               <h1 className="text-2xl font-bold">Benue State Command Center</h1>
-// //               <p className="text-slate-400">Border Security & Threat Monitoring</p>
-// //             </div>
-// //           </div>
-
-// //           <div className="flex items-center space-x-4">
-// //             <div className="flex items-center space-x-2">
-// //               <div className={`w-3 h-3 rounded-full ${connectionStatus === 'connected' ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
-// //               <span className="text-sm text-slate-400 capitalize">{connectionStatus}</span>
-// //             </div>
-
-// //             <button
-// //               onClick={() => setSoundEnabled(!soundEnabled)}
-// //               className={`p-2 rounded-lg ${soundEnabled ? 'bg-blue-600 text-white' : 'bg-slate-600 text-slate-300'}`}
-// //             >
-// //               {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
-// //             </button>
-
-// //             <div className="text-right">
-// //               <div className="text-sm font-medium">{new Date().toLocaleTimeString()}</div>
-// //               <div className="text-xs text-slate-400">{new Date().toLocaleDateString()}</div>
-// //             </div>
-// //           </div>
-// //         </div>
-// //       </div>
-
-// //       {/* Critical Alert Banner */}
-// //       {activeCriticalThreats.length > 0 && (
-// //         <Alert variant="destructive" className="px-6 py-3 animate-pulse">
-// //           <AlertTriangle className="h-4 w-4" />
-// //           <AlertDescription>
-// //             <div className="flex items-center space-x-2">
-// //               <span className="font-semibold">
-// //                 CRITICAL ALERT: {activeCriticalThreats.length} active critical threat{activeCriticalThreats.length > 1 ? 's' : ''} detected
-// //               </span>
-// //               <Bell className="w-5 h-5 animate-bounce" />
-// //             </div>
-// //           </AlertDescription>
-// //         </Alert>
-// //       )}
-
-// //       <div className="flex flex-1">
-// //         {/* Main Content */}
-// //         <div className="flex-1 p-6">
-// //           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-// //             {/* Statistics Cards */}
-// //             <div className="bg-slate-800 rounded-lg p-4">
-// //               <div className="flex items-center justify-between">
-// //                 <div>
-// //                   <p className="text-slate-400 text-sm">Active Sensors</p>
-// //                   <p className="text-2xl font-bold text-green-400">
-// //                     {sensors.filter(s => s.status === 'active').length}
-// //                   </p>
-// //                 </div>
-// //                 <Activity className="w-8 h-8 text-green-400" />
-// //               </div>
-// //             </div>
-
-// //             <div className="bg-slate-800 rounded-lg p-4">
-// //               <div className="flex items-center justify-between">
-// //                 <div>
-// //                   <p className="text-slate-400 text-sm">Active Threats</p>
-// //                   <p className="text-2xl font-bold text-red-400">
-// //                     {threats.filter(t => t.status === 'active').length}
-// //                   </p>
-// //                 </div>
-// //                 <Target className="w-8 h-8 text-red-400" />
-// //               </div>
-// //             </div>
-
-// //             <div className="bg-slate-800 rounded-lg p-4">
-// //               <div className="flex items-center justify-between">
-// //                 <div>
-// //                   <p className="text-slate-400 text-sm">Personnel Deployed</p>
-// //                   <p className="text-2xl font-bold text-blue-400">
-// //                     {threats.reduce((sum, t) => sum + t.personnel, 0)}
-// //                   </p>
-// //                 </div>
-// //                 <Users className="w-8 h-8 text-blue-400" />
-// //               </div>
-// //             </div>
-// //           </div>
-
-// //           {/* Map Area */}
-// //           <div className="bg-slate-800 rounded-lg p-4 mb-6">
-// //             <div className="flex items-center justify-between mb-4">
-// //               <h2 className="text-lg font-semibold flex items-center space-x-2">
-// //                 <MapPin className="w-5 h-5" />
-// //                 <span>Benue State Border Map</span>
-// //               </h2>
-// //               <div className="flex space-x-4">
-// //                 <div className="flex items-center space-x-1 text-sm text-blue-400">
-// //                   <div className="w-3 h-3 bg-blue-400 rounded"></div>
-// //                   <span>Sensors</span>
-// //                 </div>
-// //                 <div className="flex items-center space-x-1 text-sm text-red-400">
-// //                   <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-// //                   <span>Threats</span>
-// //                 </div>
-// //                 <div className="flex items-center space-x-1 text-sm text-purple-400">
-// //                   <Eye className="w-3 h-3" />
-// //                   <span>Surveillance</span>
-// //                 </div>
-// //               </div>
-// //             </div>
-
-// //             <div className="rounded-lg h-96">
-// //               <MapContainer center={[7.4, 8.6]} zoom={8} style={{ height: '100%', width: '100%' }}>
-// //                 <TileLayer
-// //                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-// //                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-// //                 />
-// //                 {sensors.map((sensor) => (
-// //                   <Marker position={[sensor.lat, sensor.lng]} key={sensor.id}>
-// //                     <Popup>
-// //                       {sensor.name}<br />Status: {sensor.status}<br />Battery: {sensor.batteryLevel}%
-// //                     </Popup>
-// //                   </Marker>
-// //                 ))}
-// //                 {threats.filter(t => t.status === 'active').map((threat) => (
-// //                   <Circle
-// //                     key={threat.id}
-// //                     center={[threat.location.lat, threat.location.lng]}
-// //                     radius={1000}
-// //                     pathOptions={{
-// //                       color: threat.severity === 'critical' ? 'red' : threat.severity === 'high' ? 'orange' : threat.severity === 'medium' ? 'yellow' : 'green',
-// //                       fillOpacity: 0.5
-// //                     }}
-// //                     eventHandlers={{
-// //                       click: () => {
-// //                         setSelectedThreat(threat);
-// //                       }
-// //                     }}
-// //                   >
-// //                     <Popup>
-// //                       {threat.type.replace('_', ' ').toUpperCase()}<br />
-// //                       {threat.description}<br />
-// //                       Severity: {threat.severity.toUpperCase()}
-// //                     </Popup>
-// //                   </Circle>
-// //                 ))}
-// //               </MapContainer>
-// //             </div>
-// //           </div>
-
-// //           {/* Video Feeds */}
-// //           <div className="bg-slate-800 rounded-lg p-4">
-// //             <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-// //               <Camera className="w-5 h-5" />
-// //               <span>Live Video Feeds</span>
-// //             </h2>
-// //             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-// //               {sensors.slice(0, 6).map((sensor) => (
-// //                 <div key={sensor.id} className="bg-slate-700 rounded-lg p-3">
-// //                   <div className="bg-black rounded aspect-video mb-2 flex items-center justify-center">
-// //                     <div className="text-slate-400 text-center">
-// //                       <Camera className="w-8 h-8 mx-auto mb-2" />
-// //                       <div className="text-xs">Camera {sensor.id}</div>
-// //                       <div className="text-xs">{sensor.name}</div>
-// //                     </div>
-// //                   </div>
-// //                   <div className="flex justify-between items-center text-xs">
-// //                     <span className={getStatusColor(sensor.status)}>{sensor.status}</span>
-// //                     <span className="text-slate-400">Battery: {sensor.batteryLevel}%</span>
-// //                   </div>
-// //                 </div>
-// //               ))}
-// //             </div>
-// //           </div>
-// //         </div>
-
-// //         {/* Sidebar - Threat List */}
-// //         <div className="w-80 bg-slate-800 border-l border-slate-700 p-4 overflow-y-auto">
-// //           <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-// //             <AlertTriangle className="w-5 h-5" />
-// //             <span>Active Threats</span>
-// //           </h2>
-
-// //           <div className="space-y-3">
-// //             {threats.map((threat) => (
-// //               <div
-// //                 key={threat.id}
-// //                 className={`bg-slate-700 rounded-lg p-3 cursor-pointer transition-colors
-// //                   ${selectedThreat?.id === threat.id ? 'ring-2 ring-blue-400' : ''}
-// //                   hover:bg-slate-600`}
-// //                 onClick={() => setSelectedThreat(threat)}
-// //               >
-// //                 <div className="flex items-center justify-between mb-2">
-// //                   <span className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(threat.severity)}`}>
-// //                     {threat.severity.toUpperCase()}
-// //                   </span>
-// //                   <div className="flex items-center space-x-1 text-xs text-slate-400">
-// //                     <Clock className="w-3 h-3" />
-// //                     <span>{new Date(threat.timestamp).toLocaleTimeString()}</span>
-// //                   </div>
-// //                 </div>
-
-// //                 <h3 className="font-medium mb-1">{threat.type.replace('_', ' ').toUpperCase()}</h3>
-// //                 <p className="text-sm text-slate-300 mb-2">{threat.description}</p>
-
-// //                 <div className="flex items-center justify-between text-xs text-slate-400">
-// //                   <span className="flex items-center space-x-1">
-// //                     <MapPin className="w-3 h-3" />
-// //                     <span>{threat.location.name}</span>
-// //                   </span>
-// //                   <span className="flex items-center space-x-1">
-// //                     <Users className="w-3 h-3" />
-// //                     <span>{threat.personnel}</span>
-// //                   </span>
-// //                 </div>
-
-// //                 <div className="mt-2 flex space-x-2">
-// //                   <button className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-500">
-// //                     Deploy
-// //                   </button>
-// //                   <button className="px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500">
-// //                     Investigate
-// //                   </button>
-// //                 </div>
-// //               </div>
-// //             ))}
-// //           </div>
-
-// //           {/* Sensor Status */}
-// //           <div className="mt-6">
-// //             <h3 className="text-md font-semibold mb-3 flex items-center space-x-2">
-// //               <Zap className="w-4 h-4" />
-// //               <span>Sensor Status</span>
-// //             </h3>
-
-// //             <div className="space-y-2">
-// //               {sensors.map((sensor) => (
-// //                 <div key={sensor.id} className="bg-slate-700 rounded p-2">
-// //                   <div className="flex items-center justify-between mb-1">
-// //                     <span className="text-sm font-medium">{sensor.name}</span>
-// //                     <span className={`text-xs ${getStatusColor(sensor.status)}`}>
-// //                       {sensor.status}
-// //                     </span>
-// //                   </div>
-// //                   <div className="flex items-center justify-between text-xs text-slate-400">
-// //                     <span>ID: {sensor.id}</span>
-// //                     <span>Battery: {sensor.batteryLevel.toFixed(1)}%</span>
-// //                   </div>
-// //                   <div className="w-full bg-slate-600 rounded-full h-1 mt-1">
-// //                     <div
-// //                       className="bg-green-400 h-1 rounded-full"
-// //                       style={{ width: `${sensor.batteryLevel}%` }}
-// //                     />
-// //                   </div>
-// //                 </div>
-// //               ))}
-// //             </div>
-// //           </div>
-// //         </div>
-// //       </div>
-
-// //       {/* Threat Detail Modal */}
-// //       {selectedThreat && (
-// //         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-// //           <div className="bg-slate-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-// //             <div className="flex items-center justify-between mb-4">
-// //               <h2 className="text-xl font-bold">Threat Details</h2>
-// //               <button
-// //                 onClick={() => setSelectedThreat(null)}
-// //                 className="text-slate-400 hover:text-white"
-// //               >
-// //                 ×
-// //               </button>
-// //             </div>
-
-// //             <div className="space-y-4">
-// //               <div className="grid grid-cols-2 gap-4">
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">Threat ID</label>
-// //                   <p className="font-medium">{selectedThreat.id}</p>
-// //                 </div>
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">Severity</label>
-// //                   <span className={`inline-block px-2 py-1 rounded text-sm font-medium ${getSeverityColor(selectedThreat.severity)}`}>
-// //                     {selectedThreat.severity.toUpperCase()}
-// //                   </span>
-// //                 </div>
-// //               </div>
-
-// //               <div>
-// //                 <label className="text-sm text-slate-400">Description</label>
-// //                 <p className="text-slate-200">{selectedThreat.description}</p>
-// //               </div>
-
-// //               <div className="grid grid-cols-2 gap-4">
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">Location</label>
-// //                   <p className="font-medium">{selectedThreat.location.name}</p>
-// //                 </div>
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">Personnel Deployed</label>
-// //                   <p className="font-medium">{selectedThreat.personnel}</p>
-// //                 </div>
-// //               </div>
-
-// //               <div>
-// //                 <label className="text-sm text-slate-400">Timestamp</label>
-// //                 <p className="font-medium">{selectedThreat.timestamp.toLocaleString()}</p>
-// //               </div>
-
-// //               <div className="flex space-x-3 mt-6">
-// //                 <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500">
-// //                   Deploy Emergency Response
-// //                 </button>
-// //                 <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">
-// //                   Request Backup
-// //                 </button>
-// //                 <button className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500">
-// //                   Mark Investigating
-// //                 </button>
-// //               </div>
-// //             </div>
-// //           </div>
-// //         </div>
-// //       )}
-// //     </div>
-// //   );
-// // };
-
-// // export default CommandCenter;
-
-// // THE ORIGINAL CODE GIVEN TO ME BY CLAUDE AI
-// // import { useState, useEffect, useRef } from 'react';
-// // import {
-// //   AlertTriangle,
-// //   Shield,
-// //   MapPin,
-// //   Camera,
-// //   Users,
-// //   Clock,
-// //   Volume2,
-// //   VolumeX,
-// //   Eye,
-// //   Zap,
-// //   Target,
-// //   Bell,
-// //   Activity
-// // } from 'lucide-react';
-// // import { Alert, AlertDescription } from '@/components/ui/alert';
-
-// // interface Sensor {
-// //   id: string;
-// //   name: string;
-// //   lat: number;
-// //   lng: number;
-// //   status: 'active' | 'inactive' | 'alert';
-// //   lastUpdate: Date;
-// //   batteryLevel: number;
-// // }
-
-// // interface Threat {
-// //   id: string;
-// //   sensorId: string;
-// //   type: 'intrusion' | 'suspicious_activity' | 'armed_group' | 'vehicle_movement';
-// //   severity: 'low' | 'medium' | 'high' | 'critical';
-// //   location: { lat: number; lng: number; name: string };
-// //   timestamp: Date;
-// //   description: string;
-// //   videoFeed?: string;
-// //   personnel: number;
-// //   status: 'active' | 'investigating' | 'resolved';
-// // }
-
-// // const CommandCenter = () => {
-// //   const [sensors, setSensors] = useState<Sensor[]>([]);
-// //   const [threats, setThreats] = useState<Threat[]>([]);
-// //   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
-// //   const [soundEnabled, setSoundEnabled] = useState(true);
-// //   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('disconnected');
-// //   const audioRef = useRef<HTMLAudioElement>(null);
-// //   const wsRef = useRef<WebSocket | null>(null);
-
-// //   // Mock data for demonstration
-// //   useEffect(() => {
-// //     const mockSensors: Sensor[] = [
-// //       { id: 'S001', name: 'Makurdi Border North', lat: 7.7319, lng: 8.5211, status: 'active', lastUpdate: new Date(), batteryLevel: 85 },
-// //       { id: 'S002', name: 'Gboko Checkpoint', lat: 7.3239, lng: 9.0043, status: 'alert', lastUpdate: new Date(), batteryLevel: 92 },
-// //       { id: 'S003', name: 'Otukpo Border East', lat: 7.1905, lng: 8.1301, status: 'active', lastUpdate: new Date(), batteryLevel: 78 },
-// //       { id: 'S004', name: 'Katsina-Ala West', lat: 7.1667, lng: 9.2833, status: 'inactive', lastUpdate: new Date(Date.now() - 300000), batteryLevel: 45 },
-// //       { id: 'S005', name: 'Vandeikya South', lat: 6.7833, lng: 9.0667, status: 'active', lastUpdate: new Date(), batteryLevel: 95 },
-// //     ];
-
-// //     const mockThreats: Threat[] = [
-// //       {
-// //         id: 'T001',
-// //         sensorId: 'S002',
-// //         type: 'armed_group',
-// //         severity: 'critical',
-// //         location: { lat: 7.3239, lng: 9.0043, name: 'Gboko Checkpoint' },
-// //         timestamp: new Date(Date.now() - 120000),
-// //         description: 'Armed group of 8-10 individuals detected approaching checkpoint. Heavy weapons visible.',
-// //         personnel: 10,
-// //         status: 'active'
-// //       },
-// //       {
-// //         id: 'T002',
-// //         sensorId: 'S001',
-// //         type: 'vehicle_movement',
-// //         severity: 'medium',
-// //         location: { lat: 7.7319, lng: 8.5211, name: 'Makurdi Border North' },
-// //         timestamp: new Date(Date.now() - 300000),
-// //         description: 'Convoy of 3 unmarked vehicles moving towards border crossing at unusual hour.',
-// //         personnel: 5,
-// //         status: 'investigating'
-// //       },
-// //       {
-// //         id: 'T003',
-// //         sensorId: 'S003',
-// //         type: 'intrusion',
-// //         severity: 'high',
-// //         location: { lat: 7.1905, lng: 8.1301, name: 'Otukpo Border East' },
-// //         timestamp: new Date(Date.now() - 600000),
-// //         description: 'Unauthorized border crossing detected. Multiple individuals attempting to bypass checkpoint.',
-// //         personnel: 6,
-// //         status: 'active'
-// //       }
-// //     ];
-
-// //     setSensors(mockSensors);
-// //     setThreats(mockThreats);
-// //   }, []);
-
-// //   // WebSocket connection simulation
-// //   useEffect(() => {
-// //     const connectWebSocket = () => {
-// //       setConnectionStatus('reconnecting');
-
-// //       // Simulate WebSocket connection
-// //       setTimeout(() => {
-// //         setConnectionStatus('connected');
-
-// //         // Simulate real-time updates
-// //         const interval = setInterval(() => {
-// //           const now = new Date();
-
-// //           // Update sensor data
-// //           setSensors(prev => prev.map(sensor => ({
-// //             ...sensor,
-// //             lastUpdate: now,
-// //             batteryLevel: Math.max(20, sensor.batteryLevel - Math.random() * 0.5)
-// //           })));
-
-// //           // Occasionally add new threats
-// //           if (Math.random() < 0.1) {
-// //             const newThreat: Threat = {
-// //               id: `T${Date.now()}`,
-// //               sensorId: sensors[Math.floor(Math.random() * sensors.length)]?.id || 'S001',
-// //               type: ['intrusion', 'suspicious_activity', 'armed_group', 'vehicle_movement'][Math.floor(Math.random() * 4)] as Threat['type'],
-// //               severity: ['low', 'medium', 'high', 'critical'][Math.floor(Math.random() * 4)] as Threat["severity"],
-// //               location: { lat: 7 + Math.random(), lng: 8 + Math.random(), name: 'New Location' },
-// //               timestamp: now,
-// //               description: 'New threat detected by automated surveillance system.',
-// //               personnel: Math.floor(Math.random() * 15) + 1,
-// //               status: 'active'
-// //             };
-
-// //             setThreats(prev => [newThreat, ...prev.slice(0, 9)]);
-
-// //             // Play alert sound for critical threats
-// //             if (newThreat.severity === 'critical' && soundEnabled && audioRef.current) {
-// //               audioRef.current.play().catch(e => console.log('Audio play failed:', e));
-// //             }
-// //           }
-// //         }, 5000);
-
-// //         return () => clearInterval(interval);
-// //       }, 1000);
-// //     };
-
-// //     connectWebSocket();
-// //   }, [sensors, soundEnabled]);
-
-// //   const getSeverityColor = (severity: string) => {
-// //     switch (severity) {
-// //       case 'critical': return 'bg-red-600 text-white';
-// //       case 'high': return 'bg-red-500 text-white';
-// //       case 'medium': return 'bg-yellow-500 text-white';
-// //       case 'low': return 'bg-green-500 text-white';
-// //       default: return 'bg-gray-500 text-white';
-// //     }
-// //   };
-
-// //   const getStatusColor = (status: string) => {
-// //     switch (status) {
-// //       case 'active': return 'text-green-400';
-// //       case 'inactive': return 'text-red-400';
-// //       case 'alert': return 'text-orange-400';
-// //       default: return 'text-gray-400';
-// //     }
-// //   };
-
-// //   const activeCriticalThreats = threats.filter(t => t.severity === 'critical' && t.status === 'active');
-
-// //   return (
-// //     <div className="min-h-screen bg-slate-900 text-white">
-// //       {/* Audio element for alerts */}
-// //       <audio ref={audioRef} preload="auto">
-// //         <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYdAkWRzO+8bSMELH7I79+STApSou7gylUfBhNztu/7uWsFLXjK7dyGOhgWSa/q2qBNCAhxue7/ol4GFWq37LiALgcVdMvq7rliFQZGoOs1t2QNCW+z6v5vKwgacaTt8LpgByl6yO1yMxYNUrHq87RsDBR4p+n5oVIGDW6y69x7NIYOUbLqzZA6BQ93s/Psp1MDBnSo5NqBOAYVaqTp67VhBSp8xs+GNwgSb7Ps6bVhBChxw++wYBoGIneqw/K8YhQFLXvK5dB7MgwPcqHq5q5WEQNZ0n7N50QdCk1pSKq9aUdBgT1nTh2JDQxhsjN7Y" type="audio/wav" />
-// //       </audio>
-
-// //       {/* Header */}
-// //       <div className="bg-slate-800 border-b border-slate-700 px-6 py-4">
-// //         <div className="flex items-center justify-between">
-// //           <div className="flex items-center space-x-4">
-// //             <Shield className="w-8 h-8 text-blue-400" />
-// //             <div>
-// //               <h1 className="text-2xl font-bold">Benue State Command Center</h1>
-// //               <p className="text-slate-400">Border Security & Threat Monitoring</p>
-// //             </div>
-// //           </div>
-
-// //           <div className="flex items-center space-x-4">
-// //             <div className="flex items-center space-x-2">
-// //               <div className={`w-3 h-3 rounded-full ${connectionStatus === 'connected' ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
-// //               <span className="text-sm text-slate-400 capitalize">{connectionStatus}</span>
-// //             </div>
-
-// //             <button
-// //               onClick={() => setSoundEnabled(!soundEnabled)}
-// //               className={`p-2 rounded-lg ${soundEnabled ? 'bg-blue-600 text-white' : 'bg-slate-600 text-slate-300'}`}
-// //             >
-// //               {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
-// //             </button>
-
-// //             <div className="text-right">
-// //               <div className="text-sm font-medium">{new Date().toLocaleTimeString()}</div>
-// //               <div className="text-xs text-slate-400">{new Date().toLocaleDateString()}</div>
-// //             </div>
-// //           </div>
-// //         </div>
-// //       </div>
-
-// //       {/* Critical Alert Banner */}
-// //       {activeCriticalThreats.length > 0 && (
-// //         <div className="bg-red-600 text-white px-6 py-3 animate-pulse">
-// //           <div className="flex items-center space-x-2">
-// //             <AlertTriangle className="w-5 h-5" />
-// //             <span className="font-semibold">
-// //               CRITICAL ALERT: {activeCriticalThreats.length} active critical threat{activeCriticalThreats.length > 1 ? 's' : ''} detected
-// //             </span>
-// //             <Bell className="w-5 h-5 animate-bounce" />
-// //           </div>
-// //         </div>
-// //       )}
-
-// //       <div className="flex flex-1">
-// //         {/* Main Content */}
-// //         <div className="flex-1 p-6">
-// //           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-// //             {/* Statistics Cards */}
-// //             <div className="bg-slate-800 rounded-lg p-4">
-// //               <div className="flex items-center justify-between">
-// //                 <div>
-// //                   <p className="text-slate-400 text-sm">Active Sensors</p>
-// //                   <p className="text-2xl font-bold text-green-400">
-// //                     {sensors.filter(s => s.status === 'active').length}
-// //                   </p>
-// //                 </div>
-// //                 <Activity className="w-8 h-8 text-green-400" />
-// //               </div>
-// //             </div>
-
-// //             <div className="bg-slate-800 rounded-lg p-4">
-// //               <div className="flex items-center justify-between">
-// //                 <div>
-// //                   <p className="text-slate-400 text-sm">Active Threats</p>
-// //                   <p className="text-2xl font-bold text-red-400">
-// //                     {threats.filter(t => t.status === 'active').length}
-// //                   </p>
-// //                 </div>
-// //                 <Target className="w-8 h-8 text-red-400" />
-// //               </div>
-// //             </div>
-
-// //             <div className="bg-slate-800 rounded-lg p-4">
-// //               <div className="flex items-center justify-between">
-// //                 <div>
-// //                   <p className="text-slate-400 text-sm">Personnel Deployed</p>
-// //                   <p className="text-2xl font-bold text-blue-400">
-// //                     {threats.reduce((sum, t) => sum + t.personnel, 0)}
-// //                   </p>
-// //                 </div>
-// //                 <Users className="w-8 h-8 text-blue-400" />
-// //               </div>
-// //             </div>
-// //           </div>
-
-// //           {/* Map Area */}
-// //           <div className="bg-slate-800 rounded-lg p-4 mb-6">
-// //             <div className="flex items-center justify-between mb-4">
-// //               <h2 className="text-lg font-semibold flex items-center space-x-2">
-// //                 <MapPin className="w-5 h-5" />
-// //                 <span>Benue State Border Map</span>
-// //               </h2>
-// //               <div className="flex space-x-2">
-// //                 <div className="flex items-center space-x-1 text-sm text-green-400">
-// //                   <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-// //                   <span>Active</span>
-// //                 </div>
-// //                 <div className="flex items-center space-x-1 text-sm text-red-400">
-// //                   <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-// //                   <span>Threats</span>
-// //                 </div>
-// //               </div>
-// //             </div>
-
-// //             <div className="bg-slate-700 rounded-lg h-96 relative overflow-hidden">
-// //               {/* Simulated Map */}
-// //               <div className="absolute inset-0 bg-gradient-to-br from-slate-600 to-slate-800">
-// //                 <div className="absolute inset-4">
-// //                   {/* Sensor Points */}
-// //                   {sensors.map((sensor, index) => (
-// //                     <div
-// //                       key={sensor.id}
-// //                       className={`absolute w-4 h-4 rounded-full border-2 border-white animate-pulse cursor-pointer
-// //                         ${sensor.status === 'active' ? 'bg-green-400' :
-// //                           sensor.status === 'alert' ? 'bg-red-400' : 'bg-gray-400'}`}
-// //                       style={{
-// //                         left: `${20 + (index * 15)}%`,
-// //                         top: `${30 + (index * 10)}%`
-// //                       }}
-// //                       title={sensor.name}
-// //                     />
-// //                   ))}
-
-// //                   {/* Threat Indicators */}
-// //                   {threats.filter(t => t.status === 'active').map((threat, index) => (
-// //                     <div
-// //                       key={threat.id}
-// //                       className="absolute animate-ping cursor-pointer"
-// //                       style={{
-// //                         left: `${25 + (index * 20)}%`,
-// //                         top: `${40 + (index * 15)}%`
-// //                       }}
-// //                       onClick={() => setSelectedThreat(threat)}
-// //                     >
-// //                       <AlertTriangle className={`w-6 h-6 ${
-// //                         threat.severity === 'critical' ? 'text-red-500' :
-// //                         threat.severity === 'high' ? 'text-orange-500' :
-// //                         'text-yellow-500'
-// //                       }`} />
-// //                     </div>
-// //                   ))}
-// //                 </div>
-
-// //                 {/* Map Labels */}
-// //                 <div className="absolute top-4 left-4 text-xs text-slate-300">
-// //                   <div>Benue State</div>
-// //                   <div>Border Monitoring System</div>
-// //                 </div>
-// //               </div>
-// //             </div>
-// //           </div>
-
-// //           {/* Video Feeds */}
-// //           <div className="bg-slate-800 rounded-lg p-4">
-// //             <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-// //               <Camera className="w-5 h-5" />
-// //               <span>Live Video Feeds</span>
-// //             </h2>
-// //             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-// //               {sensors.slice(0, 6).map((sensor) => (
-// //                 <div key={sensor.id} className="bg-slate-700 rounded-lg p-3">
-// //                   <div className="bg-black rounded aspect-video mb-2 flex items-center justify-center">
-// //                     <div className="text-slate-400 text-center">
-// //                       <Camera className="w-8 h-8 mx-auto mb-2" />
-// //                       <div className="text-xs">Camera {sensor.id}</div>
-// //                       <div className="text-xs">{sensor.name}</div>
-// //                     </div>
-// //                   </div>
-// //                   <div className="flex justify-between items-center text-xs">
-// //                     <span className={getStatusColor(sensor.status)}>{sensor.status}</span>
-// //                     <span className="text-slate-400">Battery: {sensor.batteryLevel}%</span>
-// //                   </div>
-// //                 </div>
-// //               ))}
-// //             </div>
-// //           </div>
-// //         </div>
-
-// //         {/* Sidebar - Threat List */}
-// //         <div className="w-80 bg-slate-800 border-l border-slate-700 p-4 overflow-y-auto">
-// //           <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-// //             <AlertTriangle className="w-5 h-5" />
-// //             <span>Active Threats</span>
-// //           </h2>
-
-// //           <div className="space-y-3">
-// //             {threats.map((threat) => (
-// //               <div
-// //                 key={threat.id}
-// //                 className={`bg-slate-700 rounded-lg p-3 cursor-pointer transition-colors
-// //                   ${selectedThreat?.id === threat.id ? 'ring-2 ring-blue-400' : ''}
-// //                   hover:bg-slate-600`}
-// //                 onClick={() => setSelectedThreat(threat)}
-// //               >
-// //                 <div className="flex items-center justify-between mb-2">
-// //                   <span className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(threat.severity)}`}>
-// //                     {threat.severity.toUpperCase()}
-// //                   </span>
-// //                   <div className="flex items-center space-x-1 text-xs text-slate-400">
-// //                     <Clock className="w-3 h-3" />
-// //                     <span>{new Date(threat.timestamp).toLocaleTimeString()}</span>
-// //                   </div>
-// //                 </div>
-
-// //                 <h3 className="font-medium mb-1">{threat.type.replace('_', ' ').toUpperCase()}</h3>
-// //                 <p className="text-sm text-slate-300 mb-2">{threat.description}</p>
-
-// //                 <div className="flex items-center justify-between text-xs text-slate-400">
-// //                   <span className="flex items-center space-x-1">
-// //                     <MapPin className="w-3 h-3" />
-// //                     <span>{threat.location.name}</span>
-// //                   </span>
-// //                   <span className="flex items-center space-x-1">
-// //                     <Users className="w-3 h-3" />
-// //                     <span>{threat.personnel}</span>
-// //                   </span>
-// //                 </div>
-
-// //                 <div className="mt-2 flex space-x-2">
-// //                   <button className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-500">
-// //                     Deploy
-// //                   </button>
-// //                   <button className="px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500">
-// //                     Investigate
-// //                   </button>
-// //                 </div>
-// //               </div>
-// //             ))}
-// //           </div>
-
-// //           {/* Sensor Status */}
-// //           <div className="mt-6">
-// //             <h3 className="text-md font-semibold mb-3 flex items-center space-x-2">
-// //               <Zap className="w-4 h-4" />
-// //               <span>Sensor Status</span>
-// //             </h3>
-
-// //             <div className="space-y-2">
-// //               {sensors.map((sensor) => (
-// //                 <div key={sensor.id} className="bg-slate-700 rounded p-2">
-// //                   <div className="flex items-center justify-between mb-1">
-// //                     <span className="text-sm font-medium">{sensor.name}</span>
-// //                     <span className={`text-xs ${getStatusColor(sensor.status)}`}>
-// //                       {sensor.status}
-// //                     </span>
-// //                   </div>
-// //                   <div className="flex items-center justify-between text-xs text-slate-400">
-// //                     <span>ID: {sensor.id}</span>
-// //                     <span>Battery: {sensor.batteryLevel.toFixed(1)}%</span>
-// //                   </div>
-// //                   <div className="w-full bg-slate-600 rounded-full h-1 mt-1">
-// //                     <div
-// //                       className="bg-green-400 h-1 rounded-full"
-// //                       style={{ width: `${sensor.batteryLevel}%` }}
-// //                     />
-// //                   </div>
-// //                 </div>
-// //               ))}
-// //             </div>
-// //           </div>
-// //         </div>
-// //       </div>
-
-// //       {/* Threat Detail Modal */}
-// //       {selectedThreat && (
-// //         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-// //           <div className="bg-slate-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-// //             <div className="flex items-center justify-between mb-4">
-// //               <h2 className="text-xl font-bold">Threat Details</h2>
-// //               <button
-// //                 onClick={() => setSelectedThreat(null)}
-// //                 className="text-slate-400 hover:text-white"
-// //               >
-// //                 ×
-// //               </button>
-// //             </div>
-
-// //             <div className="space-y-4">
-// //               <div className="grid grid-cols-2 gap-4">
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">Threat ID</label>
-// //                   <p className="font-medium">{selectedThreat.id}</p>
-// //                 </div>
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">Severity</label>
-// //                   <span className={`inline-block px-2 py-1 rounded text-sm font-medium ${getSeverityColor(selectedThreat.severity)}`}>
-// //                     {selectedThreat.severity.toUpperCase()}
-// //                   </span>
-// //                 </div>
-// //               </div>
-
-// //               <div>
-// //                 <label className="text-sm text-slate-400">Description</label>
-// //                 <p className="text-slate-200">{selectedThreat.description}</p>
-// //               </div>
-
-// //               <div className="grid grid-cols-2 gap-4">
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">Location</label>
-// //                   <p className="font-medium">{selectedThreat.location.name}</p>
-// //                 </div>
-// //                 <div>
-// //                   <label className="text-sm text-slate-400">Personnel Deployed</label>
-// //                   <p className="font-medium">{selectedThreat.personnel}</p>
-// //                 </div>
-// //               </div>
-
-// //               <div>
-// //                 <label className="text-sm text-slate-400">Timestamp</label>
-// //                 <p className="font-medium">{selectedThreat.timestamp.toLocaleString()}</p>
-// //               </div>
-
-// //               <div className="flex space-x-3 mt-6">
-// //                 <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500">
-// //                   Deploy Emergency Response
-// //                 </button>
-// //                 <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">
-// //                   Request Backup
-// //                 </button>
-// //                 <button className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500">
-// //                   Mark Investigating
-// //                 </button>
-// //               </div>
-// //             </div>
-// //           </div>
-// //         </div>
-// //       )}
-// //     </div>
-// //   );
-// // };
-
-// // export default CommandCenter;
-
-
-
-
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+// THIS IS THE DEFAULT CODE
+// import { useState, useEffect, useRef } from "react";
+// import {
+//   AlertTriangle,
+//   Shield,
+//   MapPin,
+//   Camera,
+//   Users,
+//   Clock,
+//   Volume2,
+//   VolumeX,
+//   Eye,
+//   Zap,
+//   Target,
+//   Bell,
+//   Activity,
+// } from "lucide-react";
+// import { Alert, AlertDescription } from "@/components/ui/alert";
+// import { GeoJSON } from "react-leaflet";
+// import benueBoundaryData from "../data/benue1.geojson.json";
+// import type { FeatureCollection } from "geojson";
+// import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
+// import { Virtuoso } from "react-virtuoso";
+// import "leaflet/dist/leaflet.css";
+
+// interface Sensor {
+//   id: string;
+//   name: string;
+//   lat: number;
+//   lng: number;
+//   status: string;
+//   lastUpdate: Date;
+//   batteryLevel: number;
+// }
+
+// interface Threat {
+//   id: string;
+//   sensorId: string;
+//   type: string;
+//   severity: string;
+//   location: { lat: number; lng: number; name: string };
+//   timestamp: Date;
+//   description: string;
+//   personnel: number;
+//   status: string;
+// }
+
+// const CommandCenter = () => {
+//   const [sensors, setSensors] = useState<Sensor[]>([]);
+//   const [threats, setThreats] = useState<Threat[]>([]);
+//   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
+//   const [soundEnabled, setSoundEnabled] = useState(true);
+//   const [connectionStatus, setConnectionStatus] = useState("disconnected");
+//   const audioRef = useRef<HTMLAudioElement>(null);
+//   // const wsRef = useRef<WebSocket | null>(null); Reopen this when you are ready for backend integration
+
+//   // Mock data for demonstration
+//   useEffect(() => {
+//     const mockSensors = [
+//       {
+//         id: "S001",
+//         name: "Makurdi Border North",
+//         lat: 7.7319,
+//         lng: 8.5211,
+//         status: "active",
+//         lastUpdate: new Date(),
+//         batteryLevel: 85,
+//       },
+//       {
+//         id: "S002",
+//         name: "Gboko Checkpoint",
+//         lat: 7.3239,
+//         lng: 9.0043,
+//         status: "alert",
+//         lastUpdate: new Date(),
+//         batteryLevel: 92,
+//       },
+//       {
+//         id: "S003",
+//         name: "Otukpo Border East",
+//         lat: 7.1905,
+//         lng: 8.1301,
+//         status: "active",
+//         lastUpdate: new Date(),
+//         batteryLevel: 78,
+//       },
+//       {
+//         id: "S004",
+//         name: "Katsina-Ala West",
+//         lat: 7.1667,
+//         lng: 9.2833,
+//         status: "inactive",
+//         lastUpdate: new Date(Date.now() - 300000),
+//         batteryLevel: 45,
+//       },
+//       {
+//         id: "S005",
+//         name: "Vandeikya South",
+//         lat: 6.7833,
+//         lng: 9.0667,
+//         status: "active",
+//         lastUpdate: new Date(),
+//         batteryLevel: 95,
+//       },
+//     ];
+
+//     const mockThreats = [
+//       {
+//         id: "T001",
+//         sensorId: "S002",
+//         type: "armed_group",
+//         severity: "critical",
+//         location: { lat: 7.3239, lng: 9.0043, name: "Gboko Checkpoint" },
+//         timestamp: new Date(Date.now() - 120000),
+//         description:
+//           "Armed group of 8-10 individuals detected approaching checkpoint. Heavy weapons visible.",
+//         personnel: 10,
+//         status: "active",
+//       },
+//       {
+//         id: "T002",
+//         sensorId: "S001",
+//         type: "vehicle_movement",
+//         severity: "medium",
+//         location: { lat: 7.7319, lng: 8.5211, name: "Makurdi Border North" },
+//         timestamp: new Date(Date.now() - 300000),
+//         description:
+//           "Convoy of 3 unmarked vehicles moving towards border crossing at unusual hour.",
+//         personnel: 5,
+//         status: "investigating",
+//       },
+//       {
+//         id: "T003",
+//         sensorId: "S003",
+//         type: "intrusion",
+//         severity: "high",
+//         location: { lat: 7.1905, lng: 8.1301, name: "Otukpo Border East" },
+//         timestamp: new Date(Date.now() - 600000),
+//         description:
+//           "Unauthorized border crossing detected. Multiple individuals attempting to bypass checkpoint.",
+//         personnel: 6,
+//         status: "active",
+//       },
+//     ];
+
+//     setSensors(mockSensors);
+//     setThreats(mockThreats);
+//   }, []);
+
+//   // WebSocket connection simulation
+//   useEffect(() => {
+//     const connectWebSocket = () => {
+//       setConnectionStatus("reconnecting");
+
+//       // Simulate WebSocket connection
+//       setTimeout(() => {
+//         setConnectionStatus("connected");
+
+//         // Simulate real-time updates
+//         const interval = setInterval(() => {
+//           const now = new Date();
+
+//           // Update sensor data
+//           setSensors((prev) =>
+//             prev.map((sensor) => ({
+//               ...sensor,
+//               lastUpdate: now,
+//               batteryLevel: Math.max(
+//                 20,
+//                 sensor.batteryLevel - Math.random() * 0.5
+//               ),
+//             }))
+//           );
+
+//           // Occasionally add new threats
+//           if (Math.random() < 0.1) {
+//             const newThreat = {
+//               id: `T${Date.now()}`,
+//               sensorId:
+//                 sensors[Math.floor(Math.random() * sensors.length)]?.id ||
+//                 "S001",
+//               type: [
+//                 "intrusion",
+//                 "suspicious_activity",
+//                 "armed_group",
+//                 "vehicle_movement",
+//               ][Math.floor(Math.random() * 4)],
+//               severity: ["low", "medium", "high", "critical"][
+//                 Math.floor(Math.random() * 4)
+//               ],
+//               location: {
+//                 lat: 7 + Math.random(),
+//                 lng: 8 + Math.random(),
+//                 name: "New Location",
+//               },
+//               timestamp: now,
+//               description:
+//                 "New threat detected by automated surveillance system.",
+//               personnel: Math.floor(Math.random() * 15) + 1,
+//               status: "active",
+//             };
+
+//             setThreats((prev) => [newThreat, ...prev]);
+
+//             // Play alert sound for critical threats
+//             if (
+//               newThreat.severity === "critical" &&
+//               soundEnabled &&
+//               audioRef.current
+//             ) {
+//               audioRef.current
+//                 .play()
+//                 .catch((e) => console.log("Audio play failed:", e));
+//             }
+//           }
+//         }, 5000);
+
+//         return () => {
+//           clearInterval(interval);
+//         };
+//       }, 1000);
+//     };
+
+//     connectWebSocket();
+//   }, [sensors, soundEnabled]);
+
+//   interface SeverityColorMap {
+//     [key: string]: string;
+//   }
+
+//   const getSeverityColor = (severity: keyof SeverityColorMap): string => {
+//     switch (severity) {
+//       case "critical":
+//         return "bg-red-800 text-white";
+//       case "high":
+//         return "bg-red-500 text-white";
+//       case "medium":
+//         return "bg-yellow-500 text-white";
+//       case "low":
+//         return "bg-green-500 text-white";
+//       default:
+//         return "bg-gray-500 text-white";
+//     }
+//   };
+
+//   interface StatusColorMap {
+//     [key: string]: string;
+//   }
+
+//   type SensorStatus = "active" | "inactive" | "alert";
+
+//   const getStatusColor = (status: SensorStatus): string => {
+//     const colorMap: StatusColorMap = {
+//       active: "text-green-400",
+//       inactive: "text-red-400",
+//       alert: "text-orange-400",
+//     };
+//     return colorMap[status] ?? "text-gray-400";
+//   };
+
+//   const activeCriticalThreats = threats.filter(
+//     (t) => t.severity === "critical" && t.status === "active"
+//   );
+
+//   return (
+//     <div className="min-h-screen bg-slate-900 text-white">
+//       {/* Audio element for alerts */}
+//       <audio ref={audioRef} preload="auto">
+//         <source
+//           src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYdAkWRzO+8bSMELH7I79+STApSou7gylUfBhNztu/7uWsFLXjK7dyGOhgWSa/q2qBNCAhxue7/ol4GFWq37LiALgcVdMvq7rliFQZGoOs1t2QNCW+z6v5vKwgacaTt8LpgByl6yO1yMxYNUrHq87RsDBR4p+n5oVIGDW6y69x7NIYOUbLqzZA6BQ93s/Psp1MDBnSo5NqBOAYVaqTp67VhBSp8xs+GNwgSb7Ps6bVhBChxw++wYBoGIneqw/K8YhQFLXvK5dB7MgwPcqHq5q5WEQNZ0n7N50QdCk1pSKq9aUdBgT1nTh2JDQxhsjN7Y"
+//           type="audio/wav"
+//         />
+//       </audio>
+
+//       {/* Header */}
+//       <div className="bg-slate-800 border-b border-slate-700 px-6 py-4">
+//         <div className="flex items-center justify-between">
+//           <div className="flex items-center space-x-4">
+//             <Shield className="w-8 h-8 text-blue-400" />
+//             <div>
+//               <h1 className="text-2xl font-bold">
+//                 Benue State Border Surveillance
+//               </h1>
+//               <p className="text-slate-400">
+//                 Border Security & Threat Monitoring
+//               </p>
+//             </div>
+//           </div>
+
+//           <div className="flex items-center space-x-4">
+//             <div className="flex items-center space-x-2">
+//               <div
+//                 className={`w-3 h-3 rounded-full ${
+//                   connectionStatus === "connected"
+//                     ? "bg-green-400 animate-pulse"
+//                     : "bg-red-400"
+//                 }`}
+//               />
+//               <span className="text-sm text-slate-400 capitalize">
+//                 {connectionStatus}
+//               </span>
+//             </div>
+
+//             <button
+//               onClick={() => setSoundEnabled(!soundEnabled)}
+//               className={`p-2 rounded-lg ${
+//                 soundEnabled
+//                   ? "bg-blue-600 text-white"
+//                   : "bg-slate-600 text-slate-300"
+//               }`}
+//             >
+//               {soundEnabled ? (
+//                 <Volume2 className="w-5 h-5" />
+//               ) : (
+//                 <VolumeX className="w-5 h-5" />
+//               )}
+//             </button>
+
+//             <div className="text-right">
+//               <div className="text-sm font-medium">
+//                 {new Date().toLocaleTimeString()}
+//               </div>
+//               <div className="text-xs text-slate-400">
+//                 {new Date().toLocaleDateString()}
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Critical Alert Banner */}
+//       {activeCriticalThreats.length > 0 && (
+//         <Alert variant="destructive" className="px-6 py-3 animate-pulse">
+//           <AlertTriangle className="h-4 w-4" />
+//           <AlertDescription>
+//             <div className="flex items-center space-x-2">
+//               <span className="font-semibold">
+//                 CRITICAL ALERT: {activeCriticalThreats.length} active critical
+//                 threat{activeCriticalThreats.length > 1 ? "s" : ""} detected
+//               </span>
+//               <Bell className="w-5 h-5 animate-bounce" />
+//             </div>
+//           </AlertDescription>
+//         </Alert>
+//       )}
+
+//       <div className="flex flex-1">
+//         {/* Main Content */}
+//         <div className="flex-1 p-6">
+//           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+//             {/* Statistics Cards */}
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Active Sensors</p>
+//                   <p className="text-2xl font-bold text-green-400">
+//                     {sensors.filter((s) => s.status === "active").length}
+//                   </p>
+//                 </div>
+//                 <Activity className="w-8 h-8 text-green-400" />
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Active Threats</p>
+//                   <p className="text-2xl font-bold text-red-400">
+//                     {threats.filter((t) => t.status === "active").length}
+//                   </p>
+//                 </div>
+//                 <Target className="w-8 h-8 text-red-400" />
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Personnel Deployed</p>
+//                   <p className="text-2xl font-bold text-blue-400">
+//                     {threats.reduce((sum, t) => sum + t.personnel, 0)}
+//                   </p>
+//                 </div>
+//                 <Users className="w-8 h-8 text-blue-400" />
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Map Area */}
+//           <div className="bg-slate-800 rounded-lg p-4 mb-6">
+//             <div className="flex items-center justify-between mb-4">
+//               <h2 className="text-lg font-semibold flex items-center space-x-2">
+//                 <MapPin className="w-5 h-5" />
+//                 <span>Benue State Border Map</span>
+//               </h2>
+//               <div className="flex space-x-4">
+//                 <div className="flex items-center space-x-1 text-sm text-blue-400">
+//                   <div className="w-3 h-3 bg-blue-400 rounded"></div>
+//                   <span>Sensors</span>
+//                 </div>
+//                 <div className="flex items-center space-x-1 text-sm text-red-400">
+//                   <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+//                   <span>Threats</span>
+//                 </div>
+//                 <div className="flex items-center space-x-1 text-sm text-purple-400">
+//                   <Eye className="w-3 h-3" />
+//                   <span>Surveillance</span>
+//                 </div>
+//               </div>
+//             </div>
+
+//             <div className="rounded-lg h-[90vh]">
+//               <MapContainer
+//                 center={[7.4, 8.6]}
+//                 zoom={8}
+//                 style={{ height: "100%", width: "100%" }}
+//                 preferCanvas={true}
+//               >
+//                 <TileLayer
+//                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+//                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+//                 />
+//                 {/* Benue State Border */}
+//                 {/* Benue State GeoJSON Boundary */}
+//                 <GeoJSON
+//                   data={benueBoundaryData as FeatureCollection}
+//                   style={() => ({
+//                     color: "blue",
+//                     weight: 2,
+//                     fillOpacity: 0.2,
+//                     fillColor: "blue",
+//                   })}
+//                 />
+
+//                 {/* Sensors */}
+//                 {sensors.map((sensor) => (
+//                   <Marker position={[sensor.lat, sensor.lng]} key={sensor.id}>
+//                     <Popup>
+//                       {sensor.name}
+//                       <br />
+//                       Status: {sensor.status}
+//                       <br />
+//                       Battery: {sensor.batteryLevel}%
+//                     </Popup>
+//                   </Marker>
+//                 ))}
+//                 {threats
+//                   .filter((t) => t.status === "active")
+//                   .map((threat) => (
+//                     <Circle
+//                       key={threat.id}
+//                       center={[threat.location.lat, threat.location.lng]}
+//                       radius={1000}
+//                       pathOptions={{
+//                         color:
+//                           threat.severity === "critical"
+//                             ? "red"
+//                             : threat.severity === "high"
+//                             ? "orange"
+//                             : threat.severity === "medium"
+//                             ? "yellow"
+//                             : "green",
+//                         fillOpacity: 0.5,
+//                       }}
+//                       eventHandlers={{
+//                         click: () => {
+//                           setSelectedThreat(threat);
+//                         },
+//                       }}
+//                     >
+//                       <Popup>
+//                         {threat.type.replace("_", " ").toUpperCase()}
+//                         <br />
+//                         {threat.description}
+//                         <br />
+//                         Severity: {threat.severity.toUpperCase()}
+//                       </Popup>
+//                     </Circle>
+//                   ))}
+//               </MapContainer>
+//             </div>
+//           </div>
+
+//           {/* Video Feeds */}
+//           <div className="bg-slate-800 rounded-lg p-4">
+//             <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+//               <Camera className="w-5 h-5" />
+//               <span>Live Video Feeds</span>
+//             </h2>
+//             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+//               {sensors.slice(0, 6).map((sensor) => (
+//                 <div key={sensor.id} className="bg-slate-700 rounded-lg p-3">
+//                   <div className="bg-black rounded aspect-video mb-2 flex items-center justify-center">
+//                     <div className="text-slate-400 text-center">
+//                       <Camera className="w-8 h-8 mx-auto mb-2" />
+//                       <div className="text-xs">Camera {sensor.id}</div>
+//                       <div className="text-xs">{sensor.name}</div>
+//                     </div>
+//                   </div>
+//                   <div className="flex justify-between items-center text-xs">
+//                     <span
+//                       className={getStatusColor(sensor.status as SensorStatus)}
+//                     >
+//                       {sensor.status}
+//                     </span>
+//                     <span className="text-slate-400">
+//                       Battery: {sensor.batteryLevel}%
+//                     </span>
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Sidebar - Threat List */}
+//         <div className="w-80 bg-slate-800 border-l border-slate-700 p-4 overflow-y-auto">
+//           <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+//             <AlertTriangle className="w-5 h-5" />
+//             <span>Active Threats</span>
+//           </h2>
+
+//           <div className="mb-6" style={{ height: '50vh' }}>
+//             <Virtuoso
+//               style={{ height: '100%' }}
+//               data={threats}
+//               itemContent={(_, threat) => (
+//                 <div
+//                   key={threat.id}
+//                   className={`bg-slate-700 rounded-lg p-3 cursor-pointer transition-colors
+//                     ${selectedThreat?.id === threat.id ? "ring-2 ring-blue-400" : ""}
+//                     hover:bg-slate-600`}
+//                   onClick={() => setSelectedThreat(threat)}
+//                 >
+//                   <div className="flex items-center justify-between mb-2">
+//                     <span
+//                       className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(
+//                         threat.severity
+//                       )}`}
+//                     >
+//                       {threat.severity.toUpperCase()}
+//                     </span>
+//                     <div className="flex items-center space-x-1 text-xs text-slate-400">
+//                       <Clock className="w-3 h-3" />
+//                       <span>
+//                         {new Date(threat.timestamp).toLocaleTimeString()}
+//                       </span>
+//                     </div>
+//                   </div>
+
+//                   <h3 className="font-medium mb-1">
+//                     {threat.type.replace("_", " ").toUpperCase()}
+//                   </h3>
+//                   <p className="text-sm text-slate-300 mb-2">
+//                     {threat.description}
+//                   </p>
+
+//                   <div className="flex items-center justify-between text-xs text-slate-400">
+//                     <span className="flex items-center space-x-1">
+//                       <MapPin className="w-3 h-3" />
+//                       <span>{threat.location.name}</span>
+//                     </span>
+//                     <span className="flex items-center space-x-1">
+//                       <Users className="w-3 h-3" />
+//                       <span>{threat.personnel}</span>
+//                     </span>
+//                   </div>
+
+//                   <div className="mt-2 flex space-x-2">
+//                     <button className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-500">
+//                       Deploy
+//                     </button>
+//                     <button className="px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500">
+//                       Investigate
+//                     </button>
+//                   </div>
+//                 </div>
+//               )}
+//             />
+//           </div>
+
+//           {/* Sensor Status */}
+//           <div className="mt-6">
+//             <h3 className="text-md font-semibold mb-3 flex items-center space-x-2">
+//               <Zap className="w-4 h-4" />
+//               <span>Sensor Status</span>
+//             </h3>
+
+//             <div className="space-y-2">
+//               {sensors.map((sensor) => (
+//                 <div key={sensor.id} className="bg-slate-700 rounded p-2">
+//                   <div className="flex items-center justify-between mb-1">
+//                     <span className="text-sm font-medium">{sensor.name}</span>
+//                     <span
+//                       className={`text-xs ${getStatusColor(
+//                         sensor.status as SensorStatus
+//                       )}`}
+//                     >
+//                       {sensor.status}
+//                     </span>
+//                   </div>
+//                   <div className="flex items-center justify-between text-xs text-slate-400">
+//                     <span>ID: {sensor.id}</span>
+//                     <span>Battery: {sensor.batteryLevel.toFixed(1)}%</span>
+//                   </div>
+//                   <div className="w-full bg-slate-600 rounded-full h-1 mt-1">
+//                     <div
+//                       className="bg-green-400 h-1 rounded-full"
+//                       style={{ width: `${sensor.batteryLevel}%` }}
+//                     />
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Threat Detail Modal */}
+//       {selectedThreat && (
+//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+//           <div className="bg-slate-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+//             <div className="flex items-center justify-between mb-4">
+//               <h2 className="text-xl font-bold">Threat Details</h2>
+//               <button
+//                 onClick={() => setSelectedThreat(null)}
+//                 className="text-slate-400 hover:text-white"
+//               >
+//                 ×
+//               </button>
+//             </div>
+
+//             <div className="space-y-4">
+//               <div className="grid grid-cols-2 gap-4">
+//                 <div>
+//                   <label className="text-sm text-slate-400">Threat ID</label>
+//                   <p className="font-medium">{selectedThreat.id}</p>
+//                 </div>
+//                 <div>
+//                   <label className="text-sm text-slate-400">Severity</label>
+//                   <span
+//                     className={`inline-block px-2 py-1 rounded text-sm font-medium ${getSeverityColor(
+//                       selectedThreat.severity
+//                     )}`}
+//                   >
+//                     {selectedThreat.severity.toUpperCase()}
+//                   </span>
+//                 </div>
+//               </div>
+
+//               <div>
+//                 <label className="text-sm text-slate-400">Description</label>
+//                 <p className="text-slate-200">{selectedThreat.description}</p>
+//               </div>
+
+//               <div className="grid grid-cols-2 gap-4">
+//                 <div>
+//                   <label className="text-sm text-slate-400">Location</label>
+//                   <p className="font-medium">{selectedThreat.location.name}</p>
+//                 </div>
+//                 <div>
+//                   <label className="text-sm text-slate-400">
+//                     Personnel Deployed
+//                   </label>
+//                   <p className="font-medium">{selectedThreat.personnel}</p>
+//                 </div>
+//               </div>
+
+//               <div>
+//                 <label className="text-sm text-slate-400">Timestamp</label>
+//                 <p className="font-medium">
+//                   {selectedThreat.timestamp.toLocaleString()}
+//                 </p>
+//               </div>
+
+//               <div className="flex space-x-3 mt-6">
+//                 <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500">
+//                   Deploy Emergency Response
+//                 </button>
+//                 <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">
+//                   Request Backup
+//                 </button>
+//                 <button className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500">
+//                   Mark Investigating
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default CommandCenter;
+
+// THE MAP WITH BENUE STATE BOUNDARY
+// import { useState, useEffect, useRef } from "react";
+// import {
+//   AlertTriangle,
+//   Shield,
+//   MapPin,
+//   Camera,
+//   Users,
+//   Clock,
+//   Volume2,
+//   VolumeX,
+//   Eye,
+//   Zap,
+//   Target,
+//   Bell,
+//   Activity,
+// } from "lucide-react";
+// import { Alert, AlertDescription } from "@/components/ui/alert";
+// import { GeoJSON } from "react-leaflet";
+// import benueBoundaryData from "../data/benue1.geojson.json";
+// import type { FeatureCollection } from "geojson";
+// import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
+// import "leaflet/dist/leaflet.css";
+
+// interface Sensor {
+//   id: string;
+//   name: string;
+//   lat: number;
+//   lng: number;
+//   status: string;
+//   lastUpdate: Date;
+//   batteryLevel: number;
+// }
+
+// interface Threat {
+//   id: string;
+//   sensorId: string;
+//   type: string;
+//   severity: string;
+//   location: { lat: number; lng: number; name: string };
+//   timestamp: Date;
+//   description: string;
+//   personnel: number;
+//   status: string;
+// }
+
+// const CommandCenter = () => {
+//   const [sensors, setSensors] = useState<Sensor[]>([]);
+//   const [threats, setThreats] = useState<Threat[]>([]);
+//   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
+//   const [soundEnabled, setSoundEnabled] = useState(true);
+//   const [connectionStatus, setConnectionStatus] = useState("disconnected");
+//   const audioRef = useRef<HTMLAudioElement>(null);
+//   // const wsRef = useRef<WebSocket | null>(null); Reopen this when you are ready for backend integration
+
+//   // Mock data for demonstration
+//   useEffect(() => {
+//     const mockSensors = [
+//       {
+//         id: "S001",
+//         name: "Makurdi Border North",
+//         lat: 7.7319,
+//         lng: 8.5211,
+//         status: "active",
+//         lastUpdate: new Date(),
+//         batteryLevel: 85,
+//       },
+//       {
+//         id: "S002",
+//         name: "Gboko Checkpoint",
+//         lat: 7.3239,
+//         lng: 9.0043,
+//         status: "alert",
+//         lastUpdate: new Date(),
+//         batteryLevel: 92,
+//       },
+//       {
+//         id: "S003",
+//         name: "Otukpo Border East",
+//         lat: 7.1905,
+//         lng: 8.1301,
+//         status: "active",
+//         lastUpdate: new Date(),
+//         batteryLevel: 78,
+//       },
+//       {
+//         id: "S004",
+//         name: "Katsina-Ala West",
+//         lat: 7.1667,
+//         lng: 9.2833,
+//         status: "inactive",
+//         lastUpdate: new Date(Date.now() - 300000),
+//         batteryLevel: 45,
+//       },
+//       {
+//         id: "S005",
+//         name: "Vandeikya South",
+//         lat: 6.7833,
+//         lng: 9.0667,
+//         status: "active",
+//         lastUpdate: new Date(),
+//         batteryLevel: 95,
+//       },
+//     ];
+
+//     const mockThreats = [
+//       {
+//         id: "T001",
+//         sensorId: "S002",
+//         type: "armed_group",
+//         severity: "critical",
+//         location: { lat: 7.3239, lng: 9.0043, name: "Gboko Checkpoint" },
+//         timestamp: new Date(Date.now() - 120000),
+//         description:
+//           "Armed group of 8-10 individuals detected approaching checkpoint. Heavy weapons visible.",
+//         personnel: 10,
+//         status: "active",
+//       },
+//       {
+//         id: "T002",
+//         sensorId: "S001",
+//         type: "vehicle_movement",
+//         severity: "medium",
+//         location: { lat: 7.7319, lng: 8.5211, name: "Makurdi Border North" },
+//         timestamp: new Date(Date.now() - 300000),
+//         description:
+//           "Convoy of 3 unmarked vehicles moving towards border crossing at unusual hour.",
+//         personnel: 5,
+//         status: "investigating",
+//       },
+//       {
+//         id: "T003",
+//         sensorId: "S003",
+//         type: "intrusion",
+//         severity: "high",
+//         location: { lat: 7.1905, lng: 8.1301, name: "Otukpo Border East" },
+//         timestamp: new Date(Date.now() - 600000),
+//         description:
+//           "Unauthorized border crossing detected. Multiple individuals attempting to bypass checkpoint.",
+//         personnel: 6,
+//         status: "active",
+//       },
+//     ];
+
+//     setSensors(mockSensors);
+//     setThreats(mockThreats);
+//   }, []);
+
+//   // WebSocket connection simulation
+//   useEffect(() => {
+//     const connectWebSocket = () => {
+//       setConnectionStatus("reconnecting");
+
+//       // Simulate WebSocket connection
+//       setTimeout(() => {
+//         setConnectionStatus("connected");
+
+//         // Simulate real-time updates
+//         const interval = setInterval(() => {
+//           const now = new Date();
+
+//           // Update sensor data
+//           setSensors((prev) =>
+//             prev.map((sensor) => ({
+//               ...sensor,
+//               lastUpdate: now,
+//               batteryLevel: Math.max(
+//                 20,
+//                 sensor.batteryLevel - Math.random() * 0.5
+//               ),
+//             }))
+//           );
+
+//           // Occasionally add new threats
+//           if (Math.random() < 0.1) {
+//             const newThreat = {
+//               id: `T${Date.now()}`,
+//               sensorId:
+//                 sensors[Math.floor(Math.random() * sensors.length)]?.id ||
+//                 "S001",
+//               type: [
+//                 "intrusion",
+//                 "suspicious_activity",
+//                 "armed_group",
+//                 "vehicle_movement",
+//               ][Math.floor(Math.random() * 4)],
+//               severity: ["low", "medium", "high", "critical"][
+//                 Math.floor(Math.random() * 4)
+//               ],
+//               location: {
+//                 lat: 7 + Math.random(),
+//                 lng: 8 + Math.random(),
+//                 name: "New Location",
+//               },
+//               timestamp: now,
+//               description:
+//                 "New threat detected by automated surveillance system.",
+//               personnel: Math.floor(Math.random() * 15) + 1,
+//               status: "active",
+//             };
+
+//             setThreats((prev) => [newThreat, ...prev.slice(0, 9)]);
+
+//             // Play alert sound for critical threats
+//             if (
+//               newThreat.severity === "critical" &&
+//               soundEnabled &&
+//               audioRef.current
+//             ) {
+//               audioRef.current
+//                 .play()
+//                 .catch((e) => console.log("Audio play failed:", e));
+//             }
+//           }
+//         }, 5000);
+
+//         return () => {
+//           clearInterval(interval);
+//         };
+//       }, 1000);
+//     };
+
+//     connectWebSocket();
+//   }, [sensors, soundEnabled]);
+
+//   interface SeverityColorMap {
+//     [key: string]: string;
+//   }
+
+//   const getSeverityColor = (severity: keyof SeverityColorMap): string => {
+//     switch (severity) {
+//       case "critical":
+//         return "bg-red-800 text-white";
+//       case "high":
+//         return "bg-red-500 text-white";
+//       case "medium":
+//         return "bg-yellow-500 text-white";
+//       case "low":
+//         return "bg-green-500 text-white";
+//       default:
+//         return "bg-gray-500 text-white";
+//     }
+//   };
+
+//   interface StatusColorMap {
+//     [key: string]: string;
+//   }
+
+//   type SensorStatus = "active" | "inactive" | "alert";
+
+//   const getStatusColor = (status: SensorStatus): string => {
+//     const colorMap: StatusColorMap = {
+//       active: "text-green-400",
+//       inactive: "text-red-400",
+//       alert: "text-orange-400",
+//     };
+//     return colorMap[status] ?? "text-gray-400";
+//   };
+
+//   const activeCriticalThreats = threats.filter(
+//     (t) => t.severity === "critical" && t.status === "active"
+//   );
+
+//   return (
+//     <div className="min-h-screen bg-slate-900 text-white">
+//       {/* Audio element for alerts */}
+//       <audio ref={audioRef} preload="auto">
+//         <source
+//           src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYdAkWRzO+8bSMELH7I79+STApSou7gylUfBhNztu/7uWsFLXjK7dyGOhgWSa/q2qBNCAhxue7/ol4GFWq37LiALgcVdMvq7rliFQZGoOs1t2QNCW+z6v5vKwgacaTt8LpgByl6yO1yMxYNUrHq87RsDBR4p+n5oVIGDW6y69x7NIYOUbLqzZA6BQ93s/Psp1MDBnSo5NqBOAYVaqTp67VhBSp8xs+GNwgSb7Ps6bVhBChxw++wYBoGIneqw/K8YhQFLXvK5dB7MgwPcqHq5q5WEQNZ0n7N50QdCk1pSKq9aUdBgT1nTh2JDQxhsjN7Y"
+//           type="audio/wav"
+//         />
+//       </audio>
+
+//       {/* Header */}
+//       <div className="bg-slate-800 border-b border-slate-700 px-6 py-4">
+//         <div className="flex items-center justify-between">
+//           <div className="flex items-center space-x-4">
+//             <Shield className="w-8 h-8 text-blue-400" />
+//             <div>
+//               <h1 className="text-2xl font-bold">
+//                 Benue State Border Surveillance
+//               </h1>
+//               <p className="text-slate-400">
+//                 Border Security & Threat Monitoring
+//               </p>
+//             </div>
+//           </div>
+
+//           <div className="flex items-center space-x-4">
+//             <div className="flex items-center space-x-2">
+//               <div
+//                 className={`w-3 h-3 rounded-full ${
+//                   connectionStatus === "connected"
+//                     ? "bg-green-400 animate-pulse"
+//                     : "bg-red-400"
+//                 }`}
+//               />
+//               <span className="text-sm text-slate-400 capitalize">
+//                 {connectionStatus}
+//               </span>
+//             </div>
+
+//             <button
+//               onClick={() => setSoundEnabled(!soundEnabled)}
+//               className={`p-2 rounded-lg ${
+//                 soundEnabled
+//                   ? "bg-blue-600 text-white"
+//                   : "bg-slate-600 text-slate-300"
+//               }`}
+//             >
+//               {soundEnabled ? (
+//                 <Volume2 className="w-5 h-5" />
+//               ) : (
+//                 <VolumeX className="w-5 h-5" />
+//               )}
+//             </button>
+
+//             <div className="text-right">
+//               <div className="text-sm font-medium">
+//                 {new Date().toLocaleTimeString()}
+//               </div>
+//               <div className="text-xs text-slate-400">
+//                 {new Date().toLocaleDateString()}
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Critical Alert Banner */}
+//       {activeCriticalThreats.length > 0 && (
+//         <Alert variant="destructive" className="px-6 py-3 animate-pulse">
+//           <AlertTriangle className="h-4 w-4" />
+//           <AlertDescription>
+//             <div className="flex items-center space-x-2">
+//               <span className="font-semibold">
+//                 CRITICAL ALERT: {activeCriticalThreats.length} active critical
+//                 threat{activeCriticalThreats.length > 1 ? "s" : ""} detected
+//               </span>
+//               <Bell className="w-5 h-5 animate-bounce" />
+//             </div>
+//           </AlertDescription>
+//         </Alert>
+//       )}
+
+//       <div className="flex flex-1">
+//         {/* Main Content */}
+//         <div className="flex-1 p-6">
+//           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+//             {/* Statistics Cards */}
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Active Sensors</p>
+//                   <p className="text-2xl font-bold text-green-400">
+//                     {sensors.filter((s) => s.status === "active").length}
+//                   </p>
+//                 </div>
+//                 <Activity className="w-8 h-8 text-green-400" />
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Active Threats</p>
+//                   <p className="text-2xl font-bold text-red-400">
+//                     {threats.filter((t) => t.status === "active").length}
+//                   </p>
+//                 </div>
+//                 <Target className="w-8 h-8 text-red-400" />
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Personnel Deployed</p>
+//                   <p className="text-2xl font-bold text-blue-400">
+//                     {threats.reduce((sum, t) => sum + t.personnel, 0)}
+//                   </p>
+//                 </div>
+//                 <Users className="w-8 h-8 text-blue-400" />
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Map Area */}
+//           <div className="bg-slate-800 rounded-lg p-4 mb-6">
+//             <div className="flex items-center justify-between mb-4">
+//               <h2 className="text-lg font-semibold flex items-center space-x-2">
+//                 <MapPin className="w-5 h-5" />
+//                 <span>Benue State Border Map</span>
+//               </h2>
+//               <div className="flex space-x-4">
+//                 <div className="flex items-center space-x-1 text-sm text-blue-400">
+//                   <div className="w-3 h-3 bg-blue-400 rounded"></div>
+//                   <span>Sensors</span>
+//                 </div>
+//                 <div className="flex items-center space-x-1 text-sm text-red-400">
+//                   <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+//                   <span>Threats</span>
+//                 </div>
+//                 <div className="flex items-center space-x-1 text-sm text-purple-400">
+//                   <Eye className="w-3 h-3" />
+//                   <span>Surveillance</span>
+//                 </div>
+//               </div>
+//             </div>
+
+//             <div className="rounded-lg h-[90vh]">
+//               <MapContainer
+//                 center={[7.4, 8.6]}
+//                 zoom={8}
+//                 style={{ height: "100%", width: "100%" }}
+//               >
+//                 <TileLayer
+//                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+//                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+//                 />
+//                 {/* Benue State Border */}
+//                 {/* Benue State GeoJSON Boundary */}
+//                 <GeoJSON
+//                   data={benueBoundaryData as FeatureCollection}
+//                   style={() => ({
+//                     color: "blue",
+//                     weight: 2,
+//                     fillOpacity: 0.2,
+//                     fillColor: "blue",
+//                   })}
+//                 />
+
+//                 {/* Sensors */}
+//                 {sensors.map((sensor) => (
+//                   <Marker position={[sensor.lat, sensor.lng]} key={sensor.id}>
+//                     <Popup>
+//                       {sensor.name}
+//                       <br />
+//                       Status: {sensor.status}
+//                       <br />
+//                       Battery: {sensor.batteryLevel}%
+//                     </Popup>
+//                   </Marker>
+//                 ))}
+//                 {threats
+//                   .filter((t) => t.status === "active")
+//                   .map((threat) => (
+//                     <Circle
+//                       key={threat.id}
+//                       center={[threat.location.lat, threat.location.lng]}
+//                       radius={1000}
+//                       pathOptions={{
+//                         color:
+//                           threat.severity === "critical"
+//                             ? "red"
+//                             : threat.severity === "high"
+//                             ? "orange"
+//                             : threat.severity === "medium"
+//                             ? "yellow"
+//                             : "green",
+//                         fillOpacity: 0.5,
+//                       }}
+//                       eventHandlers={{
+//                         click: () => {
+//                           setSelectedThreat(threat);
+//                         },
+//                       }}
+//                     >
+//                       <Popup>
+//                         {threat.type.replace("_", " ").toUpperCase()}
+//                         <br />
+//                         {threat.description}
+//                         <br />
+//                         Severity: {threat.severity.toUpperCase()}
+//                       </Popup>
+//                     </Circle>
+//                   ))}
+//               </MapContainer>
+//             </div>
+//           </div>
+
+//           {/* Video Feeds */}
+//           <div className="bg-slate-800 rounded-lg p-4">
+//             <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+//               <Camera className="w-5 h-5" />
+//               <span>Live Video Feeds</span>
+//             </h2>
+//             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+//               {sensors.slice(0, 6).map((sensor) => (
+//                 <div key={sensor.id} className="bg-slate-700 rounded-lg p-3">
+//                   <div className="bg-black rounded aspect-video mb-2 flex items-center justify-center">
+//                     <div className="text-slate-400 text-center">
+//                       <Camera className="w-8 h-8 mx-auto mb-2" />
+//                       <div className="text-xs">Camera {sensor.id}</div>
+//                       <div className="text-xs">{sensor.name}</div>
+//                     </div>
+//                   </div>
+//                   <div className="flex justify-between items-center text-xs">
+//                     <span
+//                       className={getStatusColor(sensor.status as SensorStatus)}
+//                     >
+//                       {sensor.status}
+//                     </span>
+//                     <span className="text-slate-400">
+//                       Battery: {sensor.batteryLevel}%
+//                     </span>
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Sidebar - Threat List */}
+//         <div className="w-80 bg-slate-800 border-l border-slate-700 p-4 overflow-y-auto">
+//           <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+//             <AlertTriangle className="w-5 h-5" />
+//             <span>Active Threats</span>
+//           </h2>
+
+//           <div className="space-y-3">
+//             {threats.map((threat) => (
+//               <div
+//                 key={threat.id}
+//                 className={`bg-slate-700 rounded-lg p-3 cursor-pointer transition-colors
+//                   ${
+//                     selectedThreat?.id === threat.id
+//                       ? "ring-2 ring-blue-400"
+//                       : ""
+//                   }
+//                   hover:bg-slate-600`}
+//                 onClick={() => setSelectedThreat(threat)}
+//               >
+//                 <div className="flex items-center justify-between mb-2">
+//                   <span
+//                     className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(
+//                       threat.severity
+//                     )}`}
+//                   >
+//                     {threat.severity.toUpperCase()}
+//                   </span>
+//                   <div className="flex items-center space-x-1 text-xs text-slate-400">
+//                     <Clock className="w-3 h-3" />
+//                     <span>
+//                       {new Date(threat.timestamp).toLocaleTimeString()}
+//                     </span>
+//                   </div>
+//                 </div>
+
+//                 <h3 className="font-medium mb-1">
+//                   {threat.type.replace("_", " ").toUpperCase()}
+//                 </h3>
+//                 <p className="text-sm text-slate-300 mb-2">
+//                   {threat.description}
+//                 </p>
+
+//                 <div className="flex items-center justify-between text-xs text-slate-400">
+//                   <span className="flex items-center space-x-1">
+//                     <MapPin className="w-3 h-3" />
+//                     <span>{threat.location.name}</span>
+//                   </span>
+//                   <span className="flex items-center space-x-1">
+//                     <Users className="w-3 h-3" />
+//                     <span>{threat.personnel}</span>
+//                   </span>
+//                 </div>
+
+//                 <div className="mt-2 flex space-x-2">
+//                   <button className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-500">
+//                     Deploy
+//                   </button>
+//                   <button className="px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500">
+//                     Investigate
+//                   </button>
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+
+//           {/* Sensor Status */}
+//           <div className="mt-6">
+//             <h3 className="text-md font-semibold mb-3 flex items-center space-x-2">
+//               <Zap className="w-4 h-4" />
+//               <span>Sensor Status</span>
+//             </h3>
+
+//             <div className="space-y-2">
+//               {sensors.map((sensor) => (
+//                 <div key={sensor.id} className="bg-slate-700 rounded p-2">
+//                   <div className="flex items-center justify-between mb-1">
+//                     <span className="text-sm font-medium">{sensor.name}</span>
+//                     <span
+//                       className={`text-xs ${getStatusColor(
+//                         sensor.status as SensorStatus
+//                       )}`}
+//                     >
+//                       {sensor.status}
+//                     </span>
+//                   </div>
+//                   <div className="flex items-center justify-between text-xs text-slate-400">
+//                     <span>ID: {sensor.id}</span>
+//                     <span>Battery: {sensor.batteryLevel.toFixed(1)}%</span>
+//                   </div>
+//                   <div className="w-full bg-slate-600 rounded-full h-1 mt-1">
+//                     <div
+//                       className="bg-green-400 h-1 rounded-full"
+//                       style={{ width: `${sensor.batteryLevel}%` }}
+//                     />
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Threat Detail Modal */}
+//       {selectedThreat && (
+//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+//           <div className="bg-slate-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+//             <div className="flex items-center justify-between mb-4">
+//               <h2 className="text-xl font-bold">Threat Details</h2>
+//               <button
+//                 onClick={() => setSelectedThreat(null)}
+//                 className="text-slate-400 hover:text-white"
+//               >
+//                 ×
+//               </button>
+//             </div>
+
+//             <div className="space-y-4">
+//               <div className="grid grid-cols-2 gap-4">
+//                 <div>
+//                   <label className="text-sm text-slate-400">Threat ID</label>
+//                   <p className="font-medium">{selectedThreat.id}</p>
+//                 </div>
+//                 <div>
+//                   <label className="text-sm text-slate-400">Severity</label>
+//                   <span
+//                     className={`inline-block px-2 py-1 rounded text-sm font-medium ${getSeverityColor(
+//                       selectedThreat.severity
+//                     )}`}
+//                   >
+//                     {selectedThreat.severity.toUpperCase()}
+//                   </span>
+//                 </div>
+//               </div>
+
+//               <div>
+//                 <label className="text-sm text-slate-400">Description</label>
+//                 <p className="text-slate-200">{selectedThreat.description}</p>
+//               </div>
+
+//               <div className="grid grid-cols-2 gap-4">
+//                 <div>
+//                   <label className="text-sm text-slate-400">Location</label>
+//                   <p className="font-medium">{selectedThreat.location.name}</p>
+//                 </div>
+//                 <div>
+//                   <label className="text-sm text-slate-400">
+//                     Personnel Deployed
+//                   </label>
+//                   <p className="font-medium">{selectedThreat.personnel}</p>
+//                 </div>
+//               </div>
+
+//               <div>
+//                 <label className="text-sm text-slate-400">Timestamp</label>
+//                 <p className="font-medium">
+//                   {selectedThreat.timestamp.toLocaleString()}
+//                 </p>
+//               </div>
+
+//               <div className="flex space-x-3 mt-6">
+//                 <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500">
+//                   Deploy Emergency Response
+//                 </button>
+//                 <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">
+//                   Request Backup
+//                 </button>
+//                 <button className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500">
+//                   Mark Investigating
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default CommandCenter;
+
+// MODIFICATION OF THE ORIGINAL CODE GIVEN TO ME BY CLAUDE AI MODIFIED BY GROK
+// import { useState, useEffect, useRef } from 'react';
+// import {
+//   AlertTriangle,
+//   Shield,
+//   MapPin,
+//   Camera,
+//   Users,
+//   Clock,
+//   Volume2,
+//   VolumeX,
+//   Eye,
+//   Zap,
+//   Target,
+//   Bell,
+//   Activity
+// } from 'lucide-react';
+// import { Alert, AlertDescription } from '@/components/ui/alert';
+// import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+// import 'leaflet/dist/leaflet.css';
+
+// interface Sensor {
+//   id: string;
+//   name: string;
+//   lat: number;
+//   lng: number;
+//   status: 'active' | 'inactive' | 'alert';
+//   lastUpdate: Date;
+//   batteryLevel: number;
+// }
+
+// interface Threat {
+//   id: string;
+//   sensorId: string;
+//   type: 'intrusion' | 'suspicious_activity' | 'armed_group' | 'vehicle_movement';
+//   severity: 'low' | 'medium' | 'high' | 'critical';
+//   location: { lat: number; lng: number; name: string };
+//   timestamp: Date;
+//   description: string;
+//   personnel: number;
+//   status: 'active' | 'investigating' | 'resolved';
+// }
+
+// const CommandCenter = () => {
+//   const [sensors, setSensors] = useState<Sensor[]>([]);
+//   const [threats, setThreats] = useState<Threat[]>([]);
+//   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
+//   const [soundEnabled, setSoundEnabled] = useState(true);
+//   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('disconnected');
+//   const audioRef = useRef<HTMLAudioElement>(null);
+//   const wsRef = useRef<WebSocket | null>(null);
+
+//   // Mock data for demonstration
+//   useEffect(() => {
+//     const mockSensors: Sensor[] = [
+//       { id: 'S001', name: 'Makurdi Border North', lat: 7.7319, lng: 8.5211, status: 'active', lastUpdate: new Date(), batteryLevel: 85 },
+//       { id: 'S002', name: 'Gboko Checkpoint', lat: 7.3239, lng: 9.0043, status: 'alert', lastUpdate: new Date(), batteryLevel: 92 },
+//       { id: 'S003', name: 'Otukpo Border East', lat: 7.1905, lng: 8.1301, status: 'active', lastUpdate: new Date(), batteryLevel: 78 },
+//       { id: 'S004', name: 'Katsina-Ala West', lat: 7.1667, lng: 9.2833, status: 'inactive', lastUpdate: new Date(Date.now() - 300000), batteryLevel: 45 },
+//       { id: 'S005', name: 'Vandeikya South', lat: 6.7833, lng: 9.0667, status: 'active', lastUpdate: new Date(), batteryLevel: 95 },
+//     ];
+
+//     const mockThreats: Threat[] = [
+//       {
+//         id: 'T001',
+//         sensorId: 'S002',
+//         type: 'armed_group',
+//         severity: 'critical',
+//         location: { lat: 7.3239, lng: 9.0043, name: 'Gboko Checkpoint' },
+//         timestamp: new Date(Date.now() - 120000),
+//         description: 'Armed group of 8-10 individuals detected approaching checkpoint. Heavy weapons visible.',
+//         personnel: 10,
+//         status: 'active'
+//       },
+//       {
+//         id: 'T002',
+//         sensorId: 'S001',
+//         type: 'vehicle_movement',
+//         severity: 'medium',
+//         location: { lat: 7.7319, lng: 8.5211, name: 'Makurdi Border North' },
+//         timestamp: new Date(Date.now() - 300000),
+//         description: 'Convoy of 3 unmarked vehicles moving towards border crossing at unusual hour.',
+//         personnel: 5,
+//         status: 'investigating'
+//       },
+//       {
+//         id: 'T003',
+//         sensorId: 'S003',
+//         type: 'intrusion',
+//         severity: 'high',
+//         location: { lat: 7.1905, lng: 8.1301, name: 'Otukpo Border East' },
+//         timestamp: new Date(Date.now() - 600000),
+//         description: 'Unauthorized border crossing detected. Multiple individuals attempting to bypass checkpoint.',
+//         personnel: 6,
+//         status: 'active'
+//       }
+//     ];
+
+//     setSensors(mockSensors);
+//     setThreats(mockThreats);
+//   }, []);
+
+//   // WebSocket connection simulation
+//   useEffect(() => {
+//     const connectWebSocket = () => {
+//       setConnectionStatus('reconnecting');
+
+//       // Simulate WebSocket connection
+//             setTimeout(() => {
+//               setConnectionStatus('connected');
+
+//               // Simulate real-time updates
+//               const interval = setInterval(() => {
+//                 const now = new Date();
+
+//                 // Update sensor data
+//                 setSensors(prev => prev.map(sensor => ({
+//                   ...sensor,
+//                   lastUpdate: now,
+//                   batteryLevel: Math.max(20, sensor.batteryLevel - Math.random() * 0.5)
+//                 })));
+
+//                 // Occasionally add new threats
+//                 if (Math.random() < 0.1) {
+//                   const newThreat: Threat = {
+//                     id: `T${Date.now()}`,
+//                     sensorId: sensors[Math.floor(Math.random() * sensors.length)]?.id || 'S001',
+//                     type: ['intrusion', 'suspicious_activity', 'armed_group', 'vehicle_movement'][Math.floor(Math.random() * 4)] as Threat['type'],
+//                     severity: ['low', 'medium', 'high', 'critical'][Math.floor(Math.random() * 4)] as Threat['severity'],
+//                     location: { lat: 7 + Math.random(), lng: 8 + Math.random(), name: 'New Location' },
+//                     timestamp: now,
+//                     description: 'New threat detected by automated surveillance system.',
+//                     personnel: Math.floor(Math.random() * 15) + 1,
+//                     status: 'active'
+//                   };
+
+//                   setThreats(prev => [newThreat, ...prev.slice(0, 9)]);
+
+//                   // Play alert sound for critical threats
+//                   if (newThreat.severity === 'critical' && soundEnabled && audioRef.current) {
+//                     audioRef.current.play().catch(e => console.log('Audio play failed:', e));
+//                   }
+//                 }
+//               }, 5000);
+
+//               return () => {
+//                 clearInterval(interval);
+//               };
+//             }, 1000);
+//     };
+
+//     connectWebSocket();
+//   }, [sensors, soundEnabled]);
+
+// interface SeverityColorMap {
+//     [key: string]: string;
+// }
+
+// const getSeverityColor = (severity: keyof SeverityColorMap): string => {
+//     const colorMap: SeverityColorMap = {
+//         critical: 'bg-red-600 text-white',
+//         high: 'bg-red-500 text-white',
+//         medium: 'bg-yellow-500 text-white',
+//         low: 'bg-green-500 text-white',
+//     };
+//     return colorMap[severity] ?? 'bg-gray-500 text-white';
+// };
+
+// interface StatusColorMap {
+//     [key: string]: string;
+// }
+
+// type SensorStatus = 'active' | 'inactive' | 'alert';
+
+// const getStatusColor = (status: SensorStatus): string => {
+//     const colorMap: StatusColorMap = {
+//         active: 'text-green-400',
+//         inactive: 'text-red-400',
+//         alert: 'text-orange-400',
+//     };
+//     return colorMap[status] ?? 'text-gray-400';
+// };
+
+//   const activeCriticalThreats = threats.filter(t => t.severity === 'critical' && t.status === 'active');
+
+//   return (
+//     <div className="min-h-screen bg-slate-900 text-white">
+//       {/* Audio element for alerts */}
+//       <audio ref={audioRef} preload="auto">
+//         <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYdAkWRzO+8bSMELH7I79+STApSou7gylUfBhNztu/7uWsFLXjK7dyGOhgWSa/q2qBNCAhxue7/ol4GFWq37LiALgcVdMvq7rliFQZGoOs1t2QNCW+z6v5vKwgacaTt8LpgByl6yO1yMxYNUrHq87RsDBR4p+n5oVIGDW6y69x7NIYOUbLqzZA6BQ93s/Psp1MDBnSo5NqBOAYVaqTp67VhBSp8xs+GNwgSb7Ps6bVhBChxw++wYBoGIneqw/K8YhQFLXvK5dB7MgwPcqHq5q5WEQNZ0n7N50QdCk1pSKq9aUdBgT1nTh2JDQxhsjN7Y" type="audio/wav" />
+//       </audio>
+
+//       {/* Header */}
+//       <div className="bg-slate-800 border-b border-slate-700 px-6 py-4">
+//         <div className="flex items-center justify-between">
+//           <div className="flex items-center space-x-4">
+//             <Shield className="w-8 h-8 text-blue-400" />
+//             <div>
+//               <h1 className="text-2xl font-bold">Benue State Command Center</h1>
+//               <p className="text-slate-400">Border Security & Threat Monitoring</p>
+//             </div>
+//           </div>
+
+//           <div className="flex items-center space-x-4">
+//             <div className="flex items-center space-x-2">
+//               <div className={`w-3 h-3 rounded-full ${connectionStatus === 'connected' ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
+//               <span className="text-sm text-slate-400 capitalize">{connectionStatus}</span>
+//             </div>
+
+//             <button
+//               onClick={() => setSoundEnabled(!soundEnabled)}
+//               className={`p-2 rounded-lg ${soundEnabled ? 'bg-blue-600 text-white' : 'bg-slate-600 text-slate-300'}`}
+//             >
+//               {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+//             </button>
+
+//             <div className="text-right">
+//               <div className="text-sm font-medium">{new Date().toLocaleTimeString()}</div>
+//               <div className="text-xs text-slate-400">{new Date().toLocaleDateString()}</div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Critical Alert Banner */}
+//       {activeCriticalThreats.length > 0 && (
+//         <Alert variant="destructive" className="px-6 py-3 animate-pulse">
+//           <AlertTriangle className="h-4 w-4" />
+//           <AlertDescription>
+//             <div className="flex items-center space-x-2">
+//               <span className="font-semibold">
+//                 CRITICAL ALERT: {activeCriticalThreats.length} active critical threat{activeCriticalThreats.length > 1 ? 's' : ''} detected
+//               </span>
+//               <Bell className="w-5 h-5 animate-bounce" />
+//             </div>
+//           </AlertDescription>
+//         </Alert>
+//       )}
+
+//       <div className="flex flex-1">
+//         {/* Main Content */}
+//         <div className="flex-1 p-6">
+//           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+//             {/* Statistics Cards */}
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Active Sensors</p>
+//                   <p className="text-2xl font-bold text-green-400">
+//                     {sensors.filter(s => s.status === 'active').length}
+//                   </p>
+//                 </div>
+//                 <Activity className="w-8 h-8 text-green-400" />
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Active Threats</p>
+//                   <p className="text-2xl font-bold text-red-400">
+//                     {threats.filter(t => t.status === 'active').length}
+//                   </p>
+//                 </div>
+//                 <Target className="w-8 h-8 text-red-400" />
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Personnel Deployed</p>
+//                   <p className="text-2xl font-bold text-blue-400">
+//                     {threats.reduce((sum, t) => sum + t.personnel, 0)}
+//                   </p>
+//                 </div>
+//                 <Users className="w-8 h-8 text-blue-400" />
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Map Area */}
+//           <div className="bg-slate-800 rounded-lg p-4 mb-6">
+//             <div className="flex items-center justify-between mb-4">
+//               <h2 className="text-lg font-semibold flex items-center space-x-2">
+//                 <MapPin className="w-5 h-5" />
+//                 <span>Benue State Border Map</span>
+//               </h2>
+//               <div className="flex space-x-4">
+//                 <div className="flex items-center space-x-1 text-sm text-blue-400">
+//                   <div className="w-3 h-3 bg-blue-400 rounded"></div>
+//                   <span>Sensors</span>
+//                 </div>
+//                 <div className="flex items-center space-x-1 text-sm text-red-400">
+//                   <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+//                   <span>Threats</span>
+//                 </div>
+//                 <div className="flex items-center space-x-1 text-sm text-purple-400">
+//                   <Eye className="w-3 h-3" />
+//                   <span>Surveillance</span>
+//                 </div>
+//               </div>
+//             </div>
+
+//             <div className="rounded-lg h-96">
+//               <MapContainer center={[7.4, 8.6]} zoom={8} style={{ height: '100%', width: '100%' }}>
+//                 <TileLayer
+//                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+//                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+//                 />
+//                 {sensors.map((sensor) => (
+//                   <Marker position={[sensor.lat, sensor.lng]} key={sensor.id}>
+//                     <Popup>
+//                       {sensor.name}<br />Status: {sensor.status}<br />Battery: {sensor.batteryLevel}%
+//                     </Popup>
+//                   </Marker>
+//                 ))}
+//                 {threats.filter(t => t.status === 'active').map((threat) => (
+//                   <Circle
+//                     key={threat.id}
+//                     center={[threat.location.lat, threat.location.lng]}
+//                     radius={1000}
+//                     pathOptions={{
+//                       color: threat.severity === 'critical' ? 'red' : threat.severity === 'high' ? 'orange' : threat.severity === 'medium' ? 'yellow' : 'green',
+//                       fillOpacity: 0.5
+//                     }}
+//                     eventHandlers={{
+//                       click: () => {
+//                         setSelectedThreat(threat);
+//                       }
+//                     }}
+//                   >
+//                     <Popup>
+//                       {threat.type.replace('_', ' ').toUpperCase()}<br />
+//                       {threat.description}<br />
+//                       Severity: {threat.severity.toUpperCase()}
+//                     </Popup>
+//                   </Circle>
+//                 ))}
+//               </MapContainer>
+//             </div>
+//           </div>
+
+//           {/* Video Feeds */}
+//           <div className="bg-slate-800 rounded-lg p-4">
+//             <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+//               <Camera className="w-5 h-5" />
+//               <span>Live Video Feeds</span>
+//             </h2>
+//             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+//               {sensors.slice(0, 6).map((sensor) => (
+//                 <div key={sensor.id} className="bg-slate-700 rounded-lg p-3">
+//                   <div className="bg-black rounded aspect-video mb-2 flex items-center justify-center">
+//                     <div className="text-slate-400 text-center">
+//                       <Camera className="w-8 h-8 mx-auto mb-2" />
+//                       <div className="text-xs">Camera {sensor.id}</div>
+//                       <div className="text-xs">{sensor.name}</div>
+//                     </div>
+//                   </div>
+//                   <div className="flex justify-between items-center text-xs">
+//                     <span className={getStatusColor(sensor.status)}>{sensor.status}</span>
+//                     <span className="text-slate-400">Battery: {sensor.batteryLevel}%</span>
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Sidebar - Threat List */}
+//         <div className="w-80 bg-slate-800 border-l border-slate-700 p-4 overflow-y-auto">
+//           <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+//             <AlertTriangle className="w-5 h-5" />
+//             <span>Active Threats</span>
+//           </h2>
+
+//           <div className="space-y-3">
+//             {threats.map((threat) => (
+//               <div
+//                 key={threat.id}
+//                 className={`bg-slate-700 rounded-lg p-3 cursor-pointer transition-colors
+//                   ${selectedThreat?.id === threat.id ? 'ring-2 ring-blue-400' : ''}
+//                   hover:bg-slate-600`}
+//                 onClick={() => setSelectedThreat(threat)}
+//               >
+//                 <div className="flex items-center justify-between mb-2">
+//                   <span className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(threat.severity)}`}>
+//                     {threat.severity.toUpperCase()}
+//                   </span>
+//                   <div className="flex items-center space-x-1 text-xs text-slate-400">
+//                     <Clock className="w-3 h-3" />
+//                     <span>{new Date(threat.timestamp).toLocaleTimeString()}</span>
+//                   </div>
+//                 </div>
+
+//                 <h3 className="font-medium mb-1">{threat.type.replace('_', ' ').toUpperCase()}</h3>
+//                 <p className="text-sm text-slate-300 mb-2">{threat.description}</p>
+
+//                 <div className="flex items-center justify-between text-xs text-slate-400">
+//                   <span className="flex items-center space-x-1">
+//                     <MapPin className="w-3 h-3" />
+//                     <span>{threat.location.name}</span>
+//                   </span>
+//                   <span className="flex items-center space-x-1">
+//                     <Users className="w-3 h-3" />
+//                     <span>{threat.personnel}</span>
+//                   </span>
+//                 </div>
+
+//                 <div className="mt-2 flex space-x-2">
+//                   <button className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-500">
+//                     Deploy
+//                   </button>
+//                   <button className="px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500">
+//                     Investigate
+//                   </button>
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+
+//           {/* Sensor Status */}
+//           <div className="mt-6">
+//             <h3 className="text-md font-semibold mb-3 flex items-center space-x-2">
+//               <Zap className="w-4 h-4" />
+//               <span>Sensor Status</span>
+//             </h3>
+
+//             <div className="space-y-2">
+//               {sensors.map((sensor) => (
+//                 <div key={sensor.id} className="bg-slate-700 rounded p-2">
+//                   <div className="flex items-center justify-between mb-1">
+//                     <span className="text-sm font-medium">{sensor.name}</span>
+//                     <span className={`text-xs ${getStatusColor(sensor.status)}`}>
+//                       {sensor.status}
+//                     </span>
+//                   </div>
+//                   <div className="flex items-center justify-between text-xs text-slate-400">
+//                     <span>ID: {sensor.id}</span>
+//                     <span>Battery: {sensor.batteryLevel.toFixed(1)}%</span>
+//                   </div>
+//                   <div className="w-full bg-slate-600 rounded-full h-1 mt-1">
+//                     <div
+//                       className="bg-green-400 h-1 rounded-full"
+//                       style={{ width: `${sensor.batteryLevel}%` }}
+//                     />
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Threat Detail Modal */}
+//       {selectedThreat && (
+//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+//           <div className="bg-slate-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+//             <div className="flex items-center justify-between mb-4">
+//               <h2 className="text-xl font-bold">Threat Details</h2>
+//               <button
+//                 onClick={() => setSelectedThreat(null)}
+//                 className="text-slate-400 hover:text-white"
+//               >
+//                 ×
+//               </button>
+//             </div>
+
+//             <div className="space-y-4">
+//               <div className="grid grid-cols-2 gap-4">
+//                 <div>
+//                   <label className="text-sm text-slate-400">Threat ID</label>
+//                   <p className="font-medium">{selectedThreat.id}</p>
+//                 </div>
+//                 <div>
+//                   <label className="text-sm text-slate-400">Severity</label>
+//                   <span className={`inline-block px-2 py-1 rounded text-sm font-medium ${getSeverityColor(selectedThreat.severity)}`}>
+//                     {selectedThreat.severity.toUpperCase()}
+//                   </span>
+//                 </div>
+//               </div>
+
+//               <div>
+//                 <label className="text-sm text-slate-400">Description</label>
+//                 <p className="text-slate-200">{selectedThreat.description}</p>
+//               </div>
+
+//               <div className="grid grid-cols-2 gap-4">
+//                 <div>
+//                   <label className="text-sm text-slate-400">Location</label>
+//                   <p className="font-medium">{selectedThreat.location.name}</p>
+//                 </div>
+//                 <div>
+//                   <label className="text-sm text-slate-400">Personnel Deployed</label>
+//                   <p className="font-medium">{selectedThreat.personnel}</p>
+//                 </div>
+//               </div>
+
+//               <div>
+//                 <label className="text-sm text-slate-400">Timestamp</label>
+//                 <p className="font-medium">{selectedThreat.timestamp.toLocaleString()}</p>
+//               </div>
+
+//               <div className="flex space-x-3 mt-6">
+//                 <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500">
+//                   Deploy Emergency Response
+//                 </button>
+//                 <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">
+//                   Request Backup
+//                 </button>
+//                 <button className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500">
+//                   Mark Investigating
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default CommandCenter;
+
+// THE ORIGINAL CODE GIVEN TO ME BY CLAUDE AI
+// import { useState, useEffect, useRef } from 'react';
+// import {
+//   AlertTriangle,
+//   Shield,
+//   MapPin,
+//   Camera,
+//   Users,
+//   Clock,
+//   Volume2,
+//   VolumeX,
+//   Eye,
+//   Zap,
+//   Target,
+//   Bell,
+//   Activity
+// } from 'lucide-react';
+// import { Alert, AlertDescription } from '@/components/ui/alert';
+
+// interface Sensor {
+//   id: string;
+//   name: string;
+//   lat: number;
+//   lng: number;
+//   status: 'active' | 'inactive' | 'alert';
+//   lastUpdate: Date;
+//   batteryLevel: number;
+// }
+
+// interface Threat {
+//   id: string;
+//   sensorId: string;
+//   type: 'intrusion' | 'suspicious_activity' | 'armed_group' | 'vehicle_movement';
+//   severity: 'low' | 'medium' | 'high' | 'critical';
+//   location: { lat: number; lng: number; name: string };
+//   timestamp: Date;
+//   description: string;
+//   videoFeed?: string;
+//   personnel: number;
+//   status: 'active' | 'investigating' | 'resolved';
+// }
+
+// const CommandCenter = () => {
+//   const [sensors, setSensors] = useState<Sensor[]>([]);
+//   const [threats, setThreats] = useState<Threat[]>([]);
+//   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
+//   const [soundEnabled, setSoundEnabled] = useState(true);
+//   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('disconnected');
+//   const audioRef = useRef<HTMLAudioElement>(null);
+//   const wsRef = useRef<WebSocket | null>(null);
+
+//   // Mock data for demonstration
+//   useEffect(() => {
+//     const mockSensors: Sensor[] = [
+//       { id: 'S001', name: 'Makurdi Border North', lat: 7.7319, lng: 8.5211, status: 'active', lastUpdate: new Date(), batteryLevel: 85 },
+//       { id: 'S002', name: 'Gboko Checkpoint', lat: 7.3239, lng: 9.0043, status: 'alert', lastUpdate: new Date(), batteryLevel: 92 },
+//       { id: 'S003', name: 'Otukpo Border East', lat: 7.1905, lng: 8.1301, status: 'active', lastUpdate: new Date(), batteryLevel: 78 },
+//       { id: 'S004', name: 'Katsina-Ala West', lat: 7.1667, lng: 9.2833, status: 'inactive', lastUpdate: new Date(Date.now() - 300000), batteryLevel: 45 },
+//       { id: 'S005', name: 'Vandeikya South', lat: 6.7833, lng: 9.0667, status: 'active', lastUpdate: new Date(), batteryLevel: 95 },
+//     ];
+
+//     const mockThreats: Threat[] = [
+//       {
+//         id: 'T001',
+//         sensorId: 'S002',
+//         type: 'armed_group',
+//         severity: 'critical',
+//         location: { lat: 7.3239, lng: 9.0043, name: 'Gboko Checkpoint' },
+//         timestamp: new Date(Date.now() - 120000),
+//         description: 'Armed group of 8-10 individuals detected approaching checkpoint. Heavy weapons visible.',
+//         personnel: 10,
+//         status: 'active'
+//       },
+//       {
+//         id: 'T002',
+//         sensorId: 'S001',
+//         type: 'vehicle_movement',
+//         severity: 'medium',
+//         location: { lat: 7.7319, lng: 8.5211, name: 'Makurdi Border North' },
+//         timestamp: new Date(Date.now() - 300000),
+//         description: 'Convoy of 3 unmarked vehicles moving towards border crossing at unusual hour.',
+//         personnel: 5,
+//         status: 'investigating'
+//       },
+//       {
+//         id: 'T003',
+//         sensorId: 'S003',
+//         type: 'intrusion',
+//         severity: 'high',
+//         location: { lat: 7.1905, lng: 8.1301, name: 'Otukpo Border East' },
+//         timestamp: new Date(Date.now() - 600000),
+//         description: 'Unauthorized border crossing detected. Multiple individuals attempting to bypass checkpoint.',
+//         personnel: 6,
+//         status: 'active'
+//       }
+//     ];
+
+//     setSensors(mockSensors);
+//     setThreats(mockThreats);
+//   }, []);
+
+//   // WebSocket connection simulation
+//   useEffect(() => {
+//     const connectWebSocket = () => {
+//       setConnectionStatus('reconnecting');
+
+//       // Simulate WebSocket connection
+//       setTimeout(() => {
+//         setConnectionStatus('connected');
+
+//         // Simulate real-time updates
+//         const interval = setInterval(() => {
+//           const now = new Date();
+
+//           // Update sensor data
+//           setSensors(prev => prev.map(sensor => ({
+//             ...sensor,
+//             lastUpdate: now,
+//             batteryLevel: Math.max(20, sensor.batteryLevel - Math.random() * 0.5)
+//           })));
+
+//           // Occasionally add new threats
+//           if (Math.random() < 0.1) {
+//             const newThreat: Threat = {
+//               id: `T${Date.now()}`,
+//               sensorId: sensors[Math.floor(Math.random() * sensors.length)]?.id || 'S001',
+//               type: ['intrusion', 'suspicious_activity', 'armed_group', 'vehicle_movement'][Math.floor(Math.random() * 4)] as Threat['type'],
+//               severity: ['low', 'medium', 'high', 'critical'][Math.floor(Math.random() * 4)] as Threat["severity"],
+//               location: { lat: 7 + Math.random(), lng: 8 + Math.random(), name: 'New Location' },
+//               timestamp: now,
+//               description: 'New threat detected by automated surveillance system.',
+//               personnel: Math.floor(Math.random() * 15) + 1,
+//               status: 'active'
+//             };
+
+//             setThreats(prev => [newThreat, ...prev.slice(0, 9)]);
+
+//             // Play alert sound for critical threats
+//             if (newThreat.severity === 'critical' && soundEnabled && audioRef.current) {
+//               audioRef.current.play().catch(e => console.log('Audio play failed:', e));
+//             }
+//           }
+//         }, 5000);
+
+//         return () => clearInterval(interval);
+//       }, 1000);
+//     };
+
+//     connectWebSocket();
+//   }, [sensors, soundEnabled]);
+
+//   const getSeverityColor = (severity: string) => {
+//     switch (severity) {
+//       case 'critical': return 'bg-red-600 text-white';
+//       case 'high': return 'bg-red-500 text-white';
+//       case 'medium': return 'bg-yellow-500 text-white';
+//       case 'low': return 'bg-green-500 text-white';
+//       default: return 'bg-gray-500 text-white';
+//     }
+//   };
+
+//   const getStatusColor = (status: string) => {
+//     switch (status) {
+//       case 'active': return 'text-green-400';
+//       case 'inactive': return 'text-red-400';
+//       case 'alert': return 'text-orange-400';
+//       default: return 'text-gray-400';
+//     }
+//   };
+
+//   const activeCriticalThreats = threats.filter(t => t.severity === 'critical' && t.status === 'active');
+
+//   return (
+//     <div className="min-h-screen bg-slate-900 text-white">
+//       {/* Audio element for alerts */}
+//       <audio ref={audioRef} preload="auto">
+//         <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYdAkWRzO+8bSMELH7I79+STApSou7gylUfBhNztu/7uWsFLXjK7dyGOhgWSa/q2qBNCAhxue7/ol4GFWq37LiALgcVdMvq7rliFQZGoOs1t2QNCW+z6v5vKwgacaTt8LpgByl6yO1yMxYNUrHq87RsDBR4p+n5oVIGDW6y69x7NIYOUbLqzZA6BQ93s/Psp1MDBnSo5NqBOAYVaqTp67VhBSp8xs+GNwgSb7Ps6bVhBChxw++wYBoGIneqw/K8YhQFLXvK5dB7MgwPcqHq5q5WEQNZ0n7N50QdCk1pSKq9aUdBgT1nTh2JDQxhsjN7Y" type="audio/wav" />
+//       </audio>
+
+//       {/* Header */}
+//       <div className="bg-slate-800 border-b border-slate-700 px-6 py-4">
+//         <div className="flex items-center justify-between">
+//           <div className="flex items-center space-x-4">
+//             <Shield className="w-8 h-8 text-blue-400" />
+//             <div>
+//               <h1 className="text-2xl font-bold">Benue State Command Center</h1>
+//               <p className="text-slate-400">Border Security & Threat Monitoring</p>
+//             </div>
+//           </div>
+
+//           <div className="flex items-center space-x-4">
+//             <div className="flex items-center space-x-2">
+//               <div className={`w-3 h-3 rounded-full ${connectionStatus === 'connected' ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
+//               <span className="text-sm text-slate-400 capitalize">{connectionStatus}</span>
+//             </div>
+
+//             <button
+//               onClick={() => setSoundEnabled(!soundEnabled)}
+//               className={`p-2 rounded-lg ${soundEnabled ? 'bg-blue-600 text-white' : 'bg-slate-600 text-slate-300'}`}
+//             >
+//               {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+//             </button>
+
+//             <div className="text-right">
+//               <div className="text-sm font-medium">{new Date().toLocaleTimeString()}</div>
+//               <div className="text-xs text-slate-400">{new Date().toLocaleDateString()}</div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Critical Alert Banner */}
+//       {activeCriticalThreats.length > 0 && (
+//         <div className="bg-red-600 text-white px-6 py-3 animate-pulse">
+//           <div className="flex items-center space-x-2">
+//             <AlertTriangle className="w-5 h-5" />
+//             <span className="font-semibold">
+//               CRITICAL ALERT: {activeCriticalThreats.length} active critical threat{activeCriticalThreats.length > 1 ? 's' : ''} detected
+//             </span>
+//             <Bell className="w-5 h-5 animate-bounce" />
+//           </div>
+//         </div>
+//       )}
+
+//       <div className="flex flex-1">
+//         {/* Main Content */}
+//         <div className="flex-1 p-6">
+//           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+//             {/* Statistics Cards */}
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Active Sensors</p>
+//                   <p className="text-2xl font-bold text-green-400">
+//                     {sensors.filter(s => s.status === 'active').length}
+//                   </p>
+//                 </div>
+//                 <Activity className="w-8 h-8 text-green-400" />
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Active Threats</p>
+//                   <p className="text-2xl font-bold text-red-400">
+//                     {threats.filter(t => t.status === 'active').length}
+//                   </p>
+//                 </div>
+//                 <Target className="w-8 h-8 text-red-400" />
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Personnel Deployed</p>
+//                   <p className="text-2xl font-bold text-blue-400">
+//                     {threats.reduce((sum, t) => sum + t.personnel, 0)}
+//                   </p>
+//                 </div>
+//                 <Users className="w-8 h-8 text-blue-400" />
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Map Area */}
+//           <div className="bg-slate-800 rounded-lg p-4 mb-6">
+//             <div className="flex items-center justify-between mb-4">
+//               <h2 className="text-lg font-semibold flex items-center space-x-2">
+//                 <MapPin className="w-5 h-5" />
+//                 <span>Benue State Border Map</span>
+//               </h2>
+//               <div className="flex space-x-2">
+//                 <div className="flex items-center space-x-1 text-sm text-green-400">
+//                   <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+//                   <span>Active</span>
+//                 </div>
+//                 <div className="flex items-center space-x-1 text-sm text-red-400">
+//                   <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+//                   <span>Threats</span>
+//                 </div>
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-700 rounded-lg h-96 relative overflow-hidden">
+//               {/* Simulated Map */}
+//               <div className="absolute inset-0 bg-gradient-to-br from-slate-600 to-slate-800">
+//                 <div className="absolute inset-4">
+//                   {/* Sensor Points */}
+//                   {sensors.map((sensor, index) => (
+//                     <div
+//                       key={sensor.id}
+//                       className={`absolute w-4 h-4 rounded-full border-2 border-white animate-pulse cursor-pointer
+//                         ${sensor.status === 'active' ? 'bg-green-400' :
+//                           sensor.status === 'alert' ? 'bg-red-400' : 'bg-gray-400'}`}
+//                       style={{
+//                         left: `${20 + (index * 15)}%`,
+//                         top: `${30 + (index * 10)}%`
+//                       }}
+//                       title={sensor.name}
+//                     />
+//                   ))}
+
+//                   {/* Threat Indicators */}
+//                   {threats.filter(t => t.status === 'active').map((threat, index) => (
+//                     <div
+//                       key={threat.id}
+//                       className="absolute animate-ping cursor-pointer"
+//                       style={{
+//                         left: `${25 + (index * 20)}%`,
+//                         top: `${40 + (index * 15)}%`
+//                       }}
+//                       onClick={() => setSelectedThreat(threat)}
+//                     >
+//                       <AlertTriangle className={`w-6 h-6 ${
+//                         threat.severity === 'critical' ? 'text-red-500' :
+//                         threat.severity === 'high' ? 'text-orange-500' :
+//                         'text-yellow-500'
+//                       }`} />
+//                     </div>
+//                   ))}
+//                 </div>
+
+//                 {/* Map Labels */}
+//                 <div className="absolute top-4 left-4 text-xs text-slate-300">
+//                   <div>Benue State</div>
+//                   <div>Border Monitoring System</div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Video Feeds */}
+//           <div className="bg-slate-800 rounded-lg p-4">
+//             <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+//               <Camera className="w-5 h-5" />
+//               <span>Live Video Feeds</span>
+//             </h2>
+//             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+//               {sensors.slice(0, 6).map((sensor) => (
+//                 <div key={sensor.id} className="bg-slate-700 rounded-lg p-3">
+//                   <div className="bg-black rounded aspect-video mb-2 flex items-center justify-center">
+//                     <div className="text-slate-400 text-center">
+//                       <Camera className="w-8 h-8 mx-auto mb-2" />
+//                       <div className="text-xs">Camera {sensor.id}</div>
+//                       <div className="text-xs">{sensor.name}</div>
+//                     </div>
+//                   </div>
+//                   <div className="flex justify-between items-center text-xs">
+//                     <span className={getStatusColor(sensor.status)}>{sensor.status}</span>
+//                     <span className="text-slate-400">Battery: {sensor.batteryLevel}%</span>
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Sidebar - Threat List */}
+//         <div className="w-80 bg-slate-800 border-l border-slate-700 p-4 overflow-y-auto">
+//           <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+//             <AlertTriangle className="w-5 h-5" />
+//             <span>Active Threats</span>
+//           </h2>
+
+//           <div className="space-y-3">
+//             {threats.map((threat) => (
+//               <div
+//                 key={threat.id}
+//                 className={`bg-slate-700 rounded-lg p-3 cursor-pointer transition-colors
+//                   ${selectedThreat?.id === threat.id ? 'ring-2 ring-blue-400' : ''}
+//                   hover:bg-slate-600`}
+//                 onClick={() => setSelectedThreat(threat)}
+//               >
+//                 <div className="flex items-center justify-between mb-2">
+//                   <span className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(threat.severity)}`}>
+//                     {threat.severity.toUpperCase()}
+//                   </span>
+//                   <div className="flex items-center space-x-1 text-xs text-slate-400">
+//                     <Clock className="w-3 h-3" />
+//                     <span>{new Date(threat.timestamp).toLocaleTimeString()}</span>
+//                   </div>
+//                 </div>
+
+//                 <h3 className="font-medium mb-1">{threat.type.replace('_', ' ').toUpperCase()}</h3>
+//                 <p className="text-sm text-slate-300 mb-2">{threat.description}</p>
+
+//                 <div className="flex items-center justify-between text-xs text-slate-400">
+//                   <span className="flex items-center space-x-1">
+//                     <MapPin className="w-3 h-3" />
+//                     <span>{threat.location.name}</span>
+//                   </span>
+//                   <span className="flex items-center space-x-1">
+//                     <Users className="w-3 h-3" />
+//                     <span>{threat.personnel}</span>
+//                   </span>
+//                 </div>
+
+//                 <div className="mt-2 flex space-x-2">
+//                   <button className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-500">
+//                     Deploy
+//                   </button>
+//                   <button className="px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500">
+//                     Investigate
+//                   </button>
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+
+//           {/* Sensor Status */}
+//           <div className="mt-6">
+//             <h3 className="text-md font-semibold mb-3 flex items-center space-x-2">
+//               <Zap className="w-4 h-4" />
+//               <span>Sensor Status</span>
+//             </h3>
+
+//             <div className="space-y-2">
+//               {sensors.map((sensor) => (
+//                 <div key={sensor.id} className="bg-slate-700 rounded p-2">
+//                   <div className="flex items-center justify-between mb-1">
+//                     <span className="text-sm font-medium">{sensor.name}</span>
+//                     <span className={`text-xs ${getStatusColor(sensor.status)}`}>
+//                       {sensor.status}
+//                     </span>
+//                   </div>
+//                   <div className="flex items-center justify-between text-xs text-slate-400">
+//                     <span>ID: {sensor.id}</span>
+//                     <span>Battery: {sensor.batteryLevel.toFixed(1)}%</span>
+//                   </div>
+//                   <div className="w-full bg-slate-600 rounded-full h-1 mt-1">
+//                     <div
+//                       className="bg-green-400 h-1 rounded-full"
+//                       style={{ width: `${sensor.batteryLevel}%` }}
+//                     />
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Threat Detail Modal */}
+//       {selectedThreat && (
+//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+//           <div className="bg-slate-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+//             <div className="flex items-center justify-between mb-4">
+//               <h2 className="text-xl font-bold">Threat Details</h2>
+//               <button
+//                 onClick={() => setSelectedThreat(null)}
+//                 className="text-slate-400 hover:text-white"
+//               >
+//                 ×
+//               </button>
+//             </div>
+
+//             <div className="space-y-4">
+//               <div className="grid grid-cols-2 gap-4">
+//                 <div>
+//                   <label className="text-sm text-slate-400">Threat ID</label>
+//                   <p className="font-medium">{selectedThreat.id}</p>
+//                 </div>
+//                 <div>
+//                   <label className="text-sm text-slate-400">Severity</label>
+//                   <span className={`inline-block px-2 py-1 rounded text-sm font-medium ${getSeverityColor(selectedThreat.severity)}`}>
+//                     {selectedThreat.severity.toUpperCase()}
+//                   </span>
+//                 </div>
+//               </div>
+
+//               <div>
+//                 <label className="text-sm text-slate-400">Description</label>
+//                 <p className="text-slate-200">{selectedThreat.description}</p>
+//               </div>
+
+//               <div className="grid grid-cols-2 gap-4">
+//                 <div>
+//                   <label className="text-sm text-slate-400">Location</label>
+//                   <p className="font-medium">{selectedThreat.location.name}</p>
+//                 </div>
+//                 <div>
+//                   <label className="text-sm text-slate-400">Personnel Deployed</label>
+//                   <p className="font-medium">{selectedThreat.personnel}</p>
+//                 </div>
+//               </div>
+
+//               <div>
+//                 <label className="text-sm text-slate-400">Timestamp</label>
+//                 <p className="font-medium">{selectedThreat.timestamp.toLocaleString()}</p>
+//               </div>
+
+//               <div className="flex space-x-3 mt-6">
+//                 <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500">
+//                   Deploy Emergency Response
+//                 </button>
+//                 <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">
+//                   Request Backup
+//                 </button>
+//                 <button className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500">
+//                   Mark Investigating
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default CommandCenter;
+
+// COPILOT'S IMPROVED VERSION OF THE CODE
+// import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+// import {
+//   AlertTriangle,
+//   Shield,
+//   MapPin,
+//   Camera,
+//   Users,
+//   Clock,
+//   Volume2,
+//   VolumeX,
+//   Eye,
+//   Target,
+//   Bell,
+//   Activity,
+//   Navigation,
+//   Radio,
+//   Settings,
+//   X,
+// } from "lucide-react";
+// import { Alert, AlertDescription } from "@/components/ui/alert";
+// import benueBoundaryData from "@/data/benue1.geojson.json";
+
+// // Types
+// type SensorStatus = "active" | "inactive" | "alert" | "maintenance";
+// type ThreatSeverity = "low" | "medium" | "high" | "critical";
+// type ThreatType = "intrusion" | "suspicious_activity" | "armed_group" | "vehicle_movement" | "cyber_threat" | "equipment_tampering";
+// type ThreatStatus = "active" | "investigating" | "resolved" | "escalated";
+// type ConnectionStatus = "connected" | "disconnected" | "reconnecting";
+// type MovementDirection = "inbound" | "outbound" | "lateral" | "stationary";
+
+// interface Coordinates {
+//   lat: number;
+//   lng: number;
+// }
+
+// interface LocationInfo extends Coordinates {
+//   name: string;
+// }
+
+// interface Sensor {
+//   id: string;
+//   name: string;
+//   coordinates: Coordinates;
+//   status: SensorStatus;
+//   lastUpdate: Date;
+//   batteryLevel: number;
+//   signalStrength: number;
+//   sensorType: "motion" | "thermal" | "acoustic" | "camera" | "seismic";
+// }
+
+// interface ThreatMovement {
+//   currentPosition: Coordinates;
+//   previousPosition: Coordinates;
+//   direction: MovementDirection;
+//   speed: number;
+//   trajectory: Coordinates[];
+//   lastUpdate: Date;
+// }
+
+// interface Threat {
+//   id: string;
+//   sensorId: string;
+//   type: ThreatType;
+//   severity: ThreatSeverity;
+//   location: LocationInfo;
+//   timestamp: Date;
+//   description: string;
+//   personnel: number;
+//   status: ThreatStatus;
+//   movement: ThreatMovement;
+//   estimatedSize: number;
+//   confidence: number;
+// }
+
+// interface Notification {
+//   id: string;
+//   threat: Threat;
+//   timestamp: Date;
+//   dismissed: boolean;
+// }
+
+// // Constants
+// const THREAT_TYPES: Record<ThreatType, { label: string; icon: string }> = {
+//   intrusion: { label: "Border Intrusion", icon: "👥" },
+//   suspicious_activity: { label: "Suspicious Activity", icon: "👁️" },
+//   armed_group: { label: "Armed Group", icon: "⚔️" },
+//   vehicle_movement: { label: "Vehicle Movement", icon: "🚗" },
+//   cyber_threat: { label: "Cyber Threat", icon: "💻" },
+//   equipment_tampering: { label: "Equipment Tampering", icon: "🔧" },
+// };
+
+// const SEVERITY_CONFIG: Record<ThreatSeverity, { color: string; bgColor: string; priority: number }> = {
+//   low: { color: "text-green-400", bgColor: "bg-green-500", priority: 1 },
+//   medium: { color: "text-yellow-400", bgColor: "bg-yellow-500", priority: 2 },
+//   high: { color: "text-orange-400", bgColor: "bg-orange-500", priority: 3 },
+//   critical: { color: "text-red-400", bgColor: "bg-red-500", priority: 4 },
+// };
+
+// // Utility functions
+// const isPointInPolygon = (point: Coordinates, polygon: number[][]): boolean => {
+//   const { lat, lng } = point;
+//   let inside = false;
+
+//   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+//     const [xi, yi] = polygon[i];
+//     const [xj, yj] = polygon[j];
+
+//     if (((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)) {
+//       inside = !inside;
+//     }
+//   }
+
+//   return inside;
+// };
+
+// const calculateDistance = (point1: Coordinates, point2: Coordinates): number => {
+//   const R = 6371;
+//   const dLat = (point2.lat - point1.lat) * Math.PI / 180;
+//   const dLng = (point2.lng - point1.lng) * Math.PI / 180;
+//   const a =
+//     Math.sin(dLat/2) * Math.sin(dLat/2) +
+//     Math.cos(point1.lat * Math.PI / 180) * Math.cos(point2.lat * Math.PI / 180) *
+//     Math.sin(dLng/2) * Math.sin(dLng/2);
+//   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+//   return R * c;
+// };
+
+// const calculateBearing = (start: Coordinates, end: Coordinates): number => {
+//   const dLng = (end.lng - start.lng) * Math.PI / 180;
+//   const lat1 = start.lat * Math.PI / 180;
+//   const lat2 = end.lat * Math.PI / 180;
+
+//   const y = Math.sin(dLng) * Math.cos(lat2);
+//   const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+
+//   return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+// };
+
+// const generateRandomPoint = (bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number }): Coordinates => ({
+//   lat: bounds.minLat + Math.random() * (bounds.maxLat - bounds.minLat),
+//   lng: bounds.minLng + Math.random() * (bounds.maxLng - bounds.minLng),
+// });
+
+// const movePointTowardTarget = (
+//   current: Coordinates,
+//   target: Coordinates,
+//   speedKmH: number,
+//   intervalMs: number
+// ): Coordinates => {
+//   const distance = calculateDistance(current, target);
+//   const bearing = calculateBearing(current, target);
+
+//   const movementKm = (speedKmH * intervalMs) / (1000 * 60 * 60);
+
+//   if (distance <= movementKm) {
+//     return target;
+//   }
+
+//   const bearingRad = bearing * Math.PI / 180;
+//   const R = 6371;
+
+//   const lat1 = current.lat * Math.PI / 180;
+//   const lng1 = current.lng * Math.PI / 180;
+
+//   const lat2 = Math.asin(
+//     Math.sin(lat1) * Math.cos(movementKm / R) +
+//     Math.cos(lat1) * Math.sin(movementKm / R) * Math.cos(bearingRad)
+//   );
+
+//   const lng2 = lng1 + Math.atan2(
+//     Math.sin(bearingRad) * Math.sin(movementKm / R) * Math.cos(lat1),
+//     Math.cos(movementKm / R) - Math.sin(lat1) * Math.sin(lat2)
+//   );
+
+//   return {
+//     lat: lat2 * 180 / Math.PI,
+//     lng: lng2 * 180 / Math.PI,
+//   };
+// };
+
+// // Notification Component
+// const ThreatNotification: React.FC<{
+//   notification: Notification;
+//   onDismiss: (id: string) => void;
+// }> = React.memo(({ notification, onDismiss }) => {
+//   const { threat } = notification;
+
+//   useEffect(() => {
+//     const timer = setTimeout(() => {
+//       onDismiss(notification.id);
+//     }, 8000);
+
+//     return () => clearTimeout(timer);
+//   }, [notification.id, onDismiss]);
+
+//   return (
+//     <div className={`fixed top-20 right-4 z-50 w-96 ${
+//       threat.severity === 'critical' ? 'bg-red-900 border-red-500' : 'bg-orange-900 border-orange-500'
+//     } border-2 rounded-lg p-4 shadow-2xl animate-slide-in-right`}>
+//       <div className="flex items-start justify-between">
+//         <div className="flex-1">
+//           <div className="flex items-center space-x-2 mb-2">
+//             <AlertTriangle className="w-5 h-5 text-white animate-pulse" />
+//             <span className="font-bold text-white text-sm">
+//               {threat.severity.toUpperCase()} THREAT DETECTED
+//             </span>
+//           </div>
+
+//           <div className="text-white text-sm space-y-1">
+//             <div className="flex items-center space-x-1">
+//               <span className="text-xs">{THREAT_TYPES[threat.type].icon}</span>
+//               <span className="font-medium">{THREAT_TYPES[threat.type].label}</span>
+//             </div>
+//             <div className="text-xs text-gray-200">
+//               Location: {threat.location.name}
+//             </div>
+//             <div className="text-xs text-gray-200">
+//               Personnel: {threat.personnel} | Confidence: {threat.confidence}%
+//             </div>
+//             <div className="text-xs text-gray-200">
+//               {threat.timestamp.toLocaleTimeString()}
+//             </div>
+//           </div>
+//         </div>
+
+//         <button
+//           onClick={() => onDismiss(notification.id)}
+//           className="text-white hover:text-gray-300 ml-2"
+//         >
+//           <X className="w-4 h-4" />
+//         </button>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // Simulated Video Feed Component
+// const SimulatedVideoFeed: React.FC<{ sensorType: string; isActive: boolean }> = React.memo(({ sensorType, isActive }) => {
+//   const canvasRef = useRef<HTMLCanvasElement>(null);
+//   const animationFrameRef = useRef<number>(0);
+
+//   const animate = useCallback(() => {
+//     const canvas = canvasRef.current;
+//     if (!canvas || !isActive) return;
+
+//     const ctx = canvas.getContext('2d');
+//     if (!ctx) return;
+
+//     ctx.fillStyle = '#000';
+//     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+//     const time = Date.now() * 0.001;
+
+//     switch (sensorType) {
+//       case 'thermal': {
+//         const gradient = ctx.createRadialGradient(
+//           canvas.width/2 + Math.sin(time) * 20,
+//           canvas.height/2 + Math.cos(time) * 20,
+//           0,
+//           canvas.width/2,
+//           canvas.height/2,
+//           80
+//         );
+//         gradient.addColorStop(0, '#ff6b35');
+//         gradient.addColorStop(0.5, '#f7931e');
+//         gradient.addColorStop(1, '#000');
+//         ctx.fillStyle = gradient;
+//         ctx.fillRect(0, 0, canvas.width, canvas.height);
+//         break;
+//       }
+
+//       case 'motion':
+//         ctx.strokeStyle = '#00ff00';
+//         ctx.lineWidth = 1;
+//         for (let i = 0; i < 8; i++) {
+//           for (let j = 0; j < 6; j++) {
+//             const x = (canvas.width / 8) * i;
+//             const y = (canvas.height / 6) * j;
+//             const intensity = Math.sin(time + i + j) * 0.5 + 0.5;
+//             ctx.globalAlpha = intensity;
+//             ctx.strokeRect(x, y, canvas.width / 8, canvas.height / 6);
+//           }
+//         }
+//         ctx.globalAlpha = 1;
+//         break;
+
+//       case 'camera': {
+//         ctx.strokeStyle = '#00ff00';
+//         ctx.lineWidth = 2;
+//         ctx.beginPath();
+//         ctx.moveTo(canvas.width/2, 0);
+//         ctx.lineTo(canvas.width/2, canvas.height);
+//         ctx.moveTo(0, canvas.height/2);
+//         ctx.lineTo(canvas.width, canvas.height/2);
+//         ctx.stroke();
+
+//         const objX = (Math.sin(time * 0.5) * 0.3 + 0.5) * canvas.width;
+//         const objY = (Math.cos(time * 0.3) * 0.3 + 0.5) * canvas.height;
+//         ctx.fillStyle = '#ff0000';
+//         ctx.fillRect(objX - 5, objY - 5, 10, 10);
+//         break;
+//       }
+
+//       case 'acoustic':
+//         ctx.strokeStyle = '#00ffff';
+//         ctx.lineWidth = 2;
+//         ctx.beginPath();
+//         for (let x = 0; x < canvas.width; x++) {
+//           const y = canvas.height/2 + Math.sin((x + time * 100) * 0.1) * 30 * Math.sin(time * 2);
+//           if (x === 0) ctx.moveTo(x, y);
+//           else ctx.lineTo(x, y);
+//         }
+//         ctx.stroke();
+//         break;
+
+//       case 'seismic':
+//         ctx.strokeStyle = '#ffff00';
+//         ctx.lineWidth = 1;
+//         for (let i = 0; i < 5; i++) {
+//           ctx.beginPath();
+//           for (let x = 0; x < canvas.width; x++) {
+//             const frequency = 0.02 + i * 0.01;
+//             const amplitude = 10 + Math.sin(time) * 5;
+//             const y = canvas.height/2 + i * 20 + Math.sin((x + time * 50) * frequency) * amplitude;
+//             if (x === 0) ctx.moveTo(x, y);
+//             else ctx.lineTo(x, y);
+//           }
+//           ctx.stroke();
+//         }
+//         break;
+//     }
+
+//     animationFrameRef.current = requestAnimationFrame(animate);
+//   }, [sensorType, isActive]);
+
+//   useEffect(() => {
+//     if (isActive) {
+//       animationFrameRef.current = requestAnimationFrame(animate);
+//     }
+//     return () => {
+//       if (animationFrameRef.current) {
+//         cancelAnimationFrame(animationFrameRef.current);
+//       }
+//     };
+//   }, [animate, isActive]);
+
+//   return (
+//     <canvas
+//       ref={canvasRef}
+//       width={300}
+//       height={200}
+//       className="w-full h-full object-cover rounded"
+//       style={{ backgroundColor: '#000' }}
+//     />
+//   );
+// });
+
+// // Interactive Map Component
+// const InteractiveMap: React.FC<{
+//   sensors: Sensor[];
+//   threats: Threat[];
+//   onThreatClick: (threat: Threat) => void;
+//   isSimulationRunning: boolean;
+// }> = React.memo(({ sensors, threats, onThreatClick, isSimulationRunning }) => {
+//   const svgRef = useRef<SVGSVGElement>(null);
+
+//   const toSVGCoords = useCallback((coords: Coordinates) => {
+//     const bounds = { minLat: 6.4, maxLat: 8.1, minLng: 7.8, maxLng: 9.7 };
+//     const x = ((coords.lng - bounds.minLng) / (bounds.maxLng - bounds.minLng)) * 800;
+//     const y = ((bounds.maxLat - coords.lat) / (bounds.maxLat - bounds.minLat)) * 600;
+//     return { x, y };
+//   }, []);
+
+//   const boundaryPath = useMemo(() => {
+//     if (!benueBoundaryData.features[0]?.geometry?.coordinates) return "";
+
+//     const coords = benueBoundaryData.features[0].geometry.coordinates[0];
+//     const svgCoords = coords.map(coord => toSVGCoords({ lng: coord[0], lat: coord[1] }));
+
+//     return `M ${svgCoords.map(c => `${c.x},${c.y}`).join(' L ')} Z`;
+//   }, [toSVGCoords]);
+
+//   return (
+//     <div className="w-full h-96 bg-slate-900 rounded-lg overflow-hidden relative border border-slate-600">
+//       <svg
+//         ref={svgRef}
+//         width="100%"
+//         height="100%"
+//         viewBox="0 0 800 600"
+//         className="absolute inset-0"
+//       >
+//         <rect width="800" height="600" fill="#0f172a" />
+
+//         <path
+//           d={boundaryPath}
+//           fill="none"
+//           stroke="#3b82f6"
+//           strokeWidth="2"
+//           strokeDasharray="5,5"
+//           opacity="0.7"
+//         />
+
+//         <defs>
+//           <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+//             <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#334155" strokeWidth="0.5" opacity="0.3"/>
+//           </pattern>
+//         </defs>
+//         <rect width="800" height="600" fill="url(#grid)" />
+
+//         {threats.map(threat => {
+//           const trajectory = threat.movement.trajectory;
+//           if (trajectory.length < 2) return null;
+
+//           const pathData = trajectory
+//             .map(coord => toSVGCoords(coord))
+//             .map((coord, i) => `${i === 0 ? 'M' : 'L'} ${coord.x},${coord.y}`)
+//             .join(' ');
+
+//           return (
+//             <path
+//               key={`trail-${threat.id}`}
+//               d={pathData}
+//               fill="none"
+//               stroke="#9333ea"
+//               strokeWidth="1"
+//               strokeDasharray="2,2"
+//               opacity="0.6"
+//             />
+//           );
+//         })}
+
+//         {sensors.map(sensor => {
+//           const coords = toSVGCoords(sensor.coordinates);
+//           const color = sensor.status === 'active' ? '#10b981' :
+//                        sensor.status === 'alert' ? '#f59e0b' : '#ef4444';
+
+//           return (
+//             <g key={sensor.id}>
+//               <circle
+//                 cx={coords.x}
+//                 cy={coords.y}
+//                 r="30"
+//                 fill={color}
+//                 opacity="0.1"
+//                 stroke={color}
+//                 strokeWidth="1"
+//                 strokeDasharray="2,2"
+//               />
+
+//               <rect
+//                 x={coords.x - 6}
+//                 y={coords.y - 6}
+//                 width="12"
+//                 height="12"
+//                 fill={color}
+//                 stroke="#fff"
+//                 strokeWidth="1"
+//                 className={sensor.status === 'alert' ? 'animate-pulse' : ''}
+//               />
+
+//               <text
+//                 x={coords.x}
+//                 y={coords.y - 10}
+//                 textAnchor="middle"
+//                 fontSize="10"
+//                 fill="#e2e8f0"
+//                 className="pointer-events-none"
+//               >
+//                 {sensor.id}
+//               </text>
+//             </g>
+//           );
+//         })}
+
+//         {threats.filter(t => t.status === 'active').map(threat => {
+//           const coords = toSVGCoords(threat.movement.currentPosition);
+//           const color = threat.severity === 'critical' ? '#ef4444' :
+//                        threat.severity === 'high' ? '#f97316' :
+//                        threat.severity === 'medium' ? '#eab308' : '#10b981';
+
+//           return (
+//             <g key={threat.id} className="cursor-pointer" onClick={() => onThreatClick(threat)}>
+//               <circle
+//                 cx={coords.x}
+//                 cy={coords.y}
+//                 r="20"
+//                 fill={color}
+//                 opacity="0.2"
+//                 className={threat.severity === 'critical' ? 'animate-pulse' : ''}
+//               />
+
+//               <circle
+//                 cx={coords.x}
+//                 cy={coords.y}
+//                 r="6"
+//                 fill={color}
+//                 stroke="#fff"
+//                 strokeWidth="2"
+//                 className={threat.severity === 'critical' ? 'animate-ping' : ''}
+//               />
+
+//               {threat.movement.direction !== 'stationary' && (
+//                 <path
+//                   d={`M ${coords.x} ${coords.y - 10} L ${coords.x + 5} ${coords.y - 15} L ${coords.x - 5} ${coords.y - 15} Z`}
+//                   fill={color}
+//                   transform={`rotate(${
+//                     threat.movement.direction === 'inbound' ? 180 :
+//                     threat.movement.direction === 'outbound' ? 0 :
+//                     threat.movement.direction === 'lateral' ? 90 : 0
+//                   } ${coords.x} ${coords.y})`}
+//                 />
+//               )}
+
+//               <title>
+//                 {THREAT_TYPES[threat.type].label} - {threat.severity.toUpperCase()}
+//                 {'\n'}Speed: {threat.movement.speed.toFixed(1)} km/h
+//                 {'\n'}Personnel: {threat.personnel}
+//                 {'\n'}Confidence: {threat.confidence}%
+//               </title>
+//             </g>
+//           );
+//         })}
+
+//         <g transform="translate(20, 20)">
+//           <rect width="180" height="120" fill="#1e293b" stroke="#475569" strokeWidth="1" rx="4" />
+//           <text x="10" y="20" fontSize="12" fill="#3b82f6" fontWeight="bold">Benue State Border</text>
+
+//           <circle cx="20" cy="40" r="4" fill="#10b981" />
+//           <text x="35" y="45" fontSize="10" fill="#e2e8f0">Active Sensors</text>
+
+//           <circle cx="20" cy="60" r="4" fill="#ef4444" />
+//           <text x="35" y="65" fontSize="10" fill="#e2e8f0">Critical Threats</text>
+
+//           <circle cx="20" cy="80" r="4" fill="#f97316" />
+//           <text x="35" y="85" fontSize="10" fill="#e2e8f0">High Threats</text>
+
+//           <path d="M 20 100 L 30 95 L 30 105 Z" fill="#9333ea" />
+//           <text x="35" y="105" fontSize="10" fill="#e2e8f0">Movement Trail</text>
+//         </g>
+
+//         <g transform="translate(650, 20)">
+//           <rect width="130" height="40" fill="#1e293b" stroke="#475569" strokeWidth="1" rx="4" />
+//           <circle
+//             cx="20"
+//             cy="25"
+//             r="4"
+//             fill={isSimulationRunning ? "#10b981" : "#ef4444"}
+//             className={isSimulationRunning ? "animate-pulse" : ""}
+//           />
+//           <text x="35" y="30" fontSize="10" fill="#e2e8f0">
+//             {isSimulationRunning ? 'Live Simulation' : 'Simulation Paused'}
+//           </text>
+//         </g>
+//       </svg>
+//     </div>
+//   );
+// });
+
+// // Main Component
+// const EnhancedBorderSurveillance: React.FC = () => {
+//   const [sensors, setSensors] = useState<Sensor[]>([]);
+//   const [threats, setThreats] = useState<Threat[]>([]);
+//   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
+//   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+//   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("disconnected");
+//   const [isSimulationRunning, setIsSimulationRunning] = useState<boolean>(true);
+//   const [notifications, setNotifications] = useState<Notification[]>([]);
+
+//   const audioRef = useRef<HTMLAudioElement>(null);
+//   const alarmAudioRef = useRef<HTMLAudioElement>(null);
+//   const simulationIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+//   const boundaryCoords = useMemo(() => {
+//     const geometry = benueBoundaryData.features[0].geometry;
+//     return geometry.type === "Polygon" ? geometry.coordinates[0] : [];
+//   }, []);
+
+//   const bounds = useMemo(() => ({
+//     minLat: 6.4,
+//     maxLat: 8.1,
+//     minLng: 7.8,
+//     maxLng: 9.7,
+//   }), []);
+
+//   const visibleThreats = useMemo(() =>
+//     threats
+//       .sort((a, b) => SEVERITY_CONFIG[b.severity].priority - SEVERITY_CONFIG[a.severity].priority)
+//       .slice(0, 50),
+//     [threats]
+//   );
+
+//   const statistics = useMemo(() => {
+//     const activeCriticalThreats = threats.filter(t => t.severity === "critical" && t.status === "active");
+//     const activeThreats = threats.filter(t => t.status === "active");
+//     const activeSensors = sensors.filter(s => s.status === "active");
+//     const totalPersonnel = threats.reduce((sum, t) => sum + t.personnel, 0);
+
+//     return {
+//       activeCriticalThreats,
+//       activeThreats,
+//       activeSensors,
+//       totalPersonnel
+//     };
+//   }, [threats, sensors]);
+
+//   useEffect(() => {
+//     const initialSensors: Sensor[] = [
+//       {
+//         id: "S001",
+//         name: "Makurdi Border North",
+//         coordinates: { lat: 7.7319, lng: 8.5211 },
+//         status: "active",
+//         lastUpdate: new Date(),
+//         batteryLevel: 85,
+//         signalStrength: 92,
+//         sensorType: "thermal",
+//       },
+//       {
+//         id: "S002",
+//         name: "Gboko Checkpoint",
+//         coordinates: { lat: 7.3239, lng: 9.0043 },
+//         status: "alert",
+//         lastUpdate: new Date(),
+//         batteryLevel: 92,
+//         signalStrength: 88,
+//         sensorType: "camera",
+//       },
+//       {
+//         id: "S003",
+//         name: "Otukpo Border East",
+//         coordinates: { lat: 7.1905, lng: 8.1301 },
+//         status: "active",
+//         lastUpdate: new Date(),
+//         batteryLevel: 78,
+//         signalStrength: 85,
+//         sensorType: "motion",
+//       },
+//       {
+//         id: "S004",
+//         name: "Katsina-Ala West",
+//         coordinates: { lat: 7.1667, lng: 9.2833 },
+//         status: "inactive",
+//         lastUpdate: new Date(Date.now() - 300000),
+//         batteryLevel: 45,
+//         signalStrength: 0,
+//         sensorType: "acoustic",
+//       },
+//       {
+//         id: "S005",
+//         name: "Vandeikya South",
+//         coordinates: { lat: 6.7833, lng: 9.0667 },
+//         status: "active",
+//         lastUpdate: new Date(),
+//         batteryLevel: 95,
+//         signalStrength: 95,
+//         sensorType: "seismic",
+//       },
+//     ];
+
+//     setSensors(initialSensors);
+//   }, []);
+
+//   useEffect(() => {
+//     if (sensors.length === 0) return;
+
+//     const initialThreats: Threat[] = [
+//       {
+//         id: "T001",
+//         sensorId: "S002",
+//         type: "armed_group",
+//         severity: "critical",
+//         location: {
+//           lat: 7.2,
+//           lng: 8.8,
+//           name: "Border Perimeter North",
+//         },
+//         timestamp: new Date(Date.now() - 120000),
+//         description: "Armed group of 8-10 individuals detected approaching checkpoint. Heavy weapons visible.",
+//         personnel: 10,
+//         status: "active",
+//         movement: {
+//           currentPosition: { lat: 7.2, lng: 8.8 },
+//           previousPosition: { lat: 7.15, lng: 8.75 },
+//           direction: "inbound",
+//           speed: 3.5,
+//           trajectory: [
+//             { lat: 7.1, lng: 8.7 },
+//             { lat: 7.15, lng: 8.75 },
+//             { lat: 7.2, lng: 8.8 },
+//           ],
+//           lastUpdate: new Date(),
+//         },
+//         estimatedSize: 10,
+//         confidence: 95,
+//       },
+//       {
+//         id: "T002",
+//         sensorId: "S001",
+//         type: "vehicle_movement",
+//         severity: "medium",
+//         location: {
+//           lat: 7.8,
+//           lng: 8.2,
+//           name: "Border Perimeter West",
+//         },
+//         timestamp: new Date(Date.now() - 300000),
+//         description: "Convoy of 3 unmarked vehicles moving towards border crossing at unusual hour.",
+//         personnel: 6,
+//         status: "investigating",
+//         movement: {
+//           currentPosition: { lat: 7.8, lng: 8.2 },
+//           previousPosition: { lat: 7.85, lng: 8.15 },
+//           direction: "outbound",
+//           speed: 45,
+//           trajectory: [
+//             { lat: 7.9, lng: 8.1 },
+//             { lat: 7.85, lng: 8.15 },
+//             { lat: 7.8, lng: 8.2 },
+//           ],
+//           lastUpdate: new Date(),
+//         },
+//         estimatedSize: 6,
+//         confidence: 82,
+//       },
+//     ];
+
+//     setThreats(initialThreats);
+//   }, [sensors]);
+
+//   const updateThreatMovement = useCallback(() => {
+//     setThreats(prevThreats =>
+//       prevThreats.map(threat => {
+//         if (threat.status !== "active") return threat;
+
+//         const currentPos = threat.movement.currentPosition;
+//         const isInside = isPointInPolygon(currentPos, boundaryCoords);
+
+//         let newTarget: Coordinates;
+//         let newDirection: MovementDirection;
+//         let newSpeed = threat.movement.speed;
+
+//         switch (threat.type) {
+//           case "armed_group":
+//             if (isInside) {
+//               newTarget = Math.random() > 0.7
+//                 ? generateRandomPoint(bounds)
+//                 : generateRandomPoint({
+//                     minLat: bounds.minLat - 0.2,
+//                     maxLat: bounds.maxLat + 0.2,
+//                     minLng: bounds.minLng - 0.2,
+//                     maxLng: bounds.maxLng + 0.2,
+//                   });
+//               newDirection = "outbound";
+//               newSpeed = 2 + Math.random() * 3;
+//             } else {
+//               newTarget = Math.random() > 0.5
+//                 ? generateRandomPoint(bounds)
+//                 : generateRandomPoint({
+//                     minLat: bounds.minLat - 0.1,
+//                     maxLat: bounds.maxLat + 0.1,
+//                     minLng: bounds.minLng - 0.1,
+//                     maxLng: bounds.maxLng + 0.1,
+//                   });
+//               newDirection = "inbound";
+//               newSpeed = 1.5 + Math.random() * 2.5;
+//             }
+//             break;
+
+//           case "vehicle_movement":
+//             if (isInside) {
+//               newTarget = generateRandomPoint({
+//                 minLat: bounds.minLat - 0.3,
+//                 maxLat: bounds.maxLat + 0.3,
+//                 minLng: bounds.minLng - 0.3,
+//                 maxLng: bounds.maxLng + 0.3,
+//               });
+//               newDirection = "outbound";
+//             } else {
+//               newTarget = Math.random() > 0.6
+//                 ? generateRandomPoint(bounds)
+//                 : generateRandomPoint({
+//                     minLat: bounds.minLat - 0.2,
+//                     maxLat: bounds.maxLat + 0.2,
+//                     minLng: bounds.minLng - 0.2,
+//                     maxLng: bounds.maxLng + 0.2,
+//                   });
+//               newDirection = "inbound";
+//             }
+//             newSpeed = 25 + Math.random() * 35;
+//             break;
+
+//           default:
+//             newTarget = generateRandomPoint({
+//               minLat: bounds.minLat - 0.1,
+//               maxLat: bounds.maxLat + 0.1,
+//               minLng: bounds.minLng - 0.1,
+//               maxLng: bounds.maxLng + 0.1,
+//             });
+//             newDirection = isInside ? "outbound" : "inbound";
+//             newSpeed = 1 + Math.random() * 4;
+//         }
+
+//         const newPosition = movePointTowardTarget(currentPos, newTarget, newSpeed, 3000);
+
+//         return {
+//           ...threat,
+//           movement: {
+//             currentPosition: newPosition,
+//             previousPosition: currentPos,
+//             direction: newDirection,
+//             speed: newSpeed,
+//             trajectory: [
+//               ...threat.movement.trajectory.slice(-9),
+//               newPosition,
+//             ],
+//             lastUpdate: new Date(),
+//           },
+//           location: {
+//             ...threat.location,
+//             lat: newPosition.lat,
+//             lng: newPosition.lng,
+//           },
+//         };
+//       })
+//     );
+//   }, [boundaryCoords, bounds]);
+
+//   const generateNewThreat = useCallback((): Threat | null => {
+//     if (sensors.length === 0) return null;
+
+//     const threatTypes: ThreatType[] = ["intrusion", "suspicious_activity", "vehicle_movement", "armed_group"];
+//     const severities: ThreatSeverity[] = ["low", "medium", "high", "critical"];
+//     const randomSensor = sensors[Math.floor(Math.random() * sensors.length)];
+
+//     const startPosition = Math.random() > 0.5
+//       ? generateRandomPoint(bounds)
+//       : generateRandomPoint({
+//           minLat: bounds.minLat - 0.2,
+//           maxLat: bounds.maxLat + 0.2,
+//           minLng: bounds.minLng - 0.2,
+//           maxLng: bounds.maxLng + 0.2,
+//         });
+
+//     const threat: Threat = {
+//       id: `T${Date.now()}`,
+//       sensorId: randomSensor.id,
+//       type: threatTypes[Math.floor(Math.random() * threatTypes.length)],
+//       severity: severities[Math.floor(Math.random() * severities.length)],
+//       location: {
+//         lat: startPosition.lat,
+//         lng: startPosition.lng,
+//         name: "Auto-detected Threat",
+//       },
+//       timestamp: new Date(),
+//       description: "Automated threat detection by surveillance system.",
+//       personnel: Math.floor(Math.random() * 12) + 1,
+//       status: "active",
+//       movement: {
+//         currentPosition: startPosition,
+//         previousPosition: startPosition,
+//         direction: "stationary",
+//         speed: 0,
+//         trajectory: [startPosition],
+//         lastUpdate: new Date(),
+//       },
+//       estimatedSize: Math.floor(Math.random() * 15) + 1,
+//       confidence: Math.floor(Math.random() * 40) + 60,
+//     };
+
+//     if ((threat.severity === "critical" || threat.severity === "high") && soundEnabled) {
+//       const notification: Notification = {
+//         id: `N${Date.now()}`,
+//         threat,
+//         timestamp: new Date(),
+//         dismissed: false,
+//       };
+
+//       setNotifications(prev => [notification, ...prev.slice(0, 4)]);
+
+//       if (alarmAudioRef.current) {
+//         alarmAudioRef.current.play().catch(console.error);
+//       }
+//     }
+
+//     return threat;
+//   }, [sensors, bounds, soundEnabled]);
+
+//   const dismissNotification = useCallback((id: string) => {
+//     setNotifications(prev => prev.filter(n => n.id !== id));
+//   }, []);
+
+//   useEffect(() => {
+//     if (!isSimulationRunning) return;
+
+//     setConnectionStatus("connected");
+
+//     simulationIntervalRef.current = setInterval(() => {
+//       setSensors(prev =>
+//         prev.map(sensor => ({
+//           ...sensor,
+//           lastUpdate: new Date(),
+//           batteryLevel: Math.max(20, sensor.batteryLevel - Math.random() * 0.1),
+//           signalStrength: Math.max(0, Math.min(100, sensor.signalStrength + (Math.random() - 0.5) * 5)),
+//         }))
+//       );
+
+//       updateThreatMovement();
+
+//       if (Math.random() < 0.03) {
+//         const newThreat = generateNewThreat();
+//         if (newThreat) {
+//           setThreats(prev => [newThreat, ...prev.slice(0, 29)]);
+//         }
+//       }
+
+//       setThreats(prev =>
+//         prev.filter(threat =>
+//           threat.status !== "resolved" ||
+//           Date.now() - threat.timestamp.getTime() < 300000
+//         )
+//       );
+//     }, 3000);
+
+//     return () => {
+//       if (simulationIntervalRef.current) {
+//         clearInterval(simulationIntervalRef.current);
+//       }
+//     };
+//   }, [isSimulationRunning, updateThreatMovement, generateNewThreat]);
+
+//   const getSeverityColor = (severity: ThreatSeverity): string => {
+//     return `${SEVERITY_CONFIG[severity].bgColor} text-white`;
+//   };
+
+//   const getStatusColor = (status: SensorStatus): string => {
+//     const colorMap: Record<SensorStatus, string> = {
+//       active: "text-green-400",
+//       inactive: "text-red-400",
+//       alert: "text-orange-400",
+//       maintenance: "text-yellow-400",
+//     };
+//     return colorMap[status];
+//   };
+
+//   const getMovementIcon = (direction: MovementDirection): string => {
+//     const icons: Record<MovementDirection, string> = {
+//       inbound: "↗️",
+//       outbound: "↙️",
+//       lateral: "↔️",
+//       stationary: "⏹️",
+//     };
+//     return icons[direction];
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-slate-900 text-white">
+//       <audio ref={audioRef} preload="auto">
+//         <source
+//           src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYdAkWRzO+8bSMELH7I79+STApSou7gylUfBhNztu/7uWsFLXjK7dyGOhgWSa/q2qBNCAhxue7/ol4GFWq37LiALgcVdMvq7rliFQZGoOs1t2QNCW+z6v5vKwgacaTt8LpgByl6yO1yMxYNUrHq87RsDBR4p+n5oVIGDW6y69x7NIYOUbLqzZA6BQ93s/Psp1MDBnSo5NqBOAYVaqTp67VhBSp8xs+GNwgSb7Ps6bVhBChxw++wYBoGIneqw/K8YhQFLXvK5dB7MgwPcqHq5q5WEQNZ0n7N50QdCk1pSKq9aUdBgT1nTh2JDQxhsjN7Y"
+//           type="audio/wav"
+//         />
+//       </audio>
+
+//       <audio ref={alarmAudioRef} preload="auto">
+//         <source
+//           src="data:audio/wav;base64,UklGRtYEAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YbIEAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYdAkWRzO+8bSMELH7I79+STApSou7gylUfBhNztu/7uWsFLXjK7dyGOhgWSa/q2qBNCAhxue7/ol4GFWq37LiALgcVdMvq7rliFQZGoOs1t2QNCW+z6v5vKwgacaTt8LpgByl6yO1yMxYNUrHq87RsDBR4p+n5oVIGDW6y69x7NIYOUbLqzZA6BQ93s/Psp1MDBnSo5NqBOAYVaqTp67VhBSp8xs+GNwgSb7Ps6bVhBChxw++wYBoGIneqw/K8YhQFLXvK5dB7MgwPcqHq5q5WEQNZ0n7N50QdCk1pSKq9aUdBgT1nTh2JDQxhsjN7Y"
+//           type="audio/wav"
+//         />
+//       </audio>
+
+//       {notifications.map(notification => (
+//         <ThreatNotification
+//           key={notification.id}
+//           notification={notification}
+//           onDismiss={dismissNotification}
+//         />
+//       ))}
+
+//       <div className="bg-slate-800 border-b border-slate-700 px-6 py-4">
+//         <div className="flex items-center justify-between">
+//           <div className="flex items-center space-x-4">
+//             <Shield className="w-8 h-8 text-blue-400" />
+//             <div>
+//               <h1 className="text-2xl font-bold">Enhanced Border Surveillance</h1>
+//               <p className="text-slate-400">Benue State - Real-time Threat Tracking</p>
+//             </div>
+//           </div>
+
+//           <div className="flex items-center space-x-4">
+//             <div className="flex items-center space-x-2">
+//               <div className={`w-3 h-3 rounded-full ${
+//                 connectionStatus === "connected"
+//                   ? "bg-green-400 animate-pulse"
+//                   : "bg-red-400"
+//               }`} />
+//               <span className="text-sm text-slate-400 capitalize">
+//                 {connectionStatus}
+//               </span>
+//             </div>
+
+//             <button
+//               onClick={() => setIsSimulationRunning(!isSimulationRunning)}
+//               className={`px-3 py-1 rounded text-sm ${
+//                 isSimulationRunning
+//                   ? "bg-red-600 hover:bg-red-500"
+//                   : "bg-green-600 hover:bg-green-500"
+//               }`}
+//             >
+//               {isSimulationRunning ? "Stop Sim" : "Start Sim"}
+//             </button>
+
+//             <button
+//               onClick={() => setSoundEnabled(!soundEnabled)}
+//               className={`p-2 rounded-lg ${
+//                 soundEnabled
+//                   ? "bg-blue-600 text-white"
+//                   : "bg-slate-600 text-slate-300"
+//               }`}
+//             >
+//               {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+//             </button>
+
+//             <div className="text-right">
+//               <div className="text-sm font-medium">
+//                 {new Date().toLocaleTimeString()}
+//               </div>
+//               <div className="text-xs text-slate-400">
+//                 {new Date().toLocaleDateString()}
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {statistics.activeCriticalThreats.length > 0 && (
+//         <Alert className="px-6 py-3 bg-red-900 border-red-700 text-red-100 animate-pulse">
+//           <AlertTriangle className="h-4 w-4" />
+//           <AlertDescription>
+//             <div className="flex items-center space-x-2">
+//               <span className="font-semibold">
+//                 CRITICAL ALERT: {statistics.activeCriticalThreats.length} active critical threat{statistics.activeCriticalThreats.length > 1 ? "s" : ""} detected
+//               </span>
+//               <Bell className="w-5 h-5 animate-bounce" />
+//             </div>
+//           </AlertDescription>
+//         </Alert>
+//       )}
+
+//       <div className="flex flex-1">
+//         <div className="flex-1 p-6">
+//           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Active Sensors</p>
+//                   <p className="text-2xl font-bold text-green-400">{statistics.activeSensors.length}</p>
+//                   <p className="text-xs text-slate-500">of {sensors.length} total</p>
+//                 </div>
+//                 <Activity className="w-8 h-8 text-green-400" />
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Active Threats</p>
+//                   <p className="text-2xl font-bold text-red-400">{statistics.activeThreats.length}</p>
+//                   <p className="text-xs text-slate-500">
+//                     {statistics.activeCriticalThreats.length} critical
+//                   </p>
+//                 </div>
+//                 <Target className="w-8 h-8 text-red-400" />
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Personnel Deployed</p>
+//                   <p className="text-2xl font-bold text-blue-400">
+//                     {statistics.totalPersonnel}
+//                   </p>
+//                   <p className="text-xs text-slate-500">across all threats</p>
+//                 </div>
+//                 <Users className="w-8 h-8 text-blue-400" />
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">System Status</p>
+//                   <p className="text-lg font-bold text-green-400">Operational</p>
+//                   <p className="text-xs text-slate-500">All systems normal</p>
+//                 </div>
+//                 <Settings className="w-8 h-8 text-green-400" />
+//               </div>
+//             </div>
+//           </div>
+
+//           <div className="bg-slate-800 rounded-lg p-4 mb-6">
+//             <div className="flex items-center justify-between mb-4">
+//               <h2 className="text-lg font-semibold flex items-center space-x-2">
+//                 <MapPin className="w-5 h-5" />
+//                 <span>Benue State Border Map - Live Tracking</span>
+//               </h2>
+//             </div>
+
+//             <InteractiveMap
+//               sensors={sensors}
+//               threats={threats}
+//               onThreatClick={setSelectedThreat}
+//               isSimulationRunning={isSimulationRunning}
+//             />
+//           </div>
+
+//           <div className="bg-slate-800 rounded-lg p-4">
+//             <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+//               <Camera className="w-5 h-5" />
+//               <span>Live Video Feeds & Sensor Data</span>
+//             </h2>
+//             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+//               {sensors.map((sensor) => (
+//                 <div key={sensor.id} className="bg-slate-700 rounded-lg p-3 border border-slate-600">
+//                   <div className="bg-black rounded aspect-video mb-3 flex items-center justify-center relative overflow-hidden">
+//                     <SimulatedVideoFeed
+//                       sensorType={sensor.sensorType}
+//                       isActive={sensor.status === 'active' && isSimulationRunning}
+//                     />
+
+//                     {sensor.status === 'active' && isSimulationRunning && (
+//                       <div className="absolute top-2 right-2 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+//                     )}
+
+//                     {sensor.status === 'alert' && (
+//                       <div className="absolute inset-0 border-2 border-red-500 animate-pulse rounded"></div>
+//                     )}
+
+//                     <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+//                       {sensor.sensorType.toUpperCase()}
+//                     </div>
+
+//                     {sensor.status === 'active' && (
+//                       <div className="absolute top-2 left-2 flex items-center space-x-1 bg-red-600 text-white text-xs px-2 py-1 rounded">
+//                         <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+//                         <span>REC</span>
+//                       </div>
+//                     )}
+//                   </div>
+
+//                   <div className="space-y-2">
+//                     <div className="flex justify-between items-center text-sm">
+//                       <span className="text-slate-300 font-medium">{sensor.name}</span>
+//                       <span className={`px-2 py-1 rounded text-xs ${getStatusColor(sensor.status)} bg-slate-800`}>
+//                         {sensor.status.toUpperCase()}
+//                       </span>
+//                     </div>
+
+//                     <div className="grid grid-cols-2 gap-2 text-xs">
+//                       <div className="bg-slate-600 rounded p-2">
+//                         <div className="text-slate-400 mb-1">Battery</div>
+//                         <div className="font-medium mb-1">{sensor.batteryLevel.toFixed(1)}%</div>
+//                         <div className="w-full bg-slate-800 rounded-full h-1">
+//                           <div
+//                             className={`h-1 rounded-full transition-all ${
+//                               sensor.batteryLevel > 50 ? 'bg-green-400' :
+//                               sensor.batteryLevel > 25 ? 'bg-yellow-400' : 'bg-red-400'
+//                             }`}
+//                             style={{ width: `${sensor.batteryLevel}%` }}
+//                           />
+//                         </div>
+//                       </div>
+
+//                       <div className="bg-slate-600 rounded p-2">
+//                         <div className="text-slate-400 mb-1">Signal</div>
+//                         <div className="font-medium mb-1">{sensor.signalStrength.toFixed(0)}%</div>
+//                         <div className="flex space-x-1">
+//                           {[1, 2, 3, 4, 5].map(bar => (
+//                             <div
+//                               key={bar}
+//                               className={`flex-1 h-1 rounded transition-all ${
+//                                 sensor.signalStrength >= bar * 20 ? 'bg-green-400' : 'bg-slate-800'
+//                               }`}
+//                             />
+//                           ))}
+//                         </div>
+//                       </div>
+//                     </div>
+
+//                     <div className="text-xs text-slate-400 flex justify-between">
+//                       <span>Last update: {sensor.lastUpdate.toLocaleTimeString()}</span>
+//                       <span>ID: {sensor.id}</span>
+//                     </div>
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+
+//         <div className="w-96 bg-slate-800 border-l border-slate-700 p-4 overflow-y-auto">
+//           <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+//             <AlertTriangle className="w-5 h-5" />
+//             <span>Threat Intelligence</span>
+//             <span className="bg-red-600 text-white text-xs px-2 py-1 rounded-full">
+//               {statistics.activeThreats.length}
+//             </span>
+//           </h2>
+
+//           <div className="mb-4 space-y-2">
+//             <div className="flex space-x-1 text-xs">
+//               <button className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-500">
+//                 Critical ({threats.filter(t => t.severity === 'critical').length})
+//               </button>
+//               <button className="px-2 py-1 bg-slate-600 text-slate-300 rounded hover:bg-slate-500">
+//                 All ({threats.length})
+//               </button>
+//             </div>
+//           </div>
+
+//           <div className="space-y-3 mb-6" style={{ maxHeight: '50vh', overflowY: 'auto' }}>
+//             {visibleThreats.map((threat) => (
+//               <div
+//                 key={threat.id}
+//                 className={`bg-slate-700 rounded-lg p-3 cursor-pointer transition-all border
+//                   ${selectedThreat?.id === threat.id ? 'ring-2 ring-blue-400 border-blue-400' : 'border-slate-600'}
+//                   hover:bg-slate-600 hover:border-slate-500`}
+//                 onClick={() => setSelectedThreat(threat)}
+//               >
+//                 <div className="flex items-center justify-between mb-2">
+//                   <div className="flex items-center space-x-2">
+//                     <span className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(threat.severity)}`}>
+//                       {threat.severity.toUpperCase()}
+//                     </span>
+//                     <span className="text-xs">
+//                       {THREAT_TYPES[threat.type].icon}
+//                     </span>
+//                   </div>
+//                   <div className="flex items-center space-x-1 text-xs text-slate-400">
+//                     <Clock className="w-3 h-3" />
+//                     <span>{new Date(threat.timestamp).toLocaleTimeString()}</span>
+//                   </div>
+//                 </div>
+
+//                 <h3 className="font-medium mb-1 text-sm">
+//                   {THREAT_TYPES[threat.type].label}
+//                 </h3>
+
+//                 <p className="text-xs text-slate-300 mb-2 line-clamp-2">
+//                   {threat.description}
+//                 </p>
+
+//                 <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+//                   <span className="flex items-center space-x-1">
+//                     <Navigation className="w-3 h-3" />
+//                     <span>{threat.movement.direction}</span>
+//                     <span>{getMovementIcon(threat.movement.direction)}</span>
+//                   </span>
+//                   <span>{threat.movement.speed.toFixed(1)} km/h</span>
+//                 </div>
+
+//                 <div className="flex items-center justify-between text-xs text-slate-400 mb-3">
+//                   <span className="flex items-center space-x-1">
+//                     <MapPin className="w-3 h-3" />
+//                     <span>{threat.location.name}</span>
+//                   </span>
+//                   <span className="flex items-center space-x-1">
+//                     <Users className="w-3 h-3" />
+//                     <span>{threat.personnel}</span>
+//                   </span>
+//                 </div>
+
+//                 <div className="flex items-center justify-between text-xs mb-2">
+//                   <span className="text-slate-400">Confidence: {threat.confidence}%</span>
+//                   <span className={`px-1 rounded ${
+//                     threat.status === 'active' ? 'bg-red-800 text-red-200' :
+//                     threat.status === 'investigating' ? 'bg-yellow-800 text-yellow-200' :
+//                     'bg-green-800 text-green-200'
+//                   }`}>
+//                     {threat.status.toUpperCase()}
+//                   </span>
+//                 </div>
+
+//                 <div className="flex space-x-1">
+//                   <button className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-500 flex-1">
+//                     Deploy
+//                   </button>
+//                   <button className="px-2 py-1 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-500 flex-1">
+//                     Investigate
+//                   </button>
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+
+//           <div className="border-t border-slate-600 pt-4">
+//             <h3 className="text-md font-semibold mb-3 flex items-center space-x-2">
+//               <Radio className="w-4 h-4" />
+//               <span>System Status</span>
+//             </h3>
+
+//             <div className="space-y-3">
+//               <div className="bg-slate-700 rounded p-3">
+//                 <div className="flex items-center justify-between mb-2">
+//                   <span className="text-sm font-medium">Network Status</span>
+//                   <span className={`text-xs px-2 py-1 rounded ${
+//                     connectionStatus === 'connected' ? 'bg-green-800 text-green-200' : 'bg-red-800 text-red-200'
+//                   }`}>
+//                     {connectionStatus.toUpperCase()}
+//                   </span>
+//                 </div>
+//                 <div className="text-xs text-slate-400">
+//                   Uptime: 99.8% | Latency: 12ms
+//                 </div>
+//               </div>
+
+//               <div className="bg-slate-700 rounded p-3">
+//                 <div className="text-sm font-medium mb-2">Sensor Network</div>
+//                 <div className="space-y-1 text-xs">
+//                   <div className="flex justify-between">
+//                     <span className="text-green-400">Active:</span>
+//                     <span>{sensors.filter(s => s.status === 'active').length}</span>
+//                   </div>
+//                   <div className="flex justify-between">
+//                     <span className="text-orange-400">Alert:</span>
+//                     <span>{sensors.filter(s => s.status === 'alert').length}</span>
+//                   </div>
+//                   <div className="flex justify-between">
+//                     <span className="text-red-400">Offline:</span>
+//                     <span>{sensors.filter(s => s.status === 'inactive').length}</span>
+//                   </div>
+//                 </div>
+//               </div>
+
+//               <div className="bg-slate-700 rounded p-3">
+//                 <div className="text-sm font-medium mb-2">Threat Analysis</div>
+//                 <div className="space-y-1 text-xs">
+//                   <div className="flex justify-between">
+//                     <span className="text-red-400">Critical:</span>
+//                     <span>{threats.filter(t => t.severity === 'critical' && t.status === 'active').length}</span>
+//                   </div>
+//                   <div className="flex justify-between">
+//                     <span className="text-orange-400">High:</span>
+//                     <span>{threats.filter(t => t.severity === 'high' && t.status === 'active').length}</span>
+//                   </div>
+//                   <div className="flex justify-between">
+//                     <span className="text-yellow-400">Medium:</span>
+//                     <span>{threats.filter(t => t.severity === 'medium' && t.status === 'active').length}</span>
+//                   </div>
+//                                     <div className="flex justify-between">
+//                     <span className="text-slate-400">Resolved:</span>
+//                     <span>{threats.filter(t => t.status === 'resolved').length}</span>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Enhanced Threat Detail Modal */}
+//       {selectedThreat && (
+//         <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+//           <div className="bg-slate-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-slate-600">
+//             <div className="flex items-center justify-between mb-6">
+//               <div className="flex items-center space-x-3">
+//                 <h2 className="text-xl font-bold">Threat Intelligence Report</h2>
+//                 <span className={`px-3 py-1 rounded text-sm font-medium ${getSeverityColor(selectedThreat.severity)}`}>
+//                   {selectedThreat.severity.toUpperCase()}
+//                 </span>
+//               </div>
+//               <button
+//                 onClick={() => setSelectedThreat(null)}
+//                 className="text-slate-400 hover:text-white text-xl font-bold w-8 h-8 flex items-center justify-center rounded hover:bg-slate-700"
+//               >
+//                 ×
+//               </button>
+//             </div>
+
+//             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+//               {/* Basic Information */}
+//               <div className="space-y-4">
+//                 <div className="bg-slate-700 rounded p-4">
+//                   <h3 className="font-semibold mb-3 text-blue-400">Basic Information</h3>
+//                   <div className="grid grid-cols-2 gap-3 text-sm">
+//                     <div>
+//                       <label className="text-slate-400">Threat ID</label>
+//                       <p className="font-medium">{selectedThreat.id}</p>
+//                     </div>
+//                     <div>
+//                       <label className="text-slate-400">Sensor ID</label>
+//                       <p className="font-medium">{selectedThreat.sensorId}</p>
+//                     </div>
+//                     <div>
+//                       <label className="text-slate-400">Type</label>
+//                       <p className="font-medium">
+//                         {THREAT_TYPES[selectedThreat.type].icon} {THREAT_TYPES[selectedThreat.type].label}
+//                       </p>
+//                     </div>
+//                     <div>
+//                       <label className="text-slate-400">Status</label>
+//                       <p className={`font-medium ${
+//                         selectedThreat.status === 'active' ? 'text-red-400' :
+//                         selectedThreat.status === 'investigating' ? 'text-yellow-400' :
+//                         'text-green-400'
+//                       }`}>
+//                         {selectedThreat.status.toUpperCase()}
+//                       </p>
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 <div className="bg-slate-700 rounded p-4">
+//                   <h3 className="font-semibold mb-3 text-blue-400">Movement Analysis</h3>
+//                   <div className="space-y-2 text-sm">
+//                     <div className="flex justify-between">
+//                       <span className="text-slate-400">Direction:</span>
+//                       <span className="font-medium">
+//                         {selectedThreat.movement.direction} {getMovementIcon(selectedThreat.movement.direction)}
+//                       </span>
+//                     </div>
+//                     <div className="flex justify-between">
+//                       <span className="text-slate-400">Current Speed:</span>
+//                       <span className="font-medium">{selectedThreat.movement.speed.toFixed(1)} km/h</span>
+//                     </div>
+//                     <div className="flex justify-between">
+//                       <span className="text-slate-400">Estimated Size:</span>
+//                       <span className="font-medium">{selectedThreat.estimatedSize} individuals</span>
+//                     </div>
+//                     <div className="flex justify-between">
+//                       <span className="text-slate-400">Confidence:</span>
+//                       <span className="font-medium">{selectedThreat.confidence}%</span>
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 <div className="bg-slate-700 rounded p-4">
+//                   <h3 className="font-semibold mb-3 text-blue-400">Risk Assessment</h3>
+//                   <div className="space-y-3">
+//                     <div className="flex justify-between items-center">
+//                       <span className="text-slate-400 text-sm">Threat Level:</span>
+//                       <div className="flex items-center space-x-2">
+//                         <div className="w-20 bg-slate-800 rounded-full h-2">
+//                           <div
+//                             className={`h-2 rounded-full ${
+//                               selectedThreat.severity === 'critical' ? 'bg-red-500' :
+//                               selectedThreat.severity === 'high' ? 'bg-orange-500' :
+//                               selectedThreat.severity === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+//                             }`}
+//                             style={{
+//                               width: `${
+//                                 selectedThreat.severity === 'critical' ? 100 :
+//                                 selectedThreat.severity === 'high' ? 75 :
+//                                 selectedThreat.severity === 'medium' ? 50 : 25
+//                               }%`
+//                             }}
+//                           />
+//                         </div>
+//                         <span className="text-xs font-medium">{selectedThreat.severity.toUpperCase()}</span>
+//                       </div>
+//                     </div>
+
+//                     <div className="flex justify-between items-center">
+//                       <span className="text-slate-400 text-sm">Response Priority:</span>
+//                       <span className={`text-xs px-2 py-1 rounded font-medium ${
+//                         selectedThreat.severity === 'critical' ? 'bg-red-800 text-red-200' :
+//                         selectedThreat.severity === 'high' ? 'bg-orange-800 text-orange-200' :
+//                         'bg-yellow-800 text-yellow-200'
+//                       }`}>
+//                         {selectedThreat.severity === 'critical' ? 'IMMEDIATE' :
+//                          selectedThreat.severity === 'high' ? 'HIGH' : 'STANDARD'}
+//                       </span>
+//                     </div>
+
+//                     <div className="border-t border-slate-600 pt-2 mt-2">
+//                       <div className="text-xs text-slate-400 space-y-1">
+//                         <div>• Estimated response time: {
+//                           selectedThreat.severity === 'critical' ? '< 5 min' :
+//                           selectedThreat.severity === 'high' ? '5-15 min' : '15-30 min'
+//                         }</div>
+//                         <div>• Recommended assets: {
+//                           selectedThreat.severity === 'critical' ? 'Full tactical team' :
+//                           selectedThreat.severity === 'high' ? 'Response unit' : 'Patrol unit'
+//                         }</div>
+//                         <div>• Backup required: {
+//                           selectedThreat.severity === 'critical' ? 'Yes' :
+//                           selectedThreat.severity === 'high' ? 'Standby' : 'No'
+//                         }</div>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+
+//               {/* Detailed Information */}
+//               <div className="space-y-4">
+//                 <div className="bg-slate-700 rounded p-4">
+//                   <h3 className="font-semibold mb-3 text-blue-400">Threat Description</h3>
+//                   <p className="text-slate-200 text-sm leading-relaxed mb-3">
+//                     {selectedThreat.description}
+//                   </p>
+
+//                   <div className="border-t border-slate-600 pt-3 space-y-2">
+//                     <div className="grid grid-cols-2 gap-4 text-sm">
+//                       <div>
+//                         <label className="text-slate-400 text-xs">Personnel Count</label>
+//                         <p className="font-medium">{selectedThreat.personnel}</p>
+//                       </div>
+//                       <div>
+//                         <label className="text-slate-400 text-xs">Equipment Level</label>
+//                         <p className="font-medium">{
+//                           selectedThreat.type === 'armed_group' ? 'Heavy Arms' :
+//                           selectedThreat.type === 'vehicle_movement' ? 'Vehicles' :
+//                           'Unknown'
+//                         }</p>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 <div className="bg-slate-700 rounded p-4">
+//                   <h3 className="font-semibold mb-3 text-blue-400">Location & Time</h3>
+//                   <div className="space-y-3 text-sm">
+//                     <div>
+//                       <label className="text-slate-400">Current Location</label>
+//                       <p className="font-medium">{selectedThreat.location.name}</p>
+//                       <p className="text-xs text-slate-500 font-mono">
+//                         {selectedThreat.location.lat.toFixed(6)}, {selectedThreat.location.lng.toFixed(6)}
+//                       </p>
+//                     </div>
+
+//                     <div className="grid grid-cols-2 gap-3">
+//                       <div>
+//                         <label className="text-slate-400">First Detected</label>
+//                         <p className="font-medium">{selectedThreat.timestamp.toLocaleDateString()}</p>
+//                         <p className="text-xs text-slate-500">{selectedThreat.timestamp.toLocaleTimeString()}</p>
+//                       </div>
+//                       <div>
+//                         <label className="text-slate-400">Last Update</label>
+//                         <p className="font-medium">{selectedThreat.movement.lastUpdate.toLocaleDateString()}</p>
+//                         <p className="text-xs text-slate-500">{selectedThreat.movement.lastUpdate.toLocaleTimeString()}</p>
+//                       </div>
+//                     </div>
+
+//                     <div>
+//                       <label className="text-slate-400">Duration Active</label>
+//                       <p className="font-medium">
+//                         {Math.floor((Date.now() - selectedThreat.timestamp.getTime()) / (1000 * 60))} minutes
+//                       </p>
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 <div className="bg-slate-700 rounded p-4">
+//                   <h3 className="font-semibold mb-3 text-blue-400">Sensor Data</h3>
+//                   <div className="space-y-2 text-sm">
+//                     <div className="flex justify-between">
+//                       <span className="text-slate-400">Detecting Sensor:</span>
+//                       <span className="font-medium">{selectedThreat.sensorId}</span>
+//                     </div>
+//                     <div className="flex justify-between">
+//                       <span className="text-slate-400">Detection Method:</span>
+//                       <span className="font-medium">
+//                         {sensors.find(s => s.id === selectedThreat.sensorId)?.sensorType?.toUpperCase() || 'Unknown'}
+//                       </span>
+//                     </div>
+//                     <div className="flex justify-between">
+//                       <span className="text-slate-400">Signal Strength:</span>
+//                       <span className="font-medium">
+//                         {sensors.find(s => s.id === selectedThreat.sensorId)?.signalStrength.toFixed(0) || 'N/A'}%
+//                       </span>
+//                     </div>
+//                     <div className="flex justify-between">
+//                       <span className="text-slate-400">Confidence Level:</span>
+//                       <span className="font-medium">{selectedThreat.confidence}%</span>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Action Buttons */}
+//             <div className="mt-6 pt-4 border-t border-slate-600">
+//               <div className="flex flex-wrap gap-3">
+//                 <button
+//                   className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500 flex items-center space-x-2 transition-colors"
+//                   onClick={() => {
+//                     // Handle emergency response
+//                     alert(`Emergency response deployed for ${selectedThreat.id}`);
+//                   }}
+//                 >
+//                   <AlertTriangle className="w-4 h-4" />
+//                   <span>Deploy Emergency Response</span>
+//                 </button>
+
+//                 <button
+//                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 flex items-center space-x-2 transition-colors"
+//                   onClick={() => {
+//                     // Handle backup request
+//                     alert(`Backup requested for ${selectedThreat.id}`);
+//                   }}
+//                 >
+//                   <Users className="w-4 h-4" />
+//                   <span>Request Backup</span>
+//                 </button>
+
+//                 <button
+//                   className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-500 flex items-center space-x-2 transition-colors"
+//                   onClick={() => {
+//                     // Handle investigation
+//                     setThreats(prev => prev.map(t =>
+//                       t.id === selectedThreat.id
+//                         ? { ...t, status: 'investigating' as ThreatStatus }
+//                         : t
+//                     ));
+//                     alert(`Threat ${selectedThreat.id} marked as investigating`);
+//                   }}
+//                 >
+//                   <Eye className="w-4 h-4" />
+//                   <span>Mark Investigating</span>
+//                 </button>
+
+//                 <button
+//                   className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-500 transition-colors"
+//                   onClick={() => {
+//                     // Handle resolution
+//                     setThreats(prev => prev.map(t =>
+//                       t.id === selectedThreat.id
+//                         ? { ...t, status: 'resolved' as ThreatStatus }
+//                         : t
+//                     ));
+//                     setSelectedThreat(null);
+//                     alert(`Threat ${selectedThreat.id} marked as resolved`);
+//                   }}
+//                 >
+//                   Mark Resolved
+//                 </button>
+
+//                 <button
+//                   className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-500 flex items-center space-x-2 transition-colors"
+//                   onClick={() => {
+//                     // Handle escalation
+//                     setThreats(prev => prev.map(t =>
+//                       t.id === selectedThreat.id
+//                         ? { ...t, status: 'escalated' as ThreatStatus, severity: 'critical' as ThreatSeverity }
+//                         : t
+//                     ));
+//                     alert(`Threat ${selectedThreat.id} escalated to command center`);
+//                   }}
+//                 >
+//                   <Target className="w-4 h-4" />
+//                   <span>Escalate to Command</span>
+//                 </button>
+//               </div>
+//             </div>
+
+//             {/* Additional Info */}
+//             <div className="mt-4 p-3 bg-slate-900 rounded border border-slate-600">
+//               <div className="flex items-center space-x-2 text-xs text-slate-400">
+//                 <Bell className="w-3 h-3" />
+//                 <span>
+//                   Real-time tracking active • Next update in {3 - (Math.floor(Date.now() / 1000) % 3)} seconds
+//                 </span>
+//                 <div className="flex-1"></div>
+//                 <span>Report ID: {selectedThreat.id}</span>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Custom Styles */}
+//       <style>{`
+//         @keyframes slideInRight {
+//           from {
+//             transform: translateX(100%);
+//             opacity: 0;
+//           }
+//           to {
+//             transform: translateX(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .animate-slide-in-right {
+//           animation: slideInRight 0.3s ease-out;
+//         }
+
+//         .line-clamp-2 {
+//           display: -webkit-box;
+//           -webkit-line-clamp: 2;
+//           -webkit-box-orient: vertical;
+//           overflow: hidden;
+//         }
+
+//         .animate-ping {
+//           animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+//         }
+
+//         @keyframes ping {
+//           75%, 100% {
+//             transform: scale(2);
+//             opacity: 0;
+//           }
+//         }
+
+//         .animate-pulse {
+//           animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+//         }
+
+//         @keyframes pulse {
+//           0%, 100% {
+//             opacity: 1;
+//           }
+//           50% {
+//             opacity: .5;
+//           }
+//         }
+
+//         .animate-bounce {
+//           animation: bounce 1s infinite;
+//         }
+
+//         @keyframes bounce {
+//           0%, 100% {
+//             transform: translateY(-25%);
+//             animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+//           }
+//           50% {
+//             transform: translateY(0);
+//             animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+//           }
+//         }
+
+//         /* Custom scrollbar */
+//         .overflow-y-auto::-webkit-scrollbar {
+//           width: 6px;
+//         }
+
+//         .overflow-y-auto::-webkit-scrollbar-track {
+//           background: #475569;
+//           border-radius: 3px;
+//         }
+
+//         .overflow-y-auto::-webkit-scrollbar-thumb {
+//           background: #64748b;
+//           border-radius: 3px;
+//         }
+
+//         .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+//           background: #94a3b8;
+//         }
+
+//         /* Enhance button hover effects */
+//         button {
+//           transition: all 0.2s ease-in-out;
+//         }
+
+//         button:hover {
+//           transform: translateY(-1px);
+//           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+//         }
+
+//         /* Enhance card hover effects */
+//         .bg-slate-700:hover {
+//           transform: translateY(-2px);
+//           box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+//         }
+//       `}</style>
+//     </div>
+//   );
+// };
+
+// export default EnhancedBorderSurveillance;
+
+// // Enhanced Border Surveillance System with Real-Time Threat Detection and AI Integration
+
+
+
+
+
+
+import {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+  Fragment,
+} from "react";
 import {
   AlertTriangle,
   Shield,
@@ -4180,11 +5957,35 @@ import {
   Settings,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  MapContainer,
+  TileLayer,
+  Polygon,
+  Marker,
+  Polyline,
+  Popup,
+  useMap,
+  Tooltip,
+} from "react-leaflet";
+import L, { type LatLngExpression } from "leaflet";
+import MarkerClusterGroup from "react-leaflet-markercluster";
+import { HeatmapLayer } from "react-leaflet-heatmap-layer-v3";
+import "leaflet/dist/leaflet.css";
+import benueBoundaryData from "@/data/benue1.geojson.json"; // Assume GeoJSON data for Benue state
+// import './EnhancedBorderSurveillance.css'; // Custom CSS for styling
+import * as tf from "@tensorflow/tfjs";
+import * as cocoSsd from "@tensorflow-models/coco-ssd";
 
 // Types
 type SensorStatus = "active" | "inactive" | "alert" | "maintenance";
 type ThreatSeverity = "low" | "medium" | "high" | "critical";
-type ThreatType = "intrusion" | "suspicious_activity" | "armed_group" | "vehicle_movement" | "cyber_threat" | "equipment_tampering";
+type ThreatType =
+  | "intrusion"
+  | "suspicious_activity"
+  | "armed_group"
+  | "vehicle_movement"
+  | "cyber_threat"
+  | "equipment_tampering";
 type ThreatStatus = "active" | "investigating" | "resolved" | "escalated";
 type ConnectionStatus = "connected" | "disconnected" | "reconnecting";
 type MovementDirection = "inbound" | "outbound" | "lateral" | "stationary";
@@ -4231,21 +6032,7 @@ interface Threat {
   movement: ThreatMovement;
   estimatedSize: number;
   confidence: number; // 0-100%
-}
-
-interface BoundaryFeature {
-  type: "Feature";
-  id: number;
-  geometry: {
-    type: "Polygon";
-    coordinates: number[][][];
-  };
-  properties: Record<string, unknown>;
-}
-
-interface BoundaryData {
-  type: "FeatureCollection";
-  features: BoundaryFeature[];
+  predictedPosition?: Coordinates;
 }
 
 // Constants
@@ -4258,116 +6045,211 @@ const THREAT_TYPES: Record<ThreatType, { label: string; icon: string }> = {
   equipment_tampering: { label: "Equipment Tampering", icon: "🔧" },
 };
 
-const SEVERITY_CONFIG: Record<ThreatSeverity, { color: string; bgColor: string; priority: number }> = {
+const SEVERITY_CONFIG: Record<
+  ThreatSeverity,
+  { color: string; bgColor: string; priority: number }
+> = {
   low: { color: "text-green-400", bgColor: "bg-green-500", priority: 1 },
   medium: { color: "text-yellow-400", bgColor: "bg-yellow-500", priority: 2 },
   high: { color: "text-orange-400", bgColor: "bg-orange-500", priority: 3 },
   critical: { color: "text-red-400", bgColor: "bg-red-500", priority: 4 },
 };
 
-// Mock Benue boundary data (simplified for demo)
-const benueBoundaryData: BoundaryData = {
-  type: "FeatureCollection",
-  features: [
-    {
-      type: "Feature",
-      id: 13,
-      geometry: {
-        type: "Polygon",
-        coordinates: [
-          [
-            [8.0, 6.5], [9.5, 6.5], [9.5, 8.0], [8.0, 8.0], [8.0, 6.5]
-          ],
-        ],
-      },
-      properties: {
-        name: "Benue State",
-      },
-    },
-  ],
-};
+// Custom Icons
+const sensorIcon = (status: SensorStatus) =>
+  L.divIcon({
+    className: "",
+    html: `<div style="background-color: ${
+      status === "active" ? "green" : status === "alert" ? "orange" : "red"
+    }; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white;"></div>`,
+    iconSize: [16, 16],
+  });
+
+const threatIcon = (severity: ThreatSeverity) =>
+  L.divIcon({
+    className: "",
+    html: `<div style="background-color: ${
+      severity === "critical"
+        ? "red"
+        : severity === "high"
+        ? "orange"
+        : severity === "medium"
+        ? "yellow"
+        : "green"
+    }; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white;"></div>`,
+    iconSize: [20, 20],
+  });
+
+const predictedIcon = L.divIcon({
+  className: "",
+  html: `<div style="background-color: gray; width: 15px; height: 15px; border-radius: 50%; border: 2px solid white; opacity: 0.7;"></div>`,
+  iconSize: [15, 15],
+});
 
 // Utility functions
 const isPointInPolygon = (point: Coordinates, polygon: number[][]): boolean => {
   const { lat, lng } = point;
   let inside = false;
-  
+
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
     const [xi, yi] = polygon[i];
     const [xj, yj] = polygon[j];
-    
-    if (((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)) {
+
+    if (
+      yi > lat !== yj > lat &&
+      lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi
+    ) {
       inside = !inside;
     }
   }
-  
+
   return inside;
 };
 
-const calculateDistance = (point1: Coordinates, point2: Coordinates): number => {
+const calculateDistance = (
+  point1: Coordinates,
+  point2: Coordinates
+): number => {
   const R = 6371; // Earth's radius in km
-  const dLat = (point2.lat - point1.lat) * Math.PI / 180;
-  const dLng = (point2.lng - point1.lng) * Math.PI / 180;
-  const a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(point1.lat * Math.PI / 180) * Math.cos(point2.lat * Math.PI / 180) *
-    Math.sin(dLng/2) * Math.sin(dLng/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const dLat = ((point2.lat - point1.lat) * Math.PI) / 180;
+  const dLng = ((point2.lng - point1.lng) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((point1.lat * Math.PI) / 180) *
+      Math.cos((point2.lat * Math.PI) / 180) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 };
 
 const calculateBearing = (start: Coordinates, end: Coordinates): number => {
-  const dLng = (end.lng - start.lng) * Math.PI / 180;
-  const lat1 = start.lat * Math.PI / 180;
-  const lat2 = end.lat * Math.PI / 180;
-  
+  const dLng = ((end.lng - start.lng) * Math.PI) / 180;
+  const lat1 = (start.lat * Math.PI) / 180;
+  const lat2 = (end.lat * Math.PI) / 180;
+
   const y = Math.sin(dLng) * Math.cos(lat2);
-  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
-  
-  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+  const x =
+    Math.cos(lat1) * Math.sin(lat2) -
+    Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+
+  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
 };
 
-const generateRandomPoint = (bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number }): Coordinates => ({
+const generateRandomPoint = (bounds: {
+  minLat: number;
+  maxLat: number;
+  minLng: number;
+  maxLng: number;
+}): Coordinates => ({
   lat: bounds.minLat + Math.random() * (bounds.maxLat - bounds.minLat),
   lng: bounds.minLng + Math.random() * (bounds.maxLng - bounds.minLng),
 });
 
 const movePointTowardTarget = (
-  current: Coordinates, 
-  target: Coordinates, 
-  speedKmH: number, 
+  current: Coordinates,
+  target: Coordinates,
+  speedKmH: number,
   intervalMs: number
 ): Coordinates => {
   const distance = calculateDistance(current, target);
   const bearing = calculateBearing(current, target);
-  
-  // Calculate movement distance based on speed and time interval
+
   const movementKm = (speedKmH * intervalMs) / (1000 * 60 * 60);
-  
+
   if (distance <= movementKm) {
     return target;
   }
-  
-  const bearingRad = bearing * Math.PI / 180;
+
+  const bearingRad = (bearing * Math.PI) / 180;
   const R = 6371; // Earth radius in km
-  
-  const lat1 = current.lat * Math.PI / 180;
-  const lng1 = current.lng * Math.PI / 180;
-  
+
+  const lat1 = (current.lat * Math.PI) / 180;
+  const lng1 = (current.lng * Math.PI) / 180;
+
   const lat2 = Math.asin(
     Math.sin(lat1) * Math.cos(movementKm / R) +
-    Math.cos(lat1) * Math.sin(movementKm / R) * Math.cos(bearingRad)
+      Math.cos(lat1) * Math.sin(movementKm / R) * Math.cos(bearingRad)
   );
-  
-  const lng2 = lng1 + Math.atan2(
-    Math.sin(bearingRad) * Math.sin(movementKm / R) * Math.cos(lat1),
-    Math.cos(movementKm / R) - Math.sin(lat1) * Math.sin(lat2)
-  );
-  
+
+  const lng2 =
+    lng1 +
+    Math.atan2(
+      Math.sin(bearingRad) * Math.sin(movementKm / R) * Math.cos(lat1),
+      Math.cos(movementKm / R) - Math.sin(lat1) * Math.sin(lat2)
+    );
+
   return {
-    lat: lat2 * 180 / Math.PI,
-    lng: lng2 * 180 / Math.PI,
+    lat: (lat2 * 180) / Math.PI,
+    lng: (lng2 * 180) / Math.PI,
   };
+};
+
+// Custom Map Controls
+const MapControls: React.FC<{
+  threats: Threat[];
+  showSensors: boolean;
+  setShowSensors: (val: boolean) => void;
+  showThreats: boolean;
+  setShowThreats: (val: boolean) => void;
+  showHeatmap: boolean;
+  setShowHeatmap: (val: boolean) => void;
+}> = ({
+  threats,
+  showSensors,
+  setShowSensors,
+  showThreats,
+  setShowThreats,
+  showHeatmap,
+  setShowHeatmap,
+}) => {
+  const map = useMap();
+
+  const zoomToThreats = useCallback(() => {
+    if (threats.length === 0) return;
+    const threatBounds = L.latLngBounds(
+      threats.map((t) => [
+        t.movement.currentPosition.lat,
+        t.movement.currentPosition.lng,
+      ])
+    );
+    map.fitBounds(threatBounds);
+  }, [map, threats]);
+
+  return (
+    <div className="leaflet-top leaflet-left bg-slate-800 rounded p-2 text-xs space-y-1 z-[1000] m-2">
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          checked={showSensors}
+          onChange={() => setShowSensors(!showSensors)}
+        />
+        <span>Sensors</span>
+      </div>
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          checked={showThreats}
+          onChange={() => setShowThreats(!showThreats)}
+        />
+        <span>Threats</span>
+      </div>
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          checked={showHeatmap}
+          onChange={() => setShowHeatmap(!showHeatmap)}
+        />
+        <span>Heatmap</span>
+      </div>
+      <button
+        onClick={zoomToThreats}
+        className="w-full px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-500"
+      >
+        Zoom to Threats
+      </button>
+    </div>
+  );
 };
 
 // Main Component
@@ -4376,23 +6258,208 @@ const EnhancedBorderSurveillance: React.FC = () => {
   const [threats, setThreats] = useState<Threat[]>([]);
   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("disconnected");
+  const [connectionStatus, setConnectionStatus] =
+    useState<ConnectionStatus>("disconnected");
   const [isSimulationRunning, setIsSimulationRunning] = useState<boolean>(true);
-  
+  const [notifications, setNotifications] = useState<
+    { id: string; message: string; severity: ThreatSeverity }[]
+  >([]);
+  const [model, setModel] = useState<cocoSsd.ObjectDetection | null>(null);
+  const [showSensors, setShowSensors] = useState(true);
+  const [showThreats, setShowThreats] = useState(true);
+  const [showHeatmap, setShowHeatmap] = useState(false);
+  const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
+  const canvasRefs = useRef<{ [key: string]: HTMLCanvasElement | null }>({});
+
   const audioRef = useRef<HTMLAudioElement>(null);
-  const simulationIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const simulationIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
+    null
+  );
+  const detectionIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
+    null
+  );
 
   const boundaryCoords = useMemo(() => {
     const geometry = benueBoundaryData.features[0].geometry;
     return geometry.type === "Polygon" ? geometry.coordinates[0] : [];
   }, []);
 
-  const bounds = useMemo(() => ({
-    minLat: 6.4,
-    maxLat: 8.1,
-    minLng: 7.8,
-    maxLng: 9.7,
-  }), []);
+  const bounds = useMemo(
+    () => ({
+      minLat: 6.4,
+      maxLat: 8.1,
+      minLng: 7.8,
+      maxLng: 9.7,
+    }),
+    []
+  );
+
+  // Heatmap data
+  const heatmapData = useMemo(
+    () =>
+      threats.map((threat) => ({
+        lat: threat.movement.currentPosition.lat,
+        lng: threat.movement.currentPosition.lng,
+        value: SEVERITY_CONFIG[threat.severity].priority,
+      })),
+    [threats]
+  );
+
+
+  const generateNewThreatFromDetection = useCallback(
+    (
+      sensorId: string,
+      prediction: cocoSsd.DetectedObject
+    ): Threat | null => {
+      const sensor = sensors.find((s) => s.id === sensorId);
+      if (!sensor) return null;
+
+      let type: ThreatType = "suspicious_activity";
+      let severity: ThreatSeverity = "medium";
+      const description = `AI detected ${prediction.class} with ${Math.round(
+        prediction.score * 100
+      )}% confidence.`;
+
+      if (prediction.class === "person") {
+        type = "intrusion";
+        severity = "high";
+      } else if (["car", "truck"].includes(prediction.class)) {
+        type = "vehicle_movement";
+        severity = "medium";
+      }
+
+      const startPosition = {
+        lat: sensor.coordinates.lat + (Math.random() - 0.5) * 0.05,
+        lng: sensor.coordinates.lng + (Math.random() - 0.5) * 0.05,
+      };
+
+      return {
+        id: `T${Date.now()}`,
+        sensorId,
+        type,
+        severity,
+        location: {
+          ...startPosition,
+          name: `Near ${sensor.name}`,
+        },
+        timestamp: new Date(),
+        description,
+        personnel: 1,
+        status: "active",
+        movement: {
+          currentPosition: startPosition,
+          previousPosition: startPosition,
+          direction: "stationary",
+          speed: 0,
+          trajectory: [startPosition],
+          lastUpdate: new Date(),
+        },
+        estimatedSize: 1,
+        confidence: Math.round(prediction.score * 100),
+      };
+    },
+    [sensors]
+  );
+
+  // Load TensorFlow.js model
+  useEffect(() => {
+    const loadModel = async () => {
+      await tf.ready();
+      await tf.setBackend("webgl");
+      const loadedModel = await cocoSsd.load();
+      setModel(loadedModel);
+    };
+    loadModel();
+  }, []);
+
+  // AI Object Detection on Video Feeds
+  const runDetection = useCallback(
+    async (
+      video: HTMLVideoElement,
+      canvas: HTMLCanvasElement,
+      sensorId: string
+    ) => {
+      if (!model || !video || !canvas) return;
+
+      const predictions = await model.detect(video);
+
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        predictions.forEach((prediction: cocoSsd.DetectedObject) => {
+          const [x, y, width, height] = prediction.bbox;
+          ctx.strokeStyle = "red";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x, y, width, height);
+          ctx.fillStyle = "red";
+          ctx.font = "12px Arial";
+          ctx.fillText(
+            `${prediction.class} (${Math.round(prediction.score * 100)}%)`,
+            x,
+            y > 10 ? y - 5 : y + 15
+          );
+        });
+      }
+
+      // Generate new threat based on detections
+      predictions.forEach((prediction: cocoSsd.DetectedObject) => {
+        if (
+          prediction.score > 0.5 &&
+          ["person", "car", "truck"].includes(prediction.class)
+        ) {
+          const newThreat = generateNewThreatFromDetection(
+            sensorId,
+            prediction
+          );
+          if (newThreat) {
+            setThreats((prev) => [newThreat, ...prev]);
+            setNotifications((prev) =>
+              [
+                ...prev,
+                {
+                  id: `${sensorId}-${Date.now()}`,
+                  message: `AI detected ${prediction.class} with ${Math.round(
+                    prediction.score * 100
+                  )}% confidence in ${sensorId}`,
+                  severity: "high" as ThreatSeverity,
+                },
+              ].slice(-5)
+            );
+          }
+        }
+      });
+    },
+    [model, generateNewThreatFromDetection]
+  );
+
+  
+
+  useEffect(() => {
+    if (model && isSimulationRunning) {
+      detectionIntervalRef.current = setInterval(() => {
+        sensors.forEach((sensor) => {
+          if (sensor.sensorType === "camera" && sensor.status === "active") {
+            const video = videoRefs.current[sensor.id];
+            const canvas = canvasRefs.current[sensor.id];
+            if (
+              video &&
+              canvas &&
+              video.readyState === video.HAVE_ENOUGH_DATA
+            ) {
+              canvas.width = video.videoWidth;
+              canvas.height = video.videoHeight;
+              runDetection(video, canvas, sensor.id);
+            }
+          }
+        });
+      }, 2000); // Optimized to every 2 seconds
+
+      return () => {
+        if (detectionIntervalRef.current)
+          clearInterval(detectionIntervalRef.current);
+      };
+    }
+  }, [model, isSimulationRunning, sensors, runDetection]);
 
   // Initialize sensors
   useEffect(() => {
@@ -4468,7 +6535,8 @@ const EnhancedBorderSurveillance: React.FC = () => {
           name: "Border Perimeter North",
         },
         timestamp: new Date(Date.now() - 120000),
-        description: "Armed group of 8-10 individuals detected approaching checkpoint. Heavy weapons visible.",
+        description:
+          "Armed group of 8-10 individuals detected approaching checkpoint. Heavy weapons visible.",
         personnel: 10,
         status: "active",
         movement: {
@@ -4497,7 +6565,8 @@ const EnhancedBorderSurveillance: React.FC = () => {
           name: "Border Perimeter West",
         },
         timestamp: new Date(Date.now() - 300000),
-        description: "Convoy of 3 unmarked vehicles moving towards border crossing at unusual hour.",
+        description:
+          "Convoy of 3 unmarked vehicles moving towards border crossing at unusual hour.",
         personnel: 6,
         status: "investigating",
         movement: {
@@ -4520,51 +6589,49 @@ const EnhancedBorderSurveillance: React.FC = () => {
     setThreats(initialThreats);
   }, [sensors]);
 
-  // Threat movement simulation
+  // Threat movement simulation with prediction
   const updateThreatMovement = useCallback(() => {
-    setThreats(prevThreats => 
-      prevThreats.map(threat => {
+    setThreats((prevThreats) =>
+      prevThreats.map((threat) => {
         if (threat.status !== "active") return threat;
 
         const currentPos = threat.movement.currentPosition;
         const isInside = isPointInPolygon(currentPos, boundaryCoords);
-        
+
         let newTarget: Coordinates;
         let newDirection: MovementDirection;
         let newSpeed = threat.movement.speed;
 
-        // Determine movement behavior based on threat type and current position
         switch (threat.type) {
           case "armed_group":
             if (isInside) {
-              // If inside, move toward random interior point or exit
-              newTarget = Math.random() > 0.7 
-                ? generateRandomPoint(bounds) 
-                : generateRandomPoint({
-                    minLat: bounds.minLat - 0.2,
-                    maxLat: bounds.maxLat + 0.2,
-                    minLng: bounds.minLng - 0.2,
-                    maxLng: bounds.maxLng + 0.2,
-                  });
+              newTarget =
+                Math.random() > 0.7
+                  ? generateRandomPoint(bounds)
+                  : generateRandomPoint({
+                      minLat: bounds.minLat - 0.2,
+                      maxLat: bounds.maxLat + 0.2,
+                      minLng: bounds.minLng - 0.2,
+                      maxLng: bounds.maxLng + 0.2,
+                    });
               newDirection = "outbound";
-              newSpeed = 2 + Math.random() * 3; // 2-5 km/h
+              newSpeed = 2 + Math.random() * 3;
             } else {
-              // If outside, sometimes move toward boundary
-              newTarget = Math.random() > 0.5 
-                ? generateRandomPoint(bounds)
-                : generateRandomPoint({
-                    minLat: bounds.minLat - 0.1,
-                    maxLat: bounds.maxLat + 0.1,
-                    minLng: bounds.minLng - 0.1,
-                    maxLng: bounds.maxLng + 0.1,
-                  });
+              newTarget =
+                Math.random() > 0.5
+                  ? generateRandomPoint(bounds)
+                  : generateRandomPoint({
+                      minLat: bounds.minLat - 0.1,
+                      maxLat: bounds.maxLat + 0.1,
+                      minLng: bounds.minLng - 0.1,
+                      maxLng: bounds.maxLng + 0.1,
+                    });
               newDirection = "inbound";
-              newSpeed = 1.5 + Math.random() * 2.5; // 1.5-4 km/h
+              newSpeed = 1.5 + Math.random() * 2.5;
             }
             break;
 
           case "vehicle_movement":
-            // Vehicles move faster and more predictably
             if (isInside) {
               newTarget = generateRandomPoint({
                 minLat: bounds.minLat - 0.3,
@@ -4574,21 +6641,21 @@ const EnhancedBorderSurveillance: React.FC = () => {
               });
               newDirection = "outbound";
             } else {
-              newTarget = Math.random() > 0.6 
-                ? generateRandomPoint(bounds)
-                : generateRandomPoint({
-                    minLat: bounds.minLat - 0.2,
-                    maxLat: bounds.maxLat + 0.2,
-                    minLng: bounds.minLng - 0.2,
-                    maxLng: bounds.maxLng + 0.2,
-                  });
+              newTarget =
+                Math.random() > 0.6
+                  ? generateRandomPoint(bounds)
+                  : generateRandomPoint({
+                      minLat: bounds.minLat - 0.2,
+                      maxLat: bounds.maxLat + 0.2,
+                      minLng: bounds.minLng - 0.2,
+                      maxLng: bounds.maxLng + 0.2,
+                    });
               newDirection = "inbound";
             }
-            newSpeed = 25 + Math.random() * 35; // 25-60 km/h
+            newSpeed = 25 + Math.random() * 35;
             break;
 
           default:
-            // Other threats move more randomly
             newTarget = generateRandomPoint({
               minLat: bounds.minLat - 0.1,
               maxLat: bounds.maxLat + 0.1,
@@ -4596,22 +6663,31 @@ const EnhancedBorderSurveillance: React.FC = () => {
               maxLng: bounds.maxLng + 0.1,
             });
             newDirection = isInside ? "outbound" : "inbound";
-            newSpeed = 1 + Math.random() * 4; // 1-5 km/h
+            newSpeed = 1 + Math.random() * 4;
         }
 
-        const newPosition = movePointTowardTarget(currentPos, newTarget, newSpeed, 3000);
-        
+        const newPosition = movePointTowardTarget(
+          currentPos,
+          newTarget,
+          newSpeed,
+          3000
+        );
+        const predictedPosition = movePointTowardTarget(
+          newPosition,
+          newTarget,
+          newSpeed,
+          60000
+        ); // Predict 60 seconds ahead
+
         return {
           ...threat,
+          predictedPosition,
           movement: {
             currentPosition: newPosition,
             previousPosition: currentPos,
             direction: newDirection,
             speed: newSpeed,
-            trajectory: [
-              ...threat.movement.trajectory.slice(-9), // Keep last 10 positions
-              newPosition,
-            ],
+            trajectory: [...threat.movement.trajectory.slice(-9), newPosition],
             lastUpdate: new Date(),
           },
           location: {
@@ -4624,65 +6700,27 @@ const EnhancedBorderSurveillance: React.FC = () => {
     );
   }, [boundaryCoords, bounds]);
 
-  // Simulation loop
-  useEffect(() => {
-    if (!isSimulationRunning) return;
-
-    setConnectionStatus("connected");
-    
-    simulationIntervalRef.current = setInterval(() => {
-      // Update sensor data
-      setSensors(prev => 
-        prev.map(sensor => ({
-          ...sensor,
-          lastUpdate: new Date(),
-          batteryLevel: Math.max(20, sensor.batteryLevel - Math.random() * 0.1),
-          signalStrength: Math.max(0, Math.min(100, sensor.signalStrength + (Math.random() - 0.5) * 5)),
-        }))
-      );
-
-      // Update threat movements
-      updateThreatMovement();
-
-      // Occasionally generate new threats
-      if (Math.random() < 0.05) { // 5% chance every 3 seconds
-        const newThreat = generateNewThreat();
-        if (newThreat) {
-          setThreats(prev => [newThreat, ...prev.slice(0, 19)]); // Keep max 20 threats
-        }
-      }
-
-      // Remove resolved threats after some time
-      setThreats(prev => 
-        prev.filter(threat => 
-          threat.status !== "resolved" || 
-          Date.now() - threat.timestamp.getTime() < 300000 // 5 minutes
-        )
-      );
-    }, 3000);
-
-    return () => {
-      if (simulationIntervalRef.current) {
-        clearInterval(simulationIntervalRef.current);
-      }
-    };
-  }, [isSimulationRunning, updateThreatMovement, sensors, ]);
-
-  const generateNewThreat = (): Threat | null => {
+  const generateNewThreat = useCallback((): Threat | null => {
     if (sensors.length === 0) return null;
 
-    const threatTypes: ThreatType[] = ["intrusion", "suspicious_activity", "vehicle_movement", "armed_group"];
+    const threatTypes: ThreatType[] = [
+      "intrusion",
+      "suspicious_activity",
+      "vehicle_movement",
+      "armed_group",
+    ];
     const severities: ThreatSeverity[] = ["low", "medium", "high", "critical"];
     const randomSensor = sensors[Math.floor(Math.random() * sensors.length)];
-    
-    const startPosition = Math.random() > 0.5 
-      ? generateRandomPoint(bounds) // Inside boundary
-      : generateRandomPoint({
-          minLat: bounds.minLat - 0.2,
-          maxLat: bounds.maxLat + 0.2,
-          minLng: bounds.minLng - 0.2,
-          maxLng: bounds.maxLng + 0.2,
-        }); // Outside boundary
+
+    const startPosition =
+      Math.random() > 0.5
+        ? generateRandomPoint(bounds)
+        : generateRandomPoint({
+            minLat: bounds.minLat - 0.2,
+            maxLat: bounds.maxLat + 0.2,
+            minLng: bounds.minLng - 0.2,
+            maxLng: bounds.maxLng + 0.2,
+          });
 
     const threat: Threat = {
       id: `T${Date.now()}`,
@@ -4707,20 +6745,85 @@ const EnhancedBorderSurveillance: React.FC = () => {
         lastUpdate: new Date(),
       },
       estimatedSize: Math.floor(Math.random() * 15) + 1,
-      confidence: Math.floor(Math.random() * 40) + 60, // 60-100%
+      confidence: Math.floor(Math.random() * 40) + 60,
     };
 
-    // Play alert sound for high-severity threats
     if (
-      (threat.severity === "critical" || threat.severity === "high") &&
+      ["high", "critical"].includes(threat.severity) &&
       soundEnabled &&
       audioRef.current
     ) {
       audioRef.current.play().catch(console.error);
+      setNotifications((prev) =>
+        [
+          ...prev,
+          {
+            id: threat.id,
+            message: `New ${threat.severity.toUpperCase()} threat detected: ${
+              THREAT_TYPES[threat.type].label
+            }`,
+            severity: threat.severity,
+          },
+        ].slice(-5)
+      );
     }
 
     return threat;
-  };
+  }, [sensors, bounds, soundEnabled]);
+
+  // Simulation loop
+  useEffect(() => {
+    if (!isSimulationRunning) return;
+
+    setConnectionStatus("connected");
+
+    simulationIntervalRef.current = setInterval(() => {
+      setSensors((prev) =>
+        prev.map((sensor) => ({
+          ...sensor,
+          lastUpdate: new Date(),
+          batteryLevel: Math.max(20, sensor.batteryLevel - Math.random() * 0.1),
+          signalStrength: Math.max(
+            0,
+            Math.min(100, sensor.signalStrength + (Math.random() - 0.5) * 5)
+          ),
+        }))
+      );
+
+      updateThreatMovement();
+
+      if (Math.random() < 0.05) {
+        const newThreat = generateNewThreat();
+        if (newThreat) {
+          setThreats((prev) => [newThreat, ...prev.slice(0, 19)]);
+        }
+      }
+
+      setThreats((prev) =>
+        prev.filter(
+          (threat) =>
+            threat.status !== "resolved" ||
+            Date.now() - threat.timestamp.getTime() < 300000
+        )
+      );
+    }, 3000);
+
+    return () => {
+      if (simulationIntervalRef.current) {
+        clearInterval(simulationIntervalRef.current);
+      }
+    };
+  }, [isSimulationRunning, updateThreatMovement, generateNewThreat, sensors]);
+
+  // Auto-dismiss notifications
+  useEffect(() => {
+    if (notifications.length > 0) {
+      const timer = setTimeout(() => {
+        setNotifications((prev) => prev.slice(1));
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [notifications]);
 
   const getSeverityColor = (severity: ThreatSeverity): string => {
     return `${SEVERITY_CONFIG[severity].bgColor} text-white`;
@@ -4746,15 +6849,24 @@ const EnhancedBorderSurveillance: React.FC = () => {
     return icons[direction];
   };
 
-  const activeCriticalThreats = threats.filter(
-    t => t.severity === "critical" && t.status === "active"
+  const activeCriticalThreats = useMemo(
+    () =>
+      threats.filter((t) => t.severity === "critical" && t.status === "active"),
+    [threats]
   );
 
-  const activeThreats = threats.filter(t => t.status === "active");
-  const activeSensors = sensors.filter(s => s.status === "active");
+  const activeThreats = useMemo(
+    () => threats.filter((t) => t.status === "active"),
+    [threats]
+  );
+
+  const activeSensors = useMemo(
+    () => sensors.filter((s) => s.status === "active"),
+    [sensors]
+  );
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-slate-900 text-white relative">
       {/* Audio element for alerts */}
       <audio ref={audioRef} preload="auto">
         <source
@@ -4763,24 +6875,44 @@ const EnhancedBorderSurveillance: React.FC = () => {
         />
       </audio>
 
+      {/* In-app notifications */}
+      <div className="absolute top-20 right-4 z-20 space-y-2">
+        {notifications.map((notif) => (
+          <div
+            key={notif.id}
+            className={`p-4 rounded shadow-lg text-white transform transition-all duration-300 ease-in-out animate-slide-in ${
+              notif.severity === "critical" ? "bg-red-600" : "bg-orange-600"
+            }`}
+          >
+            {notif.message}
+          </div>
+        ))}
+      </div>
+
       {/* Header */}
       <div className="bg-slate-800 border-b border-slate-700 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Shield className="w-8 h-8 text-blue-400" />
             <div>
-              <h1 className="text-2xl font-bold">Enhanced Border Surveillance</h1>
-              <p className="text-slate-400">Benue State - Real-time Threat Tracking</p>
+              <h1 className="text-2xl font-bold">
+                Enhanced Border Surveillance
+              </h1>
+              <p className="text-slate-400">
+                Benue State - Real-time Threat Tracking
+              </p>
             </div>
           </div>
 
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className={`w-3 h-3 rounded-full ${
-                connectionStatus === "connected" 
-                  ? "bg-green-400 animate-pulse" 
-                  : "bg-red-400"
-              }`} />
+              <div
+                className={`w-3 h-3 rounded-full ${
+                  connectionStatus === "connected"
+                    ? "bg-green-400 animate-pulse"
+                    : "bg-red-400"
+                }`}
+              />
               <span className="text-sm text-slate-400 capitalize">
                 {connectionStatus}
               </span>
@@ -4789,8 +6921,8 @@ const EnhancedBorderSurveillance: React.FC = () => {
             <button
               onClick={() => setIsSimulationRunning(!isSimulationRunning)}
               className={`px-3 py-1 rounded text-sm ${
-                isSimulationRunning 
-                  ? "bg-red-600 hover:bg-red-500" 
+                isSimulationRunning
+                  ? "bg-red-600 hover:bg-red-500"
                   : "bg-green-600 hover:bg-green-500"
               }`}
             >
@@ -4805,7 +6937,11 @@ const EnhancedBorderSurveillance: React.FC = () => {
                   : "bg-slate-600 text-slate-300"
               }`}
             >
-              {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+              {soundEnabled ? (
+                <Volume2 className="w-5 h-5" />
+              ) : (
+                <VolumeX className="w-5 h-5" />
+              )}
             </button>
 
             <div className="text-right">
@@ -4827,7 +6963,9 @@ const EnhancedBorderSurveillance: React.FC = () => {
           <AlertDescription>
             <div className="flex items-center space-x-2">
               <span className="font-semibold">
-                CRITICAL ALERT: {activeCriticalThreats.length} active critical threat{activeCriticalThreats.length > 1 ? "s" : ""} detected
+                CRITICAL ALERT: {activeCriticalThreats.length} active critical
+                threat
+                {activeCriticalThreats.length > 1 ? "s" : ""} detected
               </span>
               <Bell className="w-5 h-5 animate-bounce" />
             </div>
@@ -4844,8 +6982,12 @@ const EnhancedBorderSurveillance: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-slate-400 text-sm">Active Sensors</p>
-                  <p className="text-2xl font-bold text-green-400">{activeSensors.length}</p>
-                  <p className="text-xs text-slate-500">of {sensors.length} total</p>
+                  <p className="text-2xl font-bold text-green-400">
+                    {activeSensors.length}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    of {sensors.length} total
+                  </p>
                 </div>
                 <Activity className="w-8 h-8 text-green-400" />
               </div>
@@ -4855,7 +6997,9 @@ const EnhancedBorderSurveillance: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-slate-400 text-sm">Active Threats</p>
-                  <p className="text-2xl font-bold text-red-400">{activeThreats.length}</p>
+                  <p className="text-2xl font-bold text-red-400">
+                    {activeThreats.length}
+                  </p>
                   <p className="text-xs text-slate-500">
                     {activeCriticalThreats.length} critical
                   </p>
@@ -4881,7 +7025,9 @@ const EnhancedBorderSurveillance: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-slate-400 text-sm">System Status</p>
-                  <p className="text-lg font-bold text-green-400">Operational</p>
+                  <p className="text-lg font-bold text-green-400">
+                    Operational
+                  </p>
                   <p className="text-xs text-slate-500">All systems normal</p>
                 </div>
                 <Settings className="w-8 h-8 text-green-400" />
@@ -4889,7 +7035,7 @@ const EnhancedBorderSurveillance: React.FC = () => {
             </div>
           </div>
 
-          {/* Map Placeholder */}
+          {/* Map */}
           <div className="bg-slate-800 rounded-lg p-4 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold flex items-center space-x-2">
@@ -4912,113 +7058,170 @@ const EnhancedBorderSurveillance: React.FC = () => {
               </div>
             </div>
 
-            {/* Enhanced Map Visualization */}
-            <div className="bg-slate-900 rounded-lg h-96 relative overflow-hidden border border-slate-600">
-              <div className="absolute inset-0 p-4">
-                {/* Boundary representation */}
-                <div className="absolute inset-4 border-2 border-blue-500 border-dashed rounded-lg opacity-60"></div>
-                
-                {/* Legend */}
-                <div className="absolute top-4 left-4 bg-slate-800 rounded p-2 text-xs space-y-1 border border-slate-600">
-                  <div className="text-blue-400 font-semibold">Benue State Border</div>
-                  <div className="flex items-center space-x-1">
-                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <span>Active Sensors</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                    <span>Critical Threats</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                    <span>Medium Threats</span>
-                  </div>
-                </div>
-
-                {/* Sensor positions */}
-                {sensors.map((sensor, index) => (
-                  <div
-                    key={sensor.id}
-                    className={`absolute w-4 h-4 rounded transform -translate-x-2 -translate-y-2 ${
-                      sensor.status === 'active' ? 'bg-green-400' : 
-                      sensor.status === 'alert' ? 'bg-orange-400 animate-pulse' : 'bg-red-400'
-                    }`}
-                    style={{
-                      left: `${20 + (index * 15)}%`,
-                      top: `${25 + (index * 12)}%`,
-                    }}
-                    title={`${sensor.name} - ${sensor.status}`}
-                  >
-                    <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-white bg-slate-800 px-1 rounded whitespace-nowrap opacity-0 hover:opacity-100 transition-opacity">
-                      {sensor.id}
-                    </div>
-                  </div>
-                ))}
-
-                {/* Threat positions with movement indicators */}
-                {activeThreats.map((threat, index) => {
-                  const baseLeft = 30 + (index * 18) % 60;
-                  const baseTop = 35 + (index * 15) % 45;
-                  
-                  return (
-                    <div key={threat.id} className="absolute">
-                      {/* Movement trail */}
-                      {threat.movement.trajectory.length > 1 && (
-                        <svg 
-                          className="absolute w-full h-full pointer-events-none"
-                          style={{
-                            left: `${baseLeft - 10}%`,
-                            top: `${baseTop - 10}%`,
-                            width: '20%',
-                            height: '20%',
+            {/* Real Map with Leaflet */}
+            <div className="bg-slate-900 rounded-lg h-[600px] relative overflow-hidden border border-slate-600">
+              <MapContainer
+                center={[7.5, 8.5]}
+                zoom={9}
+                style={{ height: "100%", width: "100%" }}
+                maxBounds={[
+                  [bounds.minLat - 0.5, bounds.minLng - 0.5],
+                  [bounds.maxLat + 0.5, bounds.maxLng + 0.5],
+                ]}
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
+                <Polygon
+                  positions={boundaryCoords.map(
+                    ([lng, lat]) => [lat, lng] as LatLngExpression
+                  )}
+                  pathOptions={{ color: "blue", dashArray: "5, 5" }}
+                />
+                <MapControls
+                  threats={threats}
+                  showSensors={showSensors}
+                  setShowSensors={setShowSensors}
+                  showThreats={showThreats}
+                  setShowThreats={setShowThreats}
+                  showHeatmap={showHeatmap}
+                  setShowHeatmap={setShowHeatmap}
+                />
+                {showSensors && (
+                  <MarkerClusterGroup>
+                    {sensors.map((sensor) => (
+                      <Marker
+                        key={sensor.id}
+                        position={[
+                          sensor.coordinates.lat,
+                          sensor.coordinates.lng,
+                        ]}
+                        icon={sensorIcon(sensor.status)}
+                      >
+                        <Popup>
+                          {sensor.name} - {sensor.status}
+                        </Popup>
+                        <Tooltip>{sensor.id}</Tooltip>
+                      </Marker>
+                    ))}
+                  </MarkerClusterGroup>
+                )}
+                {showThreats && (
+                  <MarkerClusterGroup>
+                    {activeThreats.map((threat) => (
+                      <Fragment key={threat.id}>
+                        <Marker
+                          position={[
+                            threat.movement.currentPosition.lat,
+                            threat.movement.currentPosition.lng,
+                          ]}
+                          icon={threatIcon(threat.severity)}
+                          eventHandlers={{
+                            click: () => setSelectedThreat(threat),
                           }}
                         >
-                          <polyline
-                            points={threat.movement.trajectory.slice(-5).map((_, i) => `${i * 4},${i * 3}`).join(' ')}
-                            stroke="rgba(147, 51, 234, 0.6)"
-                            strokeWidth="1"
-                            fill="none"
-                            strokeDasharray="2,2"
+                          <Popup>
+                            {THREAT_TYPES[threat.type].label}
+                            <br />
+                            Severity: {threat.severity}
+                            <br />
+                            Speed: {threat.movement.speed.toFixed(1)} km/h
+                          </Popup>
+                          <Tooltip direction="top">
+                            {THREAT_TYPES[threat.type].label}
+                          </Tooltip>
+                        </Marker>
+                        {threat.movement.trajectory.length > 1 && (
+                          <Polyline
+                            positions={threat.movement.trajectory.map(
+                              (pos) => [pos.lat, pos.lng] as LatLngExpression
+                            )}
+                            pathOptions={{ color: "purple", dashArray: "2,2" }}
                           />
-                        </svg>
-                      )}
-                      
-                      {/* Threat marker */}
-                      <div
-                        className={`absolute w-5 h-5 rounded-full transform -translate-x-2.5 -translate-y-2.5 cursor-pointer ${
-                          threat.severity === 'critical' ? 'bg-red-500 animate-pulse shadow-red-500/50 shadow-lg' :
-                          threat.severity === 'high' ? 'bg-orange-500 animate-pulse' :
-                          threat.severity === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-                        }`}
-                        style={{
-                          left: `${baseLeft}%`,
-                          top: `${baseTop}%`,
-                        }}
-                        onClick={() => setSelectedThreat(threat)}
-                      >
-                        {/* Movement direction indicator */}
-                        <div className="absolute -top-2 -right-2 text-xs">
-                          {getMovementIcon(threat.movement.direction)}
-                        </div>
-                        
-                        {/* Hover info */}
-                        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
-                          {THREAT_TYPES[threat.type].label}
-                          <br />
-                          {threat.severity.toUpperCase()} - {threat.movement.speed.toFixed(1)} km/h
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                        )}
+                        {threat.predictedPosition && (
+                          <>
+                            <Polyline
+                              positions={
+                                [
+                                  [
+                                    threat.movement.currentPosition.lat,
+                                    threat.movement.currentPosition.lng,
+                                  ],
+                                  [
+                                    threat.predictedPosition.lat,
+                                    threat.predictedPosition.lng,
+                                  ],
+                                ] as LatLngExpression[]
+                              }
+                              pathOptions={{
+                                color: "gray",
+                                dashArray: "5,5",
+                                opacity: 0.7,
+                              }}
+                            />
+                            <Marker
+                              position={[
+                                threat.predictedPosition.lat,
+                                threat.predictedPosition.lng,
+                              ]}
+                              icon={predictedIcon}
+                            >
+                              <Popup>Predicted Position (60s ahead)</Popup>
+                              <Tooltip>Predicted</Tooltip>
+                            </Marker>
+                          </>
+                        )}
+                      </Fragment>
+                    ))}
+                  </MarkerClusterGroup>
+                )}
+                {showHeatmap && (
+                  <HeatmapLayer
+                    points={
+                      heatmapData as Array<{
+                        lat: number;
+                        lng: number;
+                        value: number;
+                      }>
+                    }
+                    longitudeExtractor={(p: {
+                      lat: number;
+                      lng: number;
+                      value: number;
+                    }) => p.lng}
+                    latitudeExtractor={(p: {
+                      lat: number;
+                      lng: number;
+                      value: number;
+                    }) => p.lat}
+                    intensityExtractor={(p: {
+                      lat: number;
+                      lng: number;
+                      value: number;
+                    }) => p.value}
+                    radius={20}
+                    blur={15}
+                    maxZoom={18}
+                  />
+                )}
+              </MapContainer>
 
-                {/* Simulation indicator */}
-                <div className="absolute bottom-4 right-4 flex items-center space-x-2 bg-slate-800 rounded px-3 py-1 border border-slate-600">
-                  <div className={`w-2 h-2 rounded-full ${isSimulationRunning ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
-                  <span className="text-xs">
-                    {isSimulationRunning ? 'Live Simulation' : 'Simulation Paused'}
-                  </span>
-                </div>
+              {/* Simulation indicator */}
+              <div className="absolute bottom-4 right-4 flex items-center space-x-2 bg-slate-800 rounded px-3 py-1 border border-slate-600 z-[1000]">
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    isSimulationRunning
+                      ? "bg-green-400 animate-pulse"
+                      : "bg-red-400"
+                  }`}
+                ></div>
+                <span className="text-xs">
+                  {isSimulationRunning
+                    ? "Live Simulation"
+                    : "Simulation Paused"}
+                </span>
               </div>
             </div>
           </div>
@@ -5027,29 +7230,47 @@ const EnhancedBorderSurveillance: React.FC = () => {
           <div className="bg-slate-800 rounded-lg p-4">
             <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
               <Camera className="w-5 h-5" />
-              <span>Live Video Feeds & Sensor Data</span>
+              <span>Live Video Feeds & Sensor Data (with AI Detection)</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {sensors.map((sensor) => (
-                <div key={sensor.id} className="bg-slate-700 rounded-lg p-3 border border-slate-600">
-                  <div className="bg-black rounded aspect-video mb-3 flex items-center justify-center relative overflow-hidden">
-                    <div className="text-slate-400 text-center">
-                      <Camera className="w-8 h-8 mx-auto mb-2" />
-                      <div className="text-xs font-medium">{sensor.sensorType.toUpperCase()}</div>
-                      <div className="text-xs">{sensor.id}</div>
+                <div
+                  key={sensor.id}
+                  className="bg-slate-700 rounded-lg p-3 border border-slate-600"
+                >
+                  <div className="bg-black rounded aspect-video mb-3 relative overflow-hidden">
+                    <video
+                      ref={(el) => {
+                        videoRefs.current[sensor.id] = el;
+                      }}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover absolute top-0 left-0"
+                    >
+                      <source
+                        src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                    <canvas
+                      ref={(el) => {
+                        canvasRefs.current[sensor.id] = el;
+                      }}
+                      className="absolute top-0 left-0 pointer-events-none"
+                    />
+                    <div className="absolute top-2 left-2 text-xs bg-black/50 px-2 py-1 rounded">
+                      {sensor.sensorType.toUpperCase()} - {sensor.id}
                     </div>
-                    
-                    {/* Simulated activity indicator */}
-                    {sensor.status === 'active' && isSimulationRunning && (
-                      <div className="absolute top-2 right-2 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    {isSimulationRunning && (
+                      <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                     )}
-                    
-                    {/* Alert indicator */}
-                    {sensor.status === 'alert' && (
-                      <div className="absolute inset-0 border-2 border-red-500 animate-pulse"></div>
+                    {sensor.status === "alert" && (
+                      <div className="absolute inset-0 border-4 border-red-500 animate-pulse pointer-events-none" />
                     )}
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-300">{sensor.name}</span>
@@ -5057,38 +7278,47 @@ const EnhancedBorderSurveillance: React.FC = () => {
                         {sensor.status.toUpperCase()}
                       </span>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div className="bg-slate-600 rounded p-1">
                         <div className="text-slate-400">Battery</div>
-                        <div className="font-medium">{sensor.batteryLevel.toFixed(1)}%</div>
+                        <div className="font-medium">
+                          {sensor.batteryLevel.toFixed(1)}%
+                        </div>
                         <div className="w-full bg-slate-800 rounded-full h-1 mt-1">
                           <div
                             className={`h-1 rounded-full ${
-                              sensor.batteryLevel > 50 ? 'bg-green-400' : 
-                              sensor.batteryLevel > 25 ? 'bg-yellow-400' : 'bg-red-400'
+                              sensor.batteryLevel > 50
+                                ? "bg-green-400"
+                                : sensor.batteryLevel > 25
+                                ? "bg-yellow-400"
+                                : "bg-red-400"
                             }`}
                             style={{ width: `${sensor.batteryLevel}%` }}
                           />
                         </div>
                       </div>
-                      
+
                       <div className="bg-slate-600 rounded p-1">
                         <div className="text-slate-400">Signal</div>
-                        <div className="font-medium">{sensor.signalStrength.toFixed(0)}%</div>
+                        <div className="font-medium">
+                          {sensor.signalStrength.toFixed(0)}%
+                        </div>
                         <div className="flex space-x-1 mt-1">
-                          {[1, 2, 3, 4, 5].map(bar => (
+                          {[1, 2, 3, 4, 5].map((bar) => (
                             <div
                               key={bar}
                               className={`flex-1 h-1 rounded ${
-                                sensor.signalStrength >= bar * 20 ? 'bg-green-400' : 'bg-slate-800'
+                                sensor.signalStrength >= bar * 20
+                                  ? "bg-green-400"
+                                  : "bg-slate-800"
                               }`}
                             />
                           ))}
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="text-xs text-slate-400">
                       Last update: {sensor.lastUpdate.toLocaleTimeString()}
                     </div>
@@ -5109,28 +7339,51 @@ const EnhancedBorderSurveillance: React.FC = () => {
           {/* Threat Filter */}
           <div className="mb-4 space-y-2">
             <div className="flex space-x-1 text-xs">
-              <button className="px-2 py-1 bg-red-600 text-white rounded">Critical</button>
-              <button className="px-2 py-1 bg-slate-600 text-slate-300 rounded hover:bg-slate-500">High</button>
-              <button className="px-2 py-1 bg-slate-600 text-slate-300 rounded hover:bg-slate-500">Medium</button>
-              <button className="px-2 py-1 bg-slate-600 text-slate-300 rounded hover:bg-slate-500">All</button>
+              <button className="px-2 py-1 bg-red-600 text-white rounded">
+                Critical
+              </button>
+              <button className="px-2 py-1 bg-slate-600 text-slate-300 rounded hover:bg-slate-500">
+                High
+              </button>
+              <button className="px-2 py-1 bg-slate-600 text-slate-300 rounded hover:bg-slate-500">
+                Medium
+              </button>
+              <button className="px-2 py-1 bg-slate-600 text-slate-300 rounded hover:bg-slate-500">
+                All
+              </button>
             </div>
           </div>
 
           {/* Threat List */}
-          <div className="space-y-3 mb-6" style={{ maxHeight: '50vh', overflowY: 'auto' }}>
+          <div
+            className="space-y-3 mb-6"
+            style={{ maxHeight: "50vh", overflowY: "auto" }}
+          >
             {threats
-              .sort((a, b) => SEVERITY_CONFIG[b.severity].priority - SEVERITY_CONFIG[a.severity].priority)
+              .sort(
+                (a, b) =>
+                  SEVERITY_CONFIG[b.severity].priority -
+                  SEVERITY_CONFIG[a.severity].priority
+              )
               .map((threat) => (
                 <div
                   key={threat.id}
                   className={`bg-slate-700 rounded-lg p-3 cursor-pointer transition-all border
-                    ${selectedThreat?.id === threat.id ? 'ring-2 ring-blue-400 border-blue-400' : 'border-slate-600'}
+                    ${
+                      selectedThreat?.id === threat.id
+                        ? "ring-2 ring-blue-400 border-blue-400"
+                        : "border-slate-600"
+                    }
                     hover:bg-slate-600 hover:border-slate-500`}
                   onClick={() => setSelectedThreat(threat)}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(threat.severity)}`}>
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(
+                          threat.severity
+                        )}`}
+                      >
                         {threat.severity.toUpperCase()}
                       </span>
                       <span className="text-xs">
@@ -5139,19 +7392,20 @@ const EnhancedBorderSurveillance: React.FC = () => {
                     </div>
                     <div className="flex items-center space-x-1 text-xs text-slate-400">
                       <Clock className="w-3 h-3" />
-                      <span>{new Date(threat.timestamp).toLocaleTimeString()}</span>
+                      <span>
+                        {new Date(threat.timestamp).toLocaleTimeString()}
+                      </span>
                     </div>
                   </div>
 
                   <h3 className="font-medium mb-1 text-sm">
                     {THREAT_TYPES[threat.type].label}
                   </h3>
-                  
+
                   <p className="text-xs text-slate-300 mb-2 line-clamp-2">
                     {threat.description}
                   </p>
 
-                  {/* Movement info */}
                   <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
                     <span className="flex items-center space-x-1">
                       <Navigation className="w-3 h-3" />
@@ -5173,12 +7427,18 @@ const EnhancedBorderSurveillance: React.FC = () => {
                   </div>
 
                   <div className="flex items-center justify-between text-xs mb-2">
-                    <span className="text-slate-400">Confidence: {threat.confidence}%</span>
-                    <span className={`px-1 rounded ${
-                      threat.status === 'active' ? 'bg-red-800 text-red-200' :
-                      threat.status === 'investigating' ? 'bg-yellow-800 text-yellow-200' :
-                      'bg-green-800 text-green-200'
-                    }`}>
+                    <span className="text-slate-400">
+                      Confidence: {threat.confidence}%
+                    </span>
+                    <span
+                      className={`px-1 rounded ${
+                        threat.status === "active"
+                          ? "bg-red-800 text-red-200"
+                          : threat.status === "investigating"
+                          ? "bg-yellow-800 text-yellow-200"
+                          : "bg-green-800 text-green-200"
+                      }`}
+                    >
                       {threat.status.toUpperCase()}
                     </span>
                   </div>
@@ -5203,13 +7463,16 @@ const EnhancedBorderSurveillance: React.FC = () => {
             </h3>
 
             <div className="space-y-3">
-              {/* Network Status */}
               <div className="bg-slate-700 rounded p-3">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium">Network Status</span>
-                  <span className={`text-xs px-2 py-1 rounded ${
-                    connectionStatus === 'connected' ? 'bg-green-800 text-green-200' : 'bg-red-800 text-red-200'
-                  }`}>
+                  <span
+                    className={`text-xs px-2 py-1 rounded ${
+                      connectionStatus === "connected"
+                        ? "bg-green-800 text-green-200"
+                        : "bg-red-800 text-red-200"
+                    }`}
+                  >
                     {connectionStatus.toUpperCase()}
                   </span>
                 </div>
@@ -5218,44 +7481,70 @@ const EnhancedBorderSurveillance: React.FC = () => {
                 </div>
               </div>
 
-              {/* Sensor Summary */}
               <div className="bg-slate-700 rounded p-3">
                 <div className="text-sm font-medium mb-2">Sensor Network</div>
                 <div className="space-y-1 text-xs">
                   <div className="flex justify-between">
                     <span className="text-green-400">Active:</span>
-                    <span>{sensors.filter(s => s.status === 'active').length}</span>
+                    <span>
+                      {sensors.filter((s) => s.status === "active").length}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-orange-400">Alert:</span>
-                    <span>{sensors.filter(s => s.status === 'alert').length}</span>
+                    <span>
+                      {sensors.filter((s) => s.status === "alert").length}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-red-400">Offline:</span>
-                    <span>{sensors.filter(s => s.status === 'inactive').length}</span>
+                    <span>
+                      {sensors.filter((s) => s.status === "inactive").length}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Threat Summary */}
               <div className="bg-slate-700 rounded p-3">
                 <div className="text-sm font-medium mb-2">Threat Analysis</div>
                 <div className="space-y-1 text-xs">
                   <div className="flex justify-between">
                     <span className="text-red-400">Critical:</span>
-                    <span>{threats.filter(t => t.severity === 'critical' && t.status === 'active').length}</span>
+                    <span>
+                      {
+                        threats.filter(
+                          (t) =>
+                            t.severity === "critical" && t.status === "active"
+                        ).length
+                      }
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-orange-400">High:</span>
-                    <span>{threats.filter(t => t.severity === 'high' && t.status === 'active').length}</span>
+                    <span>
+                      {
+                        threats.filter(
+                          (t) => t.severity === "high" && t.status === "active"
+                        ).length
+                      }
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-yellow-400">Medium:</span>
-                    <span>{threats.filter(t => t.severity === 'medium' && t.status === 'active').length}</span>
+                    <span>
+                      {
+                        threats.filter(
+                          (t) =>
+                            t.severity === "medium" && t.status === "active"
+                        ).length
+                      }
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Resolved:</span>
-                    <span>{threats.filter(t => t.status === 'resolved').length}</span>
+                    <span>
+                      {threats.filter((t) => t.status === "resolved").length}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -5270,8 +7559,14 @@ const EnhancedBorderSurveillance: React.FC = () => {
           <div className="bg-slate-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-slate-600">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-3">
-                <h2 className="text-xl font-bold">Threat Intelligence Report</h2>
-                <span className={`px-3 py-1 rounded text-sm font-medium ${getSeverityColor(selectedThreat.severity)}`}>
+                <h2 className="text-xl font-bold">
+                  Threat Intelligence Report
+                </h2>
+                <span
+                  className={`px-3 py-1 rounded text-sm font-medium ${getSeverityColor(
+                    selectedThreat.severity
+                  )}`}
+                >
                   {selectedThreat.severity.toUpperCase()}
                 </span>
               </div>
@@ -5284,10 +7579,11 @@ const EnhancedBorderSurveillance: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Basic Information */}
               <div className="space-y-4">
                 <div className="bg-slate-700 rounded p-4">
-                  <h3 className="font-semibold mb-3 text-blue-400">Basic Information</h3>
+                  <h3 className="font-semibold mb-3 text-blue-400">
+                    Basic Information
+                  </h3>
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
                       <label className="text-slate-400">Threat ID</label>
@@ -5300,16 +7596,21 @@ const EnhancedBorderSurveillance: React.FC = () => {
                     <div>
                       <label className="text-slate-400">Type</label>
                       <p className="font-medium">
-                        {THREAT_TYPES[selectedThreat.type].icon} {THREAT_TYPES[selectedThreat.type].label}
+                        {THREAT_TYPES[selectedThreat.type].icon}{" "}
+                        {THREAT_TYPES[selectedThreat.type].label}
                       </p>
                     </div>
                     <div>
                       <label className="text-slate-400">Status</label>
-                      <p className={`font-medium ${
-                        selectedThreat.status === 'active' ? 'text-red-400' :
-                        selectedThreat.status === 'investigating' ? 'text-yellow-400' :
-                        'text-green-400'
-                      }`}>
+                      <p
+                        className={`font-medium ${
+                          selectedThreat.status === "active"
+                            ? "text-red-400"
+                            : selectedThreat.status === "investigating"
+                            ? "text-yellow-400"
+                            : "text-green-400"
+                        }`}
+                      >
                         {selectedThreat.status.toUpperCase()}
                       </p>
                     </div>
@@ -5317,63 +7618,81 @@ const EnhancedBorderSurveillance: React.FC = () => {
                 </div>
 
                 <div className="bg-slate-700 rounded p-4">
-                  <h3 className="font-semibold mb-3 text-blue-400">Movement Analysis</h3>
+                  <h3 className="font-semibold mb-3 text-blue-400">
+                    Movement Analysis
+                  </h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-slate-400">Direction:</span>
                       <span className="font-medium">
-                        {selectedThreat.movement.direction} {getMovementIcon(selectedThreat.movement.direction)}
+                        {selectedThreat.movement.direction}{" "}
+                        {getMovementIcon(selectedThreat.movement.direction)}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Current Speed:</span>
-                      <span className="font-medium">{selectedThreat.movement.speed.toFixed(1)} km/h</span>
+                      <span className="font-medium">
+                        {selectedThreat.movement.speed.toFixed(1)} km/h
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Estimated Size:</span>
-                      <span className="font-medium">{selectedThreat.estimatedSize} individuals</span>
+                      <span className="font-medium">
+                        {selectedThreat.estimatedSize} individuals
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Confidence:</span>
-                      <span className="font-medium">{selectedThreat.confidence}%</span>
+                      <span className="font-medium">
+                        {selectedThreat.confidence}%
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Detailed Information */}
               <div className="space-y-4">
                 <div className="bg-slate-700 rounded p-4">
-                  <h3 className="font-semibold mb-3 text-blue-400">Threat Description</h3>
+                  <h3 className="font-semibold mb-3 text-blue-400">
+                    Threat Description
+                  </h3>
                   <p className="text-slate-200 text-sm leading-relaxed">
                     {selectedThreat.description}
                   </p>
                 </div>
 
                 <div className="bg-slate-700 rounded p-4">
-                  <h3 className="font-semibold mb-3 text-blue-400">Location & Time</h3>
+                  <h3 className="font-semibold mb-3 text-blue-400">
+                    Location & Time
+                  </h3>
                   <div className="space-y-2 text-sm">
                     <div>
                       <label className="text-slate-400">Location</label>
-                      <p className="font-medium">{selectedThreat.location.name}</p>
+                      <p className="font-medium">
+                        {selectedThreat.location.name}
+                      </p>
                       <p className="text-xs text-slate-500">
-                        {selectedThreat.location.lat.toFixed(4)}, {selectedThreat.location.lng.toFixed(4)}
+                        {selectedThreat.location.lat.toFixed(4)},{" "}
+                        {selectedThreat.location.lng.toFixed(4)}
                       </p>
                     </div>
                     <div>
                       <label className="text-slate-400">First Detected</label>
-                      <p className="font-medium">{selectedThreat.timestamp.toLocaleString()}</p>
+                      <p className="font-medium">
+                        {selectedThreat.timestamp.toLocaleString()}
+                      </p>
                     </div>
                     <div>
                       <label className="text-slate-400">Last Update</label>
-                      <p className="font-medium">{selectedThreat.movement.lastUpdate.toLocaleString()}</p>
+                      <p className="font-medium">
+                        {selectedThreat.movement.lastUpdate.toLocaleString()}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex flex-wrap gap-3 mt-6 pt-4 border-t border-slate-600">
               <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500 flex items-center space-x-2">
                 <AlertTriangle className="w-4 h-4" />
@@ -5399,3 +7718,2288 @@ const EnhancedBorderSurveillance: React.FC = () => {
 };
 
 export default EnhancedBorderSurveillance;
+
+
+
+
+
+
+
+
+
+
+
+
+// import {
+//   useState,
+//   useEffect,
+//   useRef,
+//   useMemo,
+//   useCallback,
+//   Fragment,
+// } from "react";
+// import {
+//   AlertTriangle,
+//   Shield,
+//   MapPin,
+//   Camera,
+//   Users,
+//   Clock,
+//   Volume2,
+//   VolumeX,
+//   Eye,
+//   Target,
+//   Bell,
+//   Activity,
+//   Navigation,
+//   Radio,
+//   Settings,
+// } from "lucide-react";
+// import { Alert, AlertDescription } from "@/components/ui/alert";
+// import {
+//   MapContainer,
+//   TileLayer,
+//   Polygon,
+//   Marker,
+//   Polyline,
+//   Popup,
+//   useMap,
+//   Tooltip,
+// } from "react-leaflet";
+// import L, { type LatLngExpression } from "leaflet";
+// import MarkerClusterGroup from "react-leaflet-markercluster";
+// import { HeatmapLayer } from "react-leaflet-heatmap-layer-v3";
+// import "leaflet/dist/leaflet.css";
+// import benueBoundaryData from "@/data/benue1.geojson.json"; // Assume GeoJSON data for Benue state
+// // import './EnhancedBorderSurveillance.css'; // Custom CSS for styling
+// import * as tf from "@tensorflow/tfjs";
+
+// import * as cocoSsd from "@tensorflow-models/coco-ssd";
+
+// // Types
+// type SensorStatus = "active" | "inactive" | "alert" | "maintenance";
+// type ThreatSeverity = "low" | "medium" | "high" | "critical";
+// type ThreatType =
+//   | "intrusion"
+//   | "suspicious_activity"
+//   | "armed_group"
+//   | "vehicle_movement"
+//   | "cyber_threat"
+//   | "equipment_tampering";
+// type ThreatStatus = "active" | "investigating" | "resolved" | "escalated";
+// type ConnectionStatus = "connected" | "disconnected" | "reconnecting";
+// type MovementDirection = "inbound" | "outbound" | "lateral" | "stationary";
+
+// interface Coordinates {
+//   lat: number;
+//   lng: number;
+// }
+
+// interface LocationInfo extends Coordinates {
+//   name: string;
+// }
+
+// interface Sensor {
+//   id: string;
+//   name: string;
+//   coordinates: Coordinates;
+//   status: SensorStatus;
+//   lastUpdate: Date;
+//   batteryLevel: number;
+//   signalStrength: number;
+//   sensorType:
+//     | "motion"
+//     | "thermal"
+//     | "acoustic"
+//     | "camera"
+//     | "seismic"
+//     | "drone";
+//   movement?: ThreatMovement;
+// }
+
+// interface ThreatMovement {
+//   currentPosition: Coordinates;
+//   previousPosition: Coordinates;
+//   direction: MovementDirection;
+//   speed: number; // km/h
+//   trajectory: Coordinates[];
+//   lastUpdate: Date;
+//   target?: Coordinates;
+// }
+
+// interface Threat {
+//   id: string;
+//   sensorId: string;
+//   type: ThreatType;
+//   severity: ThreatSeverity;
+//   location: LocationInfo;
+//   timestamp: Date;
+//   description: string;
+//   personnel: number;
+//   status: ThreatStatus;
+//   movement: ThreatMovement;
+//   estimatedSize: number;
+//   confidence: number; // 0-100%
+//   predictedPosition?: Coordinates;
+// }
+
+// // Constants
+// const THREAT_TYPES: Record<ThreatType, { label: string; icon: string }> = {
+//   intrusion: { label: "Border Intrusion", icon: "👥" },
+//   suspicious_activity: { label: "Suspicious Activity", icon: "👁️" },
+//   armed_group: { label: "Armed Group", icon: "⚔️" },
+//   vehicle_movement: { label: "Vehicle Movement", icon: "🚗" },
+//   cyber_threat: { label: "Cyber Threat", icon: "💻" },
+//   equipment_tampering: { label: "Equipment Tampering", icon: "🔧" },
+// };
+
+// const SEVERITY_CONFIG: Record<
+//   ThreatSeverity,
+//   { color: string; bgColor: string; priority: number }
+// > = {
+//   low: { color: "text-green-400", bgColor: "bg-green-500", priority: 1 },
+//   medium: { color: "text-yellow-400", bgColor: "bg-yellow-500", priority: 2 },
+//   high: { color: "text-orange-400", bgColor: "bg-orange-500", priority: 3 },
+//   critical: { color: "text-red-400", bgColor: "bg-red-500", priority: 4 },
+// };
+
+// // Custom Icons
+// const sensorIcon = (status: SensorStatus) =>
+//   L.divIcon({
+//     className: "",
+//     html: `<div style="background-color: ${
+//       status === "active" ? "green" : status === "alert" ? "orange" : "red"
+//     }; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white;"></div>`,
+//     iconSize: [16, 16],
+//   });
+
+// const threatIcon = (severity: ThreatSeverity) =>
+//   L.divIcon({
+//     className: "",
+//     html: `<div style="background-color: ${
+//       severity === "critical"
+//         ? "red"
+//         : severity === "high"
+//         ? "orange"
+//         : severity === "medium"
+//         ? "yellow"
+//         : "green"
+//     }; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white;"></div>`,
+//     iconSize: [20, 20],
+//   });
+
+// const predictedIcon = L.divIcon({
+//   className: "",
+//   html: `<div style="background-color: gray; width: 15px; height: 15px; border-radius: 50%; border: 2px solid white; opacity: 0.7;"></div>`,
+//   iconSize: [15, 15],
+// });
+
+// // Utility functions
+// const isPointInPolygon = (point: Coordinates, polygon: number[][]): boolean => {
+//   const { lat, lng } = point;
+//   let inside = false;
+
+//   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+//     const [xi, yi] = polygon[i];
+//     const [xj, yj] = polygon[j];
+
+//     if (
+//       yi > lat !== yj > lat &&
+//       lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi
+//     ) {
+//       inside = !inside;
+//     }
+//   }
+
+//   return inside;
+// };
+
+// const calculateDistance = (
+//   point1: Coordinates,
+//   point2: Coordinates
+// ): number => {
+//   const R = 6371; // Earth's radius in km
+//   const dLat = ((point2.lat - point1.lat) * Math.PI) / 180;
+//   const dLng = ((point2.lng - point1.lng) * Math.PI) / 180;
+//   const a =
+//     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+//     Math.cos((point1.lat * Math.PI) / 180) *
+//       Math.cos((point2.lat * Math.PI) / 180) *
+//       Math.sin(dLng / 2) *
+//       Math.sin(dLng / 2);
+//   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+//   return R * c;
+// };
+
+// const calculateBearing = (start: Coordinates, end: Coordinates): number => {
+//   const dLng = ((end.lng - start.lng) * Math.PI) / 180;
+//   const lat1 = (start.lat * Math.PI) / 180;
+//   const lat2 = (end.lat * Math.PI) / 180;
+
+//   const y = Math.sin(dLng) * Math.cos(lat2);
+//   const x =
+//     Math.cos(lat1) * Math.sin(lat2) -
+//     Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+
+//   return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+// };
+
+// const generateRandomPoint = (bounds: {
+//   minLat: number;
+//   maxLat: number;
+//   minLng: number;
+//   maxLng: number;
+// }): Coordinates => ({
+//   lat: bounds.minLat + Math.random() * (bounds.maxLat - bounds.minLat),
+//   lng: bounds.minLng + Math.random() * (bounds.maxLng - bounds.minLng),
+// });
+
+// const movePointTowardTarget = (
+//   current: Coordinates,
+//   target: Coordinates,
+//   speedKmH: number,
+//   intervalMs: number
+// ): Coordinates => {
+//   const distance = calculateDistance(current, target);
+//   const bearing = calculateBearing(current, target);
+
+//   const movementKm = (speedKmH * intervalMs) / (1000 * 60 * 60);
+
+//   if (distance <= movementKm) {
+//     return target;
+//   }
+
+//   const bearingRad = (bearing * Math.PI) / 180;
+//   const R = 6371; // Earth radius in km
+
+//   const lat1 = (current.lat * Math.PI) / 180;
+//   const lng1 = (current.lng * Math.PI) / 180;
+
+//   const lat2 = Math.asin(
+//     Math.sin(lat1) * Math.cos(movementKm / R) +
+//       Math.cos(lat1) * Math.sin(movementKm / R) * Math.cos(bearingRad)
+//   );
+
+//   const lng2 =
+//     lng1 +
+//     Math.atan2(
+//       Math.sin(bearingRad) * Math.sin(movementKm / R) * Math.cos(lat1),
+//       Math.cos(movementKm / R) - Math.sin(lat1) * Math.sin(lat2)
+//     );
+
+//   return {
+//     lat: (lat2 * 180) / Math.PI,
+//     lng: (lng2 * 180) / Math.PI,
+//   };
+// };
+
+// // Nearest Neighbor TSP for drone path optimization
+// const computeTSPPath = (
+//   start: Coordinates,
+//   points: Coordinates[]
+// ): Coordinates[] => {
+//   let current = start;
+//   const remaining = [...points];
+//   const path = [start];
+
+//   while (remaining.length > 0) {
+//     let nearestIndex = 0;
+//     let minDist = calculateDistance(current, remaining[0]);
+
+//     for (let i = 1; i < remaining.length; i++) {
+//       const dist = calculateDistance(current, remaining[i]);
+//       if (dist < minDist) {
+//         minDist = dist;
+//         nearestIndex = i;
+//       }
+//     }
+
+//     current = remaining[nearestIndex];
+//     path.push(current);
+//     remaining.splice(nearestIndex, 1);
+//   }
+
+//   return path;
+// };
+
+// // Kalman Filter Class using TF.js
+// class KalmanFilter2D {
+//   private dt: number;
+//   private state: tf.Tensor;
+//   private covariance: tf.Tensor;
+//   private A: tf.Tensor;
+//   private H: tf.Tensor;
+//   private Q: tf.Tensor;
+//   private R: tf.Tensor;
+//   private identity: tf.Tensor;
+
+//   constructor(
+//     dt: number = 3,
+//     processNoise: number = 0.01,
+//     measurementNoise: number = 0.1,
+//     isBackendReady: boolean // Pass isBackendReady from component
+//   ) {
+//     if (!isBackendReady || !tf.getBackend()) {
+//       throw new Error("TensorFlow.js backend not initialized");
+//     }
+//     this.dt = dt;
+//     this.state = tf.zeros([4, 1]);
+//     this.covariance = tf.eye(4).mul(1000);
+//     this.A = tf.tensor2d([
+//       [1, 0, dt, 0],
+//       [0, 1, 0, dt],
+//       [0, 0, 1, 0],
+//       [0, 0, 0, 1],
+//     ]);
+//     this.H = tf.tensor2d([
+//       [1, 0, 0, 0],
+//       [0, 1, 0, 0],
+//     ]);
+//     this.Q = tf.eye(4).mul(processNoise);
+//     this.R = tf.eye(2).mul(measurementNoise);
+//     this.identity = tf.eye(4);
+//   }
+
+//   predict(): void {
+//     if (!tf.getBackend()) {
+//       console.warn("Backend not ready, skipping predict");
+//       return;
+//     }
+//     tf.tidy(() => {
+//       this.state = this.A.matMul(this.state);
+//       const covarianceUpdate = this.A.matMul(this.covariance)
+//         .matMul(this.A.transpose())
+//         .add(this.Q);
+//       this.covariance = covarianceUpdate;
+//     });
+//   }
+
+//   update(measurement: Coordinates): void {
+//     if (!tf.getBackend()) {
+//       console.warn("Backend not ready, skipping update");
+//       return;
+//     }
+//     tf.tidy(() => {
+//       const z = tf.tensor2d([[measurement.lat], [measurement.lng]]);
+//       const y = z.sub(this.H.matMul(this.state));
+//       const S = this.H.matMul(this.covariance)
+//         .matMul(this.H.transpose())
+//         .add(this.R);
+//       const SInverse = tf.linalg.inv(S);
+//       const K = this.covariance.matMul(this.H.transpose()).matMul(SInverse);
+//       this.state = this.state.add(K.matMul(y));
+//       this.covariance = this.identity
+//         .sub(K.matMul(this.H))
+//         .matMul(this.covariance);
+//     });
+//   }
+
+//   getPredictedPosition(): Coordinates {
+//     if (!tf.getBackend()) {
+//       console.warn("Backend not ready, returning default position");
+//       return { lat: 0, lng: 0 };
+//     }
+//     return tf.tidy(() => {
+//       const predictedState = this.A.matMul(this.state);
+//       const data = predictedState.dataSync();
+//       return {
+//         lat: data[0],
+//         lng: data[1],
+//       };
+//     });
+//   }
+
+//   getCurrentPosition(): Coordinates {
+//     if (!tf.getBackend()) {
+//       console.warn("Backend not ready, returning default position");
+//       return { lat: 0, lng: 0 };
+//     }
+//     return tf.tidy(() => {
+//       const data = this.state.dataSync();
+//       return {
+//         lat: data[0],
+//         lng: data[1],
+//       };
+//     });
+//   }
+
+//   dispose(): void {
+//     tf.tidy(() => {
+//       this.state.dispose();
+//       this.covariance.dispose();
+//       this.A.dispose();
+//       this.H.dispose();
+//       this.Q.dispose();
+//       this.R.dispose();
+//       this.identity.dispose();
+//     });
+//   }
+// }
+
+// // Custom Map Controls
+// const MapControls: React.FC<{
+//   threats: Threat[];
+//   showSensors: boolean;
+//   setShowSensors: (val: boolean) => void;
+//   showThreats: boolean;
+//   setShowThreats: (val: boolean) => void;
+//   showHeatmap: boolean;
+//   setShowHeatmap: (val: boolean) => void;
+// }> = ({
+//   threats,
+//   showSensors,
+//   setShowSensors,
+//   showThreats,
+//   setShowThreats,
+//   showHeatmap,
+//   setShowHeatmap,
+// }) => {
+//   const map = useMap();
+
+//   const zoomToThreats = useCallback(() => {
+//     if (threats.length === 0) return;
+//     const threatBounds = L.latLngBounds(
+//       threats.map((t) => [
+//         t.movement.currentPosition.lat,
+//         t.movement.currentPosition.lng,
+//       ])
+//     );
+//     map.fitBounds(threatBounds);
+//   }, [map, threats]);
+
+//   return (
+//     <div className="leaflet-top leaflet-left bg-slate-800 rounded p-2 text-xs space-y-1 z-[1000] m-2">
+//       <div className="flex items-center space-x-2">
+//         <input
+//           type="checkbox"
+//           checked={showSensors}
+//           onChange={() => setShowSensors(!showSensors)}
+//         />
+//         <span>Sensors</span>
+//       </div>
+//       <div className="flex items-center space-x-2">
+//         <input
+//           type="checkbox"
+//           checked={showThreats}
+//           onChange={() => setShowThreats(!showThreats)}
+//         />
+//         <span>Threats</span>
+//       </div>
+//       <div className="flex items-center space-x-2">
+//         <input
+//           type="checkbox"
+//           checked={showHeatmap}
+//           onChange={() => setShowHeatmap(!showHeatmap)}
+//         />
+//         <span>Heatmap</span>
+//       </div>
+//       <button
+//         onClick={zoomToThreats}
+//         className="w-full px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-500"
+//       >
+//         Zoom to Threats
+//       </button>
+//     </div>
+//   );
+// };
+
+// // Main Component
+// const EnhancedBorderSurveillance: React.FC = () => {
+//   const [sensors, setSensors] = useState<Sensor[]>([]);
+//   const [threats, setThreats] = useState<Threat[]>([]);
+//   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
+//   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+//   const [isBackendReady, setIsBackendReady] = useState<boolean>(false);
+//   const [connectionStatus, setConnectionStatus] =
+//     useState<ConnectionStatus>("disconnected");
+//   const [isSimulationRunning, setIsSimulationRunning] = useState<boolean>(true);
+//   const [notifications, setNotifications] = useState<
+//     { id: string; message: string; severity: ThreatSeverity }[]
+//   >([]);
+//   const [model, setModel] = useState<cocoSsd.ObjectDetection | null>(null);
+//   const [showSensors, setShowSensors] = useState(true);
+//   const [showThreats, setShowThreats] = useState(true);
+//   const [showHeatmap, setShowHeatmap] = useState(false);
+//   const [fpsMetrics, setFpsMetrics] = useState<{ [key: string]: number }>({});
+//   const [droneTargets, setDroneTargets] = useState<Coordinates[]>([]);
+//   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
+//   const canvasRefs = useRef<{ [key: string]: HTMLCanvasElement | null }>({});
+//   const kalmanFilters = useRef<{ [key: string]: KalmanFilter2D }>({});
+//   const [isModelLoading, setIsModelLoading] = useState<boolean>(false);
+//   const [modelError, setModelError] = useState<string | null>(null);
+
+//   const audioRef = useRef<HTMLAudioElement>(null);
+//   const simulationIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
+//     null
+//   );
+//   const detectionIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
+//     null
+//   );
+
+//   const boundaryCoords = useMemo(() => {
+//     const geometry = benueBoundaryData.features[0].geometry;
+//     return geometry.type === "Polygon" ? geometry.coordinates[0] : [];
+//   }, []);
+
+//   const bounds = useMemo(
+//     () => ({
+//       minLat: 6.4,
+//       maxLat: 8.1,
+//       minLng: 7.8,
+//       maxLng: 9.7,
+//     }),
+//     []
+//   );
+
+//   // Heatmap data
+//   const heatmapData = useMemo(
+//     () =>
+//       threats.map((threat) => ({
+//         lat: threat.movement.currentPosition.lat,
+//         lng: threat.movement.currentPosition.lng,
+//         value: SEVERITY_CONFIG[threat.severity].priority,
+//       })),
+//     [threats]
+//   );
+
+//   // Load TensorFlow.js model
+//   useEffect(() => {
+//     const loadModel = async () => {
+//       try {
+//         setIsModelLoading(true);
+//         await tf.ready();
+//         const backends = ["webgl", "wasm", "cpu"];
+//         let backendSet = false;
+//         for (const backend of backends) {
+//           try {
+//             await tf.setBackend(backend);
+//             console.log(`Successfully set backend to ${backend}`);
+//             backendSet = true;
+//             break;
+//           } catch (err) {
+//             console.warn(`Failed to set backend ${backend}:`, err);
+//           }
+//         }
+//         if (!backendSet) {
+//           throw new Error("No TensorFlow.js backend could be set");
+//         }
+//         console.log("TensorFlow.js backend:", tf.getBackend());
+//         setIsBackendReady(true);
+
+//         // Add WebGL context loss handler
+//         if (tf.getBackend() === "webgl") {
+//           // Try to access the WebGL context safely
+//           const backend = tf.backend();
+//           // @ts-ignore
+//           const gl = backend && backend.gl ? backend.gl : null;
+//           if (gl && gl.canvas) {
+//             gl.canvas.addEventListener("webglcontextlost", (event: Event) => {
+//               console.warn("WebGL context lost, attempting to restore...");
+//               event.preventDefault();
+//               setIsBackendReady(false);
+//               tf.setBackend("cpu")
+//                 .then(() => {
+//                   console.log(
+//                     "Switched to CPU backend due to WebGL context loss"
+//                   );
+//                   setIsBackendReady(true);
+//                 })
+//                 .catch((err) => {
+//                   console.error("Failed to switch to CPU backend:", err);
+//                   setModelError(
+//                     "WebGL context lost and failed to switch to CPU backend"
+//                   );
+//                 });
+//             });
+//           }
+//         }
+
+//         const loadedModel = await cocoSsd.load();
+//         console.log("COCO-SSD model loaded:", loadedModel);
+//         setModel(loadedModel);
+//       } catch (error) {
+//         console.error("Error loading TensorFlow.js model:", error);
+//         setModelError("Failed to load AI model. Please try again.");
+//       } finally {
+//         setIsModelLoading(false);
+//       }
+//     };
+//     loadModel();
+//   }, []);
+
+//   const generateNewThreatFromDetection = useCallback(
+//     (sensorId: string, prediction: cocoSsd.DetectedObject): Threat | null => {
+//       const sensor = sensors.find((s) => s.id === sensorId);
+//       if (!sensor) return null;
+
+//       let type: ThreatType = "suspicious_activity";
+//       let severity: ThreatSeverity = "medium";
+//       const description = `AI detected ${prediction.class} with ${Math.round(
+//         prediction.score * 100
+//       )}% confidence.`;
+
+//       if (prediction.class === "person") {
+//         type = "intrusion";
+//         severity = "high";
+//       } else if (["car", "truck"].includes(prediction.class)) {
+//         type = "vehicle_movement";
+//         severity = "medium";
+//       }
+
+//       const startPosition = {
+//         lat: sensor.coordinates.lat + (Math.random() - 0.5) * 0.05,
+//         lng: sensor.coordinates.lng + (Math.random() - 0.5) * 0.05,
+//       };
+
+//       return {
+//         id: `T${Date.now()}`,
+//         sensorId,
+//         type,
+//         severity,
+//         location: {
+//           ...startPosition,
+//           name: `Near ${sensor.name}`,
+//         },
+//         timestamp: new Date(),
+//         description,
+//         personnel: 1,
+//         status: "active",
+//         movement: {
+//           currentPosition: startPosition,
+//           previousPosition: startPosition,
+//           direction: "stationary",
+//           speed: 0,
+//           trajectory: [startPosition],
+//           lastUpdate: new Date(),
+//         },
+//         estimatedSize: 1,
+//         confidence: Math.round(prediction.score * 100),
+//       };
+//     },
+//     [sensors]
+//   );
+
+//   // AI Object Detection on Video Feeds
+//   const runDetection = useCallback(
+//     async (
+//       video: HTMLVideoElement,
+//       canvas: HTMLCanvasElement,
+//       sensorId: string
+//     ) => {
+//       if (!model || !video || !canvas) {
+//         console.warn("Skipping detection: model, video, or canvas not ready");
+//         return;
+//       }
+
+//       const startTime = performance.now();
+
+//       try {
+//         const predictions = await model.detect(video);
+
+//         const endTime = performance.now();
+//         const detectionTime = endTime - startTime;
+//         const fps = 1000 / detectionTime;
+
+//         setFpsMetrics((prev) => ({
+//           ...prev,
+//           [sensorId]: fps,
+//         }));
+
+//         const ctx = canvas.getContext("2d");
+//         if (ctx) {
+//           ctx.clearRect(0, 0, canvas.width, canvas.height);
+//           predictions.forEach((prediction: cocoSsd.DetectedObject) => {
+//             const [x, y, width, height] = prediction.bbox;
+//             ctx.strokeStyle = "red";
+//             ctx.lineWidth = 2;
+//             ctx.strokeRect(x, y, width, height);
+//             ctx.fillStyle = "red";
+//             ctx.font = "12px Arial";
+//             ctx.fillText(
+//               `${prediction.class} (${Math.round(prediction.score * 100)}%)`,
+//               x,
+//               y > 10 ? y - 5 : y + 15
+//             );
+//           });
+//         }
+
+//         predictions.forEach((prediction: cocoSsd.DetectedObject) => {
+//           if (
+//             prediction.score > 0.5 &&
+//             ["person", "car", "truck"].includes(prediction.class)
+//           ) {
+//             const newThreat = generateNewThreatFromDetection(
+//               sensorId,
+//               prediction
+//             );
+//             if (newThreat) {
+//               setThreats((prev) => [newThreat, ...prev]);
+//               setNotifications((prev) =>
+//                 [
+//                   ...prev,
+//                   {
+//                     id: `${sensorId}-${Date.now()}`,
+//                     message: `AI detected ${prediction.class} with ${Math.round(
+//                       prediction.score * 100
+//                     )}% confidence in ${sensorId}`,
+//                     severity: "high" as ThreatSeverity,
+//                   },
+//                 ].slice(-5)
+//               );
+//             }
+//           }
+//         });
+//       } catch (error) {
+//         console.error(`Error during detection for sensor ${sensorId}:`, error);
+//       }
+//     },
+//     [model, generateNewThreatFromDetection]
+//   );
+
+//   useEffect(() => {
+//     if (model && isSimulationRunning && isBackendReady && tf.getBackend()) {
+//       detectionIntervalRef.current = setInterval(() => {
+//         sensors.forEach((sensor, index) => {
+//           // Throttle detection: only process every other sensor
+//           if (index % 2 !== 0) return;
+//           if (
+//             ["camera", "drone"].includes(sensor.sensorType) &&
+//             sensor.status === "active"
+//           ) {
+//             const video = videoRefs.current[sensor.id];
+//             const canvas = canvasRefs.current[sensor.id];
+//             if (
+//               video &&
+//               canvas &&
+//               video.readyState === video.HAVE_ENOUGH_DATA
+//             ) {
+//               runDetection(video, canvas, sensor.id);
+//             }
+//           }
+//         });
+//       }, 4000); // Increased interval to 4 seconds
+
+//       return () => {
+//         if (detectionIntervalRef.current) {
+//           clearInterval(detectionIntervalRef.current);
+//         }
+//       };
+//     }
+//   }, [model, isSimulationRunning, isBackendReady, runDetection, sensors]);
+
+//   // Initialize sensors with drone
+//   useEffect(() => {
+//     const initialSensors: Sensor[] = [
+//       {
+//         id: "S001",
+//         name: "Makurdi Border North",
+//         coordinates: { lat: 7.7319, lng: 8.5211 },
+//         status: "active",
+//         lastUpdate: new Date(),
+//         batteryLevel: 85,
+//         signalStrength: 92,
+//         sensorType: "thermal",
+//       },
+//       {
+//         id: "S002",
+//         name: "Gboko Checkpoint",
+//         coordinates: { lat: 7.3239, lng: 9.0043 },
+//         status: "alert",
+//         lastUpdate: new Date(),
+//         batteryLevel: 92,
+//         signalStrength: 88,
+//         sensorType: "camera",
+//       },
+//       {
+//         id: "S003",
+//         name: "Otukpo Border East",
+//         coordinates: { lat: 7.1905, lng: 8.1301 },
+//         status: "active",
+//         lastUpdate: new Date(),
+//         batteryLevel: 78,
+//         signalStrength: 85,
+//         sensorType: "motion",
+//       },
+//       {
+//         id: "S004",
+//         name: "Katsina-Ala West",
+//         coordinates: { lat: 7.1667, lng: 9.2833 },
+//         status: "inactive",
+//         lastUpdate: new Date(Date.now() - 300000),
+//         batteryLevel: 45,
+//         signalStrength: 0,
+//         sensorType: "acoustic",
+//       },
+//       {
+//         id: "S005",
+//         name: "Vandeikya South",
+//         coordinates: { lat: 6.7833, lng: 9.0667 },
+//         status: "active",
+//         lastUpdate: new Date(),
+//         batteryLevel: 95,
+//         signalStrength: 95,
+//         sensorType: "seismic",
+//       },
+//       {
+//         id: "D001",
+//         name: "Drone Patrol North",
+//         coordinates: { lat: 7.5, lng: 8.5 },
+//         status: "active",
+//         lastUpdate: new Date(),
+//         batteryLevel: 70,
+//         signalStrength: 80,
+//         sensorType: "drone",
+//         movement: {
+//           currentPosition: { lat: 7.5, lng: 8.5 },
+//           previousPosition: { lat: 7.5, lng: 8.5 },
+//           direction: "stationary",
+//           speed: 50, // km/h
+//           trajectory: [{ lat: 7.5, lng: 8.5 }],
+//           lastUpdate: new Date(),
+//         },
+//       },
+//     ];
+
+//     setSensors(initialSensors);
+//   }, []);
+
+//   // Generate initial threats
+//   useEffect(() => {
+//     if (sensors.length === 0) return;
+
+//     const initialThreats: Threat[] = [
+//       {
+//         id: "T001",
+//         sensorId: "S002",
+//         type: "armed_group",
+//         severity: "critical",
+//         location: {
+//           lat: 7.2,
+//           lng: 8.8,
+//           name: "Border Perimeter North",
+//         },
+//         timestamp: new Date(Date.now() - 120000),
+//         description:
+//           "Armed group of 8-10 individuals detected approaching checkpoint. Heavy weapons visible.",
+//         personnel: 10,
+//         status: "active",
+//         movement: {
+//           currentPosition: { lat: 7.2, lng: 8.8 },
+//           previousPosition: { lat: 7.15, lng: 8.75 },
+//           direction: "inbound",
+//           speed: 3.5,
+//           trajectory: [
+//             { lat: 7.1, lng: 8.7 },
+//             { lat: 7.15, lng: 8.75 },
+//             { lat: 7.2, lng: 8.8 },
+//           ],
+//           lastUpdate: new Date(),
+//         },
+//         estimatedSize: 10,
+//         confidence: 95,
+//       },
+//       {
+//         id: "T002",
+//         sensorId: "S001",
+//         type: "vehicle_movement",
+//         severity: "medium",
+//         location: {
+//           lat: 7.8,
+//           lng: 8.2,
+//           name: "Border Perimeter West",
+//         },
+//         timestamp: new Date(Date.now() - 300000),
+//         description:
+//           "Convoy of 3 unmarked vehicles moving towards border crossing at unusual hour.",
+//         personnel: 6,
+//         status: "investigating",
+//         movement: {
+//           currentPosition: { lat: 7.8, lng: 8.2 },
+//           previousPosition: { lat: 7.85, lng: 8.15 },
+//           direction: "outbound",
+//           speed: 45,
+//           trajectory: [
+//             { lat: 7.9, lng: 8.1 },
+//             { lat: 7.85, lng: 8.15 },
+//             { lat: 7.8, lng: 8.2 },
+//           ],
+//           lastUpdate: new Date(),
+//         },
+//         estimatedSize: 6,
+//         confidence: 82,
+//       },
+//     ];
+
+//     setThreats(initialThreats);
+//   }, [sensors]);
+
+//   // Initialize Kalman filters for threats
+//   useEffect(() => {
+//     threats.forEach((threat) => {
+//       if (!kalmanFilters.current[threat.id] && isBackendReady) {
+//         kalmanFilters.current[threat.id] = new KalmanFilter2D(
+//           3,
+//           0.01,
+//           0.1,
+//           isBackendReady
+//         );
+//       }
+//     });
+//   }, [threats, isBackendReady]);
+
+//   // Drone path optimization
+//   const drone = useMemo(
+//     () => sensors.find((s) => s.sensorType === "drone"),
+//     [sensors]
+//   );
+//   const activeThreatsMemo = useMemo(
+//     () => threats.filter((t) => t.status === "active"),
+//     [threats]
+//   );
+
+//   const activeThreats = useMemo(
+//     () => threats.filter((t) => t.status === "active"),
+//     [threats]
+//   );
+
+//   const activeThreatPositions = useMemo(
+//     () => activeThreats.map((t) => t.movement.currentPosition),
+//     [activeThreats]
+//   );
+
+//   useEffect(() => {
+//     if (
+//       drone &&
+//       droneTargets.length === 0 &&
+//       activeThreatPositions.length > 0
+//     ) {
+//       const optimizedPath = computeTSPPath(
+//         drone.movement!.currentPosition,
+//         activeThreatPositions
+//       );
+//       setDroneTargets(optimizedPath.slice(1)); // exclude starting point
+//     }
+//   }, [drone, activeThreatPositions, droneTargets.length]);
+
+//   // Threat and drone movement simulation
+//   const updateMovement = useCallback(() => {
+//     setThreats((prevThreats) =>
+//       prevThreats.map((threat) => {
+//         if (threat.status !== "active") return threat;
+
+//         const currentPos = threat.movement.currentPosition;
+//         const isInside = isPointInPolygon(currentPos, boundaryCoords);
+
+//         let newTarget: Coordinates =
+//           threat.movement.target || generateRandomPoint(bounds); // default random
+//         let newDirection: MovementDirection = threat.movement.direction;
+//         let newSpeed = threat.movement.speed;
+
+//         switch (threat.type) {
+//           case "armed_group":
+//             if (isInside) {
+//               newTarget =
+//                 Math.random() > 0.7
+//                   ? generateRandomPoint(bounds)
+//                   : generateRandomPoint({
+//                       minLat: bounds.minLat - 0.2,
+//                       maxLat: bounds.maxLat + 0.2,
+//                       minLng: bounds.minLng - 0.2,
+//                       maxLng: bounds.maxLng + 0.2,
+//                     });
+//               newDirection = "outbound";
+//               newSpeed = 2 + Math.random() * 3;
+//             } else {
+//               newTarget =
+//                 Math.random() > 0.5
+//                   ? generateRandomPoint(bounds)
+//                   : generateRandomPoint({
+//                       minLat: bounds.minLat - 0.1,
+//                       maxLat: bounds.maxLat + 0.1,
+//                       minLng: bounds.minLng - 0.1,
+//                       maxLng: bounds.maxLng + 0.1,
+//                     });
+//               newDirection = "inbound";
+//               newSpeed = 1.5 + Math.random() * 2.5;
+//             }
+//             break;
+
+//           case "vehicle_movement":
+//             if (isInside) {
+//               newTarget = generateRandomPoint({
+//                 minLat: bounds.minLat - 0.3,
+//                 maxLat: bounds.maxLat + 0.3,
+//                 minLng: bounds.minLng - 0.3,
+//                 maxLng: bounds.maxLng + 0.3,
+//               });
+//               newDirection = "outbound";
+//             } else {
+//               newTarget =
+//                 Math.random() > 0.6
+//                   ? generateRandomPoint(bounds)
+//                   : generateRandomPoint({
+//                       minLat: bounds.minLat - 0.2,
+//                       maxLat: bounds.maxLat + 0.2,
+//                       minLng: bounds.minLng - 0.2,
+//                       maxLng: bounds.maxLng + 0.2,
+//                     });
+//               newDirection = "inbound";
+//             }
+//             newSpeed = 25 + Math.random() * 35;
+//             break;
+
+//           default:
+//             newTarget = generateRandomPoint({
+//               minLat: bounds.minLat - 0.1,
+//               maxLat: bounds.maxLat + 0.1,
+//               minLng: bounds.minLng - 0.1,
+//               maxLng: bounds.maxLng + 0.1,
+//             });
+//             newDirection = isInside ? "outbound" : "inbound";
+//             newSpeed = 1 + Math.random() * 4;
+//         }
+
+//         let newPosition = movePointTowardTarget(
+//           currentPos,
+//           newTarget,
+//           newSpeed,
+//           3000
+//         );
+
+//         // Apply Kalman filter
+//         const kalman = kalmanFilters.current[threat.id];
+//         if (kalman) {
+//           kalman.predict();
+//           kalman.update(newPosition);
+//           newPosition = kalman.getCurrentPosition();
+//           const predictedPosition = kalman.getPredictedPosition();
+//           threat.predictedPosition = predictedPosition;
+//         }
+
+//         return {
+//           ...threat,
+//           movement: {
+//             ...threat.movement,
+//             currentPosition: newPosition,
+//             previousPosition: currentPos,
+//             direction: newDirection,
+//             speed: newSpeed,
+//             trajectory: [...threat.movement.trajectory.slice(-9), newPosition],
+//             lastUpdate: new Date(),
+//             target: newTarget,
+//           },
+//           location: {
+//             ...threat.location,
+//             lat: newPosition.lat,
+//             lng: newPosition.lng,
+//           },
+//         };
+//       })
+//     );
+
+//     // Update drone movement
+//     setSensors((prevSensors) =>
+//       prevSensors.map((sensor) => {
+//         if (sensor.sensorType !== "drone" || !sensor.movement) return sensor;
+
+//         const currentPos = sensor.movement.currentPosition;
+//         if (droneTargets.length === 0) return sensor;
+
+//         const target = droneTargets[0];
+//         const newPosition = movePointTowardTarget(
+//           currentPos,
+//           target,
+//           sensor.movement.speed,
+//           3000
+//         );
+
+//         const distToTarget = calculateDistance(newPosition, target);
+//         if (distToTarget < 0.01) {
+//           // threshold in km
+//           setDroneTargets((prev) => prev.slice(1));
+//         }
+
+//         return {
+//           ...sensor,
+//           coordinates: newPosition,
+//           movement: {
+//             ...sensor.movement,
+//             currentPosition: newPosition,
+//             previousPosition: currentPos,
+//             direction: "lateral", // or compute
+//             trajectory: [...sensor.movement.trajectory.slice(-9), newPosition],
+//             lastUpdate: new Date(),
+//             target,
+//           },
+//         };
+//       })
+//     );
+//   }, [boundaryCoords, bounds, droneTargets]);
+
+//   const generateNewThreat = useCallback((): Threat | null => {
+//     if (sensors.length === 0) return null;
+
+//     const threatTypes: ThreatType[] = [
+//       "intrusion",
+//       "suspicious_activity",
+//       "vehicle_movement",
+//       "armed_group",
+//     ];
+//     const severities: ThreatSeverity[] = ["low", "medium", "high", "critical"];
+//     const randomSensor = sensors[Math.floor(Math.random() * sensors.length)];
+
+//     const startPosition =
+//       Math.random() > 0.5
+//         ? generateRandomPoint(bounds)
+//         : generateRandomPoint({
+//             minLat: bounds.minLat - 0.2,
+//             maxLat: bounds.maxLat + 0.2,
+//             minLng: bounds.minLng - 0.2,
+//             maxLng: bounds.maxLng + 0.2,
+//           });
+
+//     const threat: Threat = {
+//       id: `T${Date.now()}`,
+//       sensorId: randomSensor.id,
+//       type: threatTypes[Math.floor(Math.random() * threatTypes.length)],
+//       severity: severities[Math.floor(Math.random() * severities.length)],
+//       location: {
+//         lat: startPosition.lat,
+//         lng: startPosition.lng,
+//         name: "Auto-detected Threat",
+//       },
+//       timestamp: new Date(),
+//       description: "Automated threat detection by surveillance system.",
+//       personnel: Math.floor(Math.random() * 12) + 1,
+//       status: "active",
+//       movement: {
+//         currentPosition: startPosition,
+//         previousPosition: startPosition,
+//         direction: "stationary",
+//         speed: 0,
+//         trajectory: [startPosition],
+//         lastUpdate: new Date(),
+//       },
+//       estimatedSize: Math.floor(Math.random() * 15) + 1,
+//       confidence: Math.floor(Math.random() * 40) + 60,
+//     };
+
+//     kalmanFilters.current[threat.id] = new KalmanFilter2D(
+//       3,
+//       0.01,
+//       0.1,
+//       isBackendReady
+//     );
+
+//     if (
+//       ["high", "critical"].includes(threat.severity) &&
+//       soundEnabled &&
+//       audioRef.current
+//     ) {
+//       audioRef.current.play().catch(console.error);
+//       setNotifications((prev) =>
+//         [
+//           ...prev,
+//           {
+//             id: threat.id,
+//             message: `New ${threat.severity.toUpperCase()} threat detected: ${
+//               THREAT_TYPES[threat.type].label
+//             }`,
+//             severity: threat.severity,
+//           },
+//         ].slice(-5)
+//       );
+//     }
+
+//     return threat;
+//   }, [sensors, bounds, soundEnabled, isBackendReady]);
+
+//   // Simulation loop
+//   useEffect(() => {
+//     if (!isSimulationRunning || !isBackendReady) return;
+
+//     setConnectionStatus("connected");
+
+//     simulationIntervalRef.current = setInterval(() => {
+//       setSensors((prevSensors) => {
+//         const updatedSensors = prevSensors.map((sensor) => ({
+//           ...sensor,
+//           lastUpdate: new Date(),
+//           batteryLevel: Math.max(20, sensor.batteryLevel - Math.random() * 0.1),
+//           signalStrength: Math.max(
+//             0,
+//             Math.min(100, sensor.signalStrength + (Math.random() - 0.5) * 5)
+//           ),
+//         }));
+
+//         const newThreat = Math.random() < 0.02 ? generateNewThreat() : null;
+//         let updatedThreats = [...threats];
+
+//         if (newThreat) {
+//           updatedThreats = [newThreat, ...updatedThreats.slice(0, 19)];
+//         }
+
+//         updatedThreats = updatedThreats
+//           .map((threat, index) => {
+//             if (threat.status !== "active") return threat;
+
+//             // Throttle Kalman updates: only update every 2nd cycle for each threat
+//             const shouldUpdateKalman = index % 2 === 0 && isBackendReady;
+
+//             const currentPos = threat.movement.currentPosition;
+//             const isInside = isPointInPolygon(currentPos, boundaryCoords);
+
+//             const newTarget: Coordinates =
+//               threat.movement.target || generateRandomPoint(bounds);
+//             const newDirection: MovementDirection = threat.movement.direction;
+//             const newSpeed = threat.movement.speed;
+
+//             // ... (rest of threat movement logic remains the same)
+
+//             let newPosition = movePointTowardTarget(
+//               currentPos,
+//               newTarget,
+//               newSpeed,
+//               3000
+//             );
+
+//             // Apply Kalman filter only if backend is ready and throttled
+//             let predictedPosition = threat.predictedPosition;
+//             if (shouldUpdateKalman && tf.getBackend()) {
+//               const kalman = kalmanFilters.current[threat.id];
+//               if (kalman) {
+//                 kalman.predict();
+//                 kalman.update(newPosition);
+//                 newPosition = kalman.getCurrentPosition();
+//                 predictedPosition = kalman.getPredictedPosition();
+//               }
+//             }
+
+//             return {
+//               ...threat,
+//               movement: {
+//                 ...threat.movement,
+//                 currentPosition: newPosition,
+//                 previousPosition: currentPos,
+//                 direction: newDirection,
+//                 speed: newSpeed,
+//                 trajectory: [
+//                   ...threat.movement.trajectory.slice(-9),
+//                   newPosition,
+//                 ],
+//                 lastUpdate: new Date(),
+//                 target: newTarget,
+//               },
+//               location: {
+//                 ...threat.location,
+//                 lat: newPosition.lat,
+//                 lng: newPosition.lng,
+//               },
+//               predictedPosition,
+//             };
+//           })
+//           .filter(
+//             (threat) =>
+//               threat.status !== "resolved" ||
+//               Date.now() - threat.timestamp.getTime() < 300000
+//           );
+
+//         // Dispose of Kalman filters for removed threats
+//         const currentThreatIds = new Set(updatedThreats.map((t) => t.id));
+//         Object.keys(kalmanFilters.current).forEach((threatId) => {
+//           if (!currentThreatIds.has(threatId)) {
+//             kalmanFilters.current[threatId].dispose();
+//             delete kalmanFilters.current[threatId];
+//           }
+//         });
+
+//         // Update drone movement
+//         const updatedDroneSensors = updatedSensors.map((sensor) => {
+//           if (sensor.sensorType !== "drone" || !sensor.movement) return sensor;
+
+//           const currentPos = sensor.movement.currentPosition;
+//           if (droneTargets.length === 0) return sensor;
+
+//           const target = droneTargets[0];
+//           const newPosition = movePointTowardTarget(
+//             currentPos,
+//             target,
+//             sensor.movement.speed,
+//             3000
+//           );
+
+//           const distToTarget = calculateDistance(newPosition, target);
+//           if (distToTarget < 0.01) {
+//             setDroneTargets((prev) => prev.slice(1));
+//           }
+
+//           return {
+//             ...sensor,
+//             coordinates: newPosition,
+//             movement: {
+//               ...sensor.movement,
+//               currentPosition: newPosition,
+//               previousPosition: currentPos,
+//               direction: "lateral" as MovementDirection,
+//               trajectory: [
+//                 ...sensor.movement.trajectory.slice(-9),
+//                 newPosition,
+//               ],
+//               lastUpdate: new Date(),
+//               target,
+//             },
+//           };
+//         });
+
+//         // Update threats state
+//         setThreats(updatedThreats);
+
+//         return updatedDroneSensors;
+//       });
+
+//       // Log memory usage for debugging
+//       console.log("TensorFlow.js memory:", tf.memory());
+//     }, 3000);
+
+//     return () => {
+//       if (simulationIntervalRef.current) {
+//         clearInterval(simulationIntervalRef.current);
+//       }
+//       Object.values(kalmanFilters.current).forEach((filter) =>
+//         filter.dispose()
+//       );
+//       kalmanFilters.current = {};
+//     };
+//   }, [
+//     isSimulationRunning,
+//     isBackendReady,
+//     boundaryCoords,
+//     bounds,
+//     droneTargets,
+//     threats,
+//     generateNewThreat,
+//   ]);
+
+//   // Auto-dismiss notifications
+//   useEffect(() => {
+//     if (notifications.length > 0) {
+//       const timer = setTimeout(() => {
+//         setNotifications((prev) => prev.slice(1));
+//       }, 10000);
+//       return () => clearTimeout(timer);
+//     }
+//   }, [notifications]);
+
+//   const getSeverityColor = (severity: ThreatSeverity): string => {
+//     return `${SEVERITY_CONFIG[severity].bgColor} text-white`;
+//   };
+
+//   const getStatusColor = (status: SensorStatus): string => {
+//     const colorMap: Record<SensorStatus, string> = {
+//       active: "text-green-400",
+//       inactive: "text-red-400",
+//       alert: "text-orange-400",
+//       maintenance: "text-yellow-400",
+//     };
+//     return colorMap[status];
+//   };
+
+//   const getMovementIcon = (direction: MovementDirection): string => {
+//     const icons: Record<MovementDirection, string> = {
+//       inbound: "↗️",
+//       outbound: "↙️",
+//       lateral: "↔️",
+//       stationary: "⏹️",
+//     };
+//     return icons[direction];
+//   };
+
+//   const activeCriticalThreats = useMemo(
+//     () =>
+//       threats.filter((t) => t.severity === "critical" && t.status === "active"),
+//     [threats]
+//   );
+
+//   // const activeThreats = useMemo(
+//   //   () => threats.filter((t) => t.status === "active"),
+//   //   [threats]
+//   // );
+
+//   const activeSensors = useMemo(
+//     () => sensors.filter((s) => s.status === "active"),
+//     [sensors]
+//   );
+
+//   const dronePath = useMemo(() => {
+//     if (drone && drone.movement) {
+//       return [drone.movement.currentPosition, ...droneTargets];
+//     }
+//     return [];
+//   }, [drone, droneTargets]);
+
+//   return (
+//     <div className="min-h-screen bg-slate-900 text-white relative">
+//       {/* Audio element for alerts */}
+//       <audio ref={audioRef} preload="auto">
+//         <source
+//           src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYdAkWRzO+8bSMELH7I79+STApSou7gylUfBhNztu/7uWsFLXjK7dyGOhgWSa/q2qBNCAhxue7/ol4GFWq37LiALgcVdMvq7rliFQZGoOs1t2QNCW+z6v5vKwgacaTt8LpgByl6yO1yMxYNUrHq87RsDBR4p+n5oVIGDW6y69x7NIYOUbLqzZA6BQ93s/Psp1MDBnSo5NqBOAYVaqTp67VhBSp8xs+GNwgSb7Ps6bVhBChxw++wYBoGIneqw/K8YhQFLXvK5dB7MgwPcqHq5q5WEQNZ0n7N50QdCk1pSKq9aUdBgT1nTh2JDQxhsjN7Y"
+//           type="audio/wav"
+//         />
+//       </audio>
+
+//       {/* In-app notifications */}
+//       <div className="absolute top-20 right-4 z-20 space-y-2">
+//         {notifications.map((notif) => (
+//           <div
+//             key={notif.id}
+//             className={`p-4 rounded shadow-lg text-white transform transition-all duration-300 ease-in-out animate-slide-in ${
+//               notif.severity === "critical" ? "bg-red-600" : "bg-orange-600"
+//             }`}
+//           >
+//             {notif.message}
+//           </div>
+//         ))}
+//       </div>
+
+//       {/* Header */}
+//       <div className="bg-slate-800 border-b border-slate-700 px-6 py-4">
+//         <div className="flex items-center justify-between">
+//           <div className="flex items-center space-x-4">
+//             <Shield className="w-8 h-8 text-blue-400" />
+//             <div>
+//               <h1 className="text-2xl font-bold">
+//                 Enhanced Border Surveillance
+//               </h1>
+//               <p className="text-slate-400">
+//                 Benue State - Real-time Threat Tracking
+//               </p>
+//             </div>
+//           </div>
+
+//           <div className="flex items-center space-x-4">
+//             <div className="flex items-center space-x-2">
+//               <div
+//                 className={`w-3 h-3 rounded-full ${
+//                   connectionStatus === "connected"
+//                     ? "bg-green-400 animate-pulse"
+//                     : "bg-red-400"
+//                 }`}
+//               />
+//               <span className="text-sm text-slate-400 capitalize">
+//                 {connectionStatus}
+//               </span>
+//             </div>
+
+//             <button
+//               onClick={() => setIsSimulationRunning(!isSimulationRunning)}
+//               className={`px-3 py-1 rounded text-sm ${
+//                 isSimulationRunning
+//                   ? "bg-red-600 hover:bg-red-500"
+//                   : "bg-green-600 hover:bg-green-500"
+//               }`}
+//             >
+//               {isSimulationRunning ? "Stop Sim" : "Start Sim"}
+//             </button>
+
+//             <button
+//               onClick={() => setSoundEnabled(!soundEnabled)}
+//               className={`p-2 rounded-lg ${
+//                 soundEnabled
+//                   ? "bg-blue-600 text-white"
+//                   : "bg-slate-600 text-slate-300"
+//               }`}
+//             >
+//               {soundEnabled ? (
+//                 <Volume2 className="w-5 h-5" />
+//               ) : (
+//                 <VolumeX className="w-5 h-5" />
+//               )}
+//             </button>
+
+//             <div className="text-right">
+//               <div className="text-sm font-medium">
+//                 {new Date().toLocaleTimeString()}
+//               </div>
+//               <div className="text-xs text-slate-400">
+//                 {new Date().toLocaleDateString()}
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Critical Alert Banner */}
+//       {activeCriticalThreats.length > 0 && (
+//         <Alert className="px-6 py-3 bg-red-900 border-red-700 text-red-100 animate-pulse">
+//           <AlertTriangle className="h-4 w-4" />
+//           <AlertDescription>
+//             <div className="flex items-center space-x-2">
+//               <span className="font-semibold">
+//                 CRITICAL ALERT: {activeCriticalThreats.length} active critical
+//                 threat
+//                 {activeCriticalThreats.length > 1 ? "s" : ""} detected
+//               </span>
+//               <Bell className="w-5 h-5 animate-bounce" />
+//             </div>
+//           </AlertDescription>
+//         </Alert>
+//       )}
+
+//       <div className="flex flex-1">
+//         {/* Main Content */}
+//         <div className="flex-1 p-6">
+//           {/* Statistics Cards */}
+//           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Active Sensors</p>
+//                   <p className="text-2xl font-bold text-green-400">
+//                     {activeSensors.length}
+//                   </p>
+//                   <p className="text-xs text-slate-500">
+//                     of {sensors.length} total
+//                   </p>
+//                 </div>
+//                 <Activity className="w-8 h-8 text-green-400" />
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Active Threats</p>
+//                   <p className="text-2xl font-bold text-red-400">
+//                     {activeThreatsMemo.length}
+//                   </p>
+//                   <p className="text-xs text-slate-500">
+//                     {activeCriticalThreats.length} critical
+//                   </p>
+//                 </div>
+//                 <Target className="w-8 h-8 text-red-400" />
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">Personnel Deployed</p>
+//                   <p className="text-2xl font-bold text-blue-400">
+//                     {threats.reduce((sum, t) => sum + t.personnel, 0)}
+//                   </p>
+//                   <p className="text-xs text-slate-500">across all threats</p>
+//                 </div>
+//                 <Users className="w-8 h-8 text-blue-400" />
+//               </div>
+//             </div>
+
+//             <div className="bg-slate-800 rounded-lg p-4">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <p className="text-slate-400 text-sm">System Status</p>
+//                   <p className="text-lg font-bold text-green-400">
+//                     Operational
+//                   </p>
+//                   <p className="text-xs text-slate-500">All systems normal</p>
+//                 </div>
+//                 <Settings className="w-8 h-8 text-green-400" />
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Map */}
+//           <div className="bg-slate-800 rounded-lg p-4 mb-6">
+//             <div className="flex items-center justify-between mb-4">
+//               <h2 className="text-lg font-semibold flex items-center space-x-2">
+//                 <MapPin className="w-5 h-5" />
+//                 <span>Benue State Border Map - Live Tracking</span>
+//               </h2>
+//               <div className="flex space-x-4">
+//                 <div className="flex items-center space-x-1 text-sm text-blue-400">
+//                   <div className="w-3 h-3 bg-blue-400 rounded"></div>
+//                   <span>Sensors</span>
+//                 </div>
+//                 <div className="flex items-center space-x-1 text-sm text-red-400">
+//                   <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+//                   <span>Active Threats</span>
+//                 </div>
+//                 <div className="flex items-center space-x-1 text-sm text-purple-400">
+//                   <Navigation className="w-3 h-3" />
+//                   <span>Movement Trails</span>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Real Map with Leaflet */}
+//             <div className="bg-slate-900 rounded-lg h-[600px] relative overflow-hidden border border-slate-600">
+//               <MapContainer
+//                 center={[7.5, 8.5]}
+//                 zoom={9}
+//                 style={{ height: "100%", width: "100%" }}
+//                 maxBounds={[
+//                   [bounds.minLat - 0.5, bounds.minLng - 0.5],
+//                   [bounds.maxLat + 0.5, bounds.maxLng + 0.5],
+//                 ]}
+//               >
+//                 <TileLayer
+//                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+//                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+//                 />
+//                 <Polygon
+//                   positions={boundaryCoords.map(
+//                     ([lng, lat]) => [lat, lng] as LatLngExpression
+//                   )}
+//                   pathOptions={{ color: "blue", dashArray: "5, 5" }}
+//                 />
+//                 <MapControls
+//                   threats={threats}
+//                   showSensors={showSensors}
+//                   setShowSensors={setShowSensors}
+//                   showThreats={showThreats}
+//                   setShowThreats={setShowThreats}
+//                   showHeatmap={showHeatmap}
+//                   setShowHeatmap={setShowHeatmap}
+//                 />
+//                 {showSensors && (
+//                   <MarkerClusterGroup>
+//                     {sensors.map((sensor) => (
+//                       <Marker
+//                         key={sensor.id}
+//                         position={[
+//                           sensor.coordinates.lat,
+//                           sensor.coordinates.lng,
+//                         ]}
+//                         icon={sensorIcon(sensor.status)}
+//                       >
+//                         <Popup>
+//                           {sensor.name} - {sensor.status}
+//                         </Popup>
+//                         <Tooltip>{sensor.id}</Tooltip>
+//                       </Marker>
+//                     ))}
+//                   </MarkerClusterGroup>
+//                 )}
+//                 {showThreats && (
+//                   <MarkerClusterGroup>
+//                     {activeThreats.map((threat) => (
+//                       <Fragment key={threat.id}>
+//                         <Marker
+//                           position={[
+//                             threat.movement.currentPosition.lat,
+//                             threat.movement.currentPosition.lng,
+//                           ]}
+//                           icon={threatIcon(threat.severity)}
+//                           eventHandlers={{
+//                             click: () => setSelectedThreat(threat),
+//                           }}
+//                         >
+//                           <Popup>
+//                             {THREAT_TYPES[threat.type].label}
+//                             <br />
+//                             Severity: {threat.severity}
+//                             <br />
+//                             Speed: {threat.movement.speed.toFixed(1)} km/h
+//                           </Popup>
+//                           <Tooltip direction="top">
+//                             {THREAT_TYPES[threat.type].label}
+//                           </Tooltip>
+//                         </Marker>
+//                         {threat.movement.trajectory.length > 1 && (
+//                           <Polyline
+//                             positions={threat.movement.trajectory.map(
+//                               (pos) => [pos.lat, pos.lng] as LatLngExpression
+//                             )}
+//                             pathOptions={{ color: "purple", dashArray: "2,2" }}
+//                           />
+//                         )}
+//                         {threat.predictedPosition && (
+//                           <>
+//                             <Polyline
+//                               positions={
+//                                 [
+//                                   [
+//                                     threat.movement.currentPosition.lat,
+//                                     threat.movement.currentPosition.lng,
+//                                   ],
+//                                   [
+//                                     threat.predictedPosition.lat,
+//                                     threat.predictedPosition.lng,
+//                                   ],
+//                                 ] as LatLngExpression[]
+//                               }
+//                               pathOptions={{
+//                                 color: "gray",
+//                                 dashArray: "5,5",
+//                                 opacity: 0.7,
+//                               }}
+//                             />
+//                             <Marker
+//                               position={[
+//                                 threat.predictedPosition.lat,
+//                                 threat.predictedPosition.lng,
+//                               ]}
+//                               icon={predictedIcon}
+//                             >
+//                               <Popup>Predicted Position (3s ahead)</Popup>
+//                               <Tooltip>Predicted</Tooltip>
+//                             </Marker>
+//                           </>
+//                         )}
+//                       </Fragment>
+//                     ))}
+//                   </MarkerClusterGroup>
+//                 )}
+//                 {showHeatmap && (
+//                   <HeatmapLayer
+//                     points={
+//                       heatmapData as Array<{
+//                         lat: number;
+//                         lng: number;
+//                         value: number;
+//                       }>
+//                     }
+//                     longitudeExtractor={(p: {
+//                       lat: number;
+//                       lng: number;
+//                       value: number;
+//                     }) => p.lng}
+//                     latitudeExtractor={(p: {
+//                       lat: number;
+//                       lng: number;
+//                       value: number;
+//                     }) => p.lat}
+//                     intensityExtractor={(p: {
+//                       lat: number;
+//                       lng: number;
+//                       value: number;
+//                     }) => p.value}
+//                     radius={20}
+//                     blur={15}
+//                     maxZoom={18}
+//                   />
+//                 )}
+//                 {dronePath.length > 1 && (
+//                   <Polyline
+//                     positions={dronePath.map(
+//                       (pos) => [pos.lat, pos.lng] as LatLngExpression
+//                     )}
+//                     pathOptions={{ color: "yellow", dashArray: "5,5" }}
+//                   />
+//                 )}
+//               </MapContainer>
+
+//               {/* Simulation indicator */}
+//               <div className="absolute bottom-4 right-4 flex items-center space-x-2 bg-slate-800 rounded px-3 py-1 border border-slate-600 z-[1000]">
+//                 <div
+//                   className={`w-2 h-2 rounded-full ${
+//                     isSimulationRunning
+//                       ? "bg-green-400 animate-pulse"
+//                       : "bg-red-400"
+//                   }`}
+//                 ></div>
+//                 <span className="text-xs">
+//                   {isSimulationRunning
+//                     ? "Live Simulation"
+//                     : "Simulation Paused"}
+//                 </span>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Video Feeds */}
+//           <div className="bg-slate-800 rounded-lg p-4">
+//             <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+//               <Camera className="w-5 h-5" />
+//               <span>Live Video Feeds & Sensor Data (with AI Detection)</span>
+//             </h2>
+//             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+//               {sensors.map((sensor) => (
+//                 <div
+//                   key={sensor.id}
+//                   className="bg-slate-700 rounded-lg p-3 border border-slate-600"
+//                 >
+//                   <div className="bg-black rounded aspect-video mb-3 relative overflow-hidden">
+//                     <video
+//                       ref={(el) => {
+//                         videoRefs.current[sensor.id] = el;
+//                       }}
+//                       autoPlay
+//                       loop
+//                       muted
+//                       playsInline
+//                       className="w-full h-full object-cover absolute top-0 left-0"
+//                     >
+//                       <source
+//                         src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s.mp4"
+//                         type="video/mp4"
+//                       />
+//                     </video>
+//                     <canvas
+//                       ref={(el) => {
+//                         canvasRefs.current[sensor.id] = el;
+//                       }}
+//                       className="absolute top-0 left-0 pointer-events-none"
+//                     />
+//                     <div className="absolute top-2 left-2 text-xs bg-black/50 px-2 py-1 rounded">
+//                       {sensor.sensorType.toUpperCase()} - {sensor.id}
+//                     </div>
+//                     {isSimulationRunning && (
+//                       <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+//                     )}
+//                     {sensor.status === "alert" && (
+//                       <div className="absolute inset-0 border-4 border-red-500 animate-pulse pointer-events-none" />
+//                     )}
+//                   </div>
+
+//                   <div className="space-y-2">
+//                     <div className="flex justify-between items-center text-sm">
+//                       <span className="text-slate-300">{sensor.name}</span>
+//                       <span className={getStatusColor(sensor.status)}>
+//                         {sensor.status.toUpperCase()}
+//                       </span>
+//                     </div>
+
+//                     <div className="grid grid-cols-2 gap-2 text-xs">
+//                       <div className="bg-slate-600 rounded p-1">
+//                         <div className="text-slate-400">Battery</div>
+//                         <div className="font-medium">
+//                           {sensor.batteryLevel.toFixed(1)}%
+//                         </div>
+//                         <div className="w-full bg-slate-800 rounded-full h-1 mt-1">
+//                           <div
+//                             className={`h-1 rounded-full ${
+//                               sensor.batteryLevel > 50
+//                                 ? "bg-green-400"
+//                                 : sensor.batteryLevel > 25
+//                                 ? "bg-yellow-400"
+//                                 : "bg-red-400"
+//                             }`}
+//                             style={{ width: `${sensor.batteryLevel}%` }}
+//                           />
+//                         </div>
+//                       </div>
+
+//                       <div className="bg-slate-600 rounded p-1">
+//                         <div className="text-slate-400">Signal</div>
+//                         <div className="font-medium">
+//                           {sensor.signalStrength.toFixed(0)}%
+//                         </div>
+//                         <div className="flex space-x-1 mt-1">
+//                           {[1, 2, 3, 4, 5].map((bar) => (
+//                             <div
+//                               key={bar}
+//                               className={`flex-1 h-1 rounded ${
+//                                 sensor.signalStrength >= bar * 20
+//                                   ? "bg-green-400"
+//                                   : "bg-slate-800"
+//                               }`}
+//                             />
+//                           ))}
+//                         </div>
+//                       </div>
+//                     </div>
+
+//                     <div className="text-xs text-slate-400">
+//                       Last update: {sensor.lastUpdate.toLocaleTimeString()}
+//                     </div>
+//                     {fpsMetrics[sensor.id] && (
+//                       <div className="text-xs text-slate-400">
+//                         Detection FPS: {fpsMetrics[sensor.id].toFixed(1)}
+//                       </div>
+//                     )}
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Enhanced Sidebar */}
+//         <div className="w-96 bg-slate-800 border-l border-slate-700 p-4 overflow-y-auto">
+//           <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+//             <AlertTriangle className="w-5 h-5" />
+//             <span>Threat Intelligence</span>
+//           </h2>
+
+//           {/* Threat Filter */}
+//           <div className="mb-4 space-y-2">
+//             <div className="flex space-x-1 text-xs">
+//               <button className="px-2 py-1 bg-red-600 text-white rounded">
+//                 Critical
+//               </button>
+//               <button className="px-2 py-1 bg-slate-600 text-slate-300 rounded hover:bg-slate-500">
+//                 High
+//               </button>
+//               <button className="px-2 py-1 bg-slate-600 text-slate-300 rounded hover:bg-slate-500">
+//                 Medium
+//               </button>
+//               <button className="px-2 py-1 bg-slate-600 text-slate-300 rounded hover:bg-slate-500">
+//                 All
+//               </button>
+//             </div>
+//           </div>
+
+//           {/* Threat List */}
+//           <div
+//             className="space-y-3 mb-6"
+//             style={{ maxHeight: "50vh", overflowY: "auto" }}
+//           >
+//             {threats
+//               .sort(
+//                 (a, b) =>
+//                   SEVERITY_CONFIG[b.severity].priority -
+//                   SEVERITY_CONFIG[a.severity].priority
+//               )
+//               .map((threat) => (
+//                 <div
+//                   key={threat.id}
+//                   className={`bg-slate-700 rounded-lg p-3 cursor-pointer transition-all border
+//                     ${
+//                       selectedThreat?.id === threat.id
+//                         ? "ring-2 ring-blue-400 border-blue-400"
+//                         : "border-slate-600"
+//                     }
+//                     hover:bg-slate-600 hover:border-slate-500`}
+//                   onClick={() => setSelectedThreat(threat)}
+//                 >
+//                   <div className="flex items-center justify-between mb-2">
+//                     <div className="flex items-center space-x-2">
+//                       <span
+//                         className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(
+//                           threat.severity
+//                         )}`}
+//                       >
+//                         {threat.severity.toUpperCase()}
+//                       </span>
+//                       <span className="text-xs">
+//                         {THREAT_TYPES[threat.type].icon}
+//                       </span>
+//                     </div>
+//                     <div className="flex items-center space-x-1 text-xs text-slate-400">
+//                       <Clock className="w-3 h-3" />
+//                       <span>
+//                         {new Date(threat.timestamp).toLocaleTimeString()}
+//                       </span>
+//                     </div>
+//                   </div>
+
+//                   <h3 className="font-medium mb-1 text-sm">
+//                     {THREAT_TYPES[threat.type].label}
+//                   </h3>
+
+//                   <p className="text-xs text-slate-300 mb-2 line-clamp-2">
+//                     {threat.description}
+//                   </p>
+
+//                   <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+//                     <span className="flex items-center space-x-1">
+//                       <Navigation className="w-3 h-3" />
+//                       <span>{threat.movement.direction}</span>
+//                       <span>{getMovementIcon(threat.movement.direction)}</span>
+//                     </span>
+//                     <span>{threat.movement.speed.toFixed(1)} km/h</span>
+//                   </div>
+
+//                   <div className="flex items-center justify-between text-xs text-slate-400 mb-3">
+//                     <span className="flex items-center space-x-1">
+//                       <MapPin className="w-3 h-3" />
+//                       <span>{threat.location.name}</span>
+//                     </span>
+//                     <span className="flex items-center space-x-1">
+//                       <Users className="w-3 h-3" />
+//                       <span>{threat.personnel}</span>
+//                     </span>
+//                   </div>
+
+//                   <div className="flex items-center justify-between text-xs mb-2">
+//                     <span className="text-slate-400">
+//                       Confidence: {threat.confidence}%
+//                     </span>
+//                     <span
+//                       className={`px-1 rounded ${
+//                         threat.status === "active"
+//                           ? "bg-red-800 text-red-200"
+//                           : threat.status === "investigating"
+//                           ? "bg-yellow-800 text-yellow-200"
+//                           : "bg-green-800 text-green-200"
+//                       }`}
+//                     >
+//                       {threat.status.toUpperCase()}
+//                     </span>
+//                   </div>
+
+//                   <div className="flex space-x-1">
+//                     <button className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-500 flex-1">
+//                       Deploy
+//                     </button>
+//                     <button className="px-2 py-1 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-500 flex-1">
+//                       Investigate
+//                     </button>
+//                   </div>
+//                 </div>
+//               ))}
+//           </div>
+
+//           {/* System Status Panel */}
+//           <div className="border-t border-slate-600 pt-4">
+//             <h3 className="text-md font-semibold mb-3 flex items-center space-x-2">
+//               <Radio className="w-4 h-4" />
+//               <span>System Status</span>
+//             </h3>
+
+//             <div className="space-y-3">
+//               <div className="bg-slate-700 rounded p-3">
+//                 <div className="flex items-center justify-between mb-2">
+//                   <span className="text-sm font-medium">Network Status</span>
+//                   <span
+//                     className={`text-xs px-2 py-1 rounded ${
+//                       connectionStatus === "connected"
+//                         ? "bg-green-800 text-green-200"
+//                         : "bg-red-800 text-red-200"
+//                     }`}
+//                   >
+//                     {connectionStatus.toUpperCase()}
+//                   </span>
+//                 </div>
+//                 <div className="text-xs text-slate-400">
+//                   Uptime: 99.8% | Latency: 12ms
+//                 </div>
+//               </div>
+
+//               <div className="bg-slate-700 rounded p-3">
+//                 <div className="text-sm font-medium mb-2">Sensor Network</div>
+//                 <div className="space-y-1 text-xs">
+//                   <div className="flex justify-between">
+//                     <span className="text-green-400">Active:</span>
+//                     <span>
+//                       {sensors.filter((s) => s.status === "active").length}
+//                     </span>
+//                   </div>
+//                   <div className="flex justify-between">
+//                     <span className="text-orange-400">Alert:</span>
+//                     <span>
+//                       {sensors.filter((s) => s.status === "alert").length}
+//                     </span>
+//                   </div>
+//                   <div className="flex justify-between">
+//                     <span className="text-red-400">Offline:</span>
+//                     <span>
+//                       {sensors.filter((s) => s.status === "inactive").length}
+//                     </span>
+//                   </div>
+//                 </div>
+//               </div>
+
+//               <div className="bg-slate-700 rounded p-3">
+//                 <div className="text-sm font-medium mb-2">Threat Analysis</div>
+//                 <div className="space-y-1 text-xs">
+//                   <div className="flex justify-between">
+//                     <span className="text-red-400">Critical:</span>
+//                     <span>
+//                       {
+//                         threats.filter(
+//                           (t) =>
+//                             t.severity === "critical" && t.status === "active"
+//                         ).length
+//                       }
+//                     </span>
+//                   </div>
+//                   <div className="flex justify-between">
+//                     <span className="text-orange-400">High:</span>
+//                     <span>
+//                       {
+//                         threats.filter(
+//                           (t) => t.severity === "high" && t.status === "active"
+//                         ).length
+//                       }
+//                     </span>
+//                   </div>
+//                   <div className="flex justify-between">
+//                     <span className="text-yellow-400">Medium:</span>
+//                     <span>
+//                       {
+//                         threats.filter(
+//                           (t) =>
+//                             t.severity === "medium" && t.status === "active"
+//                         ).length
+//                       }
+//                     </span>
+//                   </div>
+//                   <div className="flex justify-between">
+//                     <span className="text-slate-400">Resolved:</span>
+//                     <span>
+//                       {threats.filter((t) => t.status === "resolved").length}
+//                     </span>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Enhanced Threat Detail Modal */}
+//       {selectedThreat && (
+//         <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+//           <div className="bg-slate-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-slate-600">
+//             <div className="flex items-center justify-between mb-6">
+//               <div className="flex items-center space-x-3">
+//                 <h2 className="text-xl font-bold">
+//                   Threat Intelligence Report
+//                 </h2>
+//                 <span
+//                   className={`px-3 py-1 rounded text-sm font-medium ${getSeverityColor(
+//                     selectedThreat.severity
+//                   )}`}
+//                 >
+//                   {selectedThreat.severity.toUpperCase()}
+//                 </span>
+//               </div>
+//               <button
+//                 onClick={() => setSelectedThreat(null)}
+//                 className="text-slate-400 hover:text-white text-xl font-bold w-8 h-8 flex items-center justify-center rounded hover:bg-slate-700"
+//               >
+//                 ×
+//               </button>
+//             </div>
+
+//             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+//               <div className="space-y-4">
+//                 <div className="bg-slate-700 rounded p-4">
+//                   <h3 className="font-semibold mb-3 text-blue-400">
+//                     Basic Information
+//                   </h3>
+//                   <div className="grid grid-cols-2 gap-3 text-sm">
+//                     <div>
+//                       <label className="text-slate-400">Threat ID</label>
+//                       <p className="font-medium">{selectedThreat.id}</p>
+//                     </div>
+//                     <div>
+//                       <label className="text-slate-400">Sensor ID</label>
+//                       <p className="font-medium">{selectedThreat.sensorId}</p>
+//                     </div>
+//                     <div>
+//                       <label className="text-slate-400">Type</label>
+//                       <p className="font-medium">
+//                         {THREAT_TYPES[selectedThreat.type].icon}{" "}
+//                         {THREAT_TYPES[selectedThreat.type].label}
+//                       </p>
+//                     </div>
+//                     <div>
+//                       <label className="text-slate-400">Status</label>
+//                       <p
+//                         className={`font-medium ${
+//                           selectedThreat.status === "active"
+//                             ? "text-red-400"
+//                             : selectedThreat.status === "investigating"
+//                             ? "text-yellow-400"
+//                             : "text-green-400"
+//                         }`}
+//                       >
+//                         {selectedThreat.status.toUpperCase()}
+//                       </p>
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 <div className="bg-slate-700 rounded p-4">
+//                   <h3 className="font-semibold mb-3 text-blue-400">
+//                     Movement Analysis
+//                   </h3>
+//                   <div className="space-y-2 text-sm">
+//                     <div className="flex justify-between">
+//                       <span className="text-slate-400">Direction:</span>
+//                       <span className="font-medium">
+//                         {selectedThreat.movement.direction}{" "}
+//                         {getMovementIcon(selectedThreat.movement.direction)}
+//                       </span>
+//                     </div>
+//                     <div className="flex justify-between">
+//                       <span className="text-slate-400">Current Speed:</span>
+//                       <span className="font-medium">
+//                         {selectedThreat.movement.speed.toFixed(1)} km/h
+//                       </span>
+//                     </div>
+//                     <div className="flex justify-between">
+//                       <span className="text-slate-400">Estimated Size:</span>
+//                       <span className="font-medium">
+//                         {selectedThreat.estimatedSize} individuals
+//                       </span>
+//                     </div>
+//                     <div className="flex justify-between">
+//                       <span className="text-slate-400">Confidence:</span>
+//                       <span className="font-medium">
+//                         {selectedThreat.confidence}%
+//                       </span>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+
+//               <div className="space-y-4">
+//                 <div className="bg-slate-700 rounded p-4">
+//                   <h3 className="font-semibold mb-3 text-blue-400">
+//                     Threat Description
+//                   </h3>
+//                   <p className="text-slate-200 text-sm leading-relaxed">
+//                     {selectedThreat.description}
+//                   </p>
+//                 </div>
+
+//                 <div className="bg-slate-700 rounded p-4">
+//                   <h3 className="font-semibold mb-3 text-blue-400">
+//                     Location & Time
+//                   </h3>
+//                   <div className="space-y-2 text-sm">
+//                     <div>
+//                       <label className="text-slate-400">Location</label>
+//                       <p className="font-medium">
+//                         {selectedThreat.location.name}
+//                       </p>
+//                       <p className="text-xs text-slate-500">
+//                         {selectedThreat.location.lat.toFixed(4)},{" "}
+//                         {selectedThreat.location.lng.toFixed(4)}
+//                       </p>
+//                     </div>
+//                     <div>
+//                       <label className="text-slate-400">First Detected</label>
+//                       <p className="font-medium">
+//                         {selectedThreat.timestamp.toLocaleString()}
+//                       </p>
+//                     </div>
+//                     <div>
+//                       <label className="text-slate-400">Last Update</label>
+//                       <p className="font-medium">
+//                         {selectedThreat.movement.lastUpdate.toLocaleString()}
+//                       </p>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+
+//             <div className="flex flex-wrap gap-3 mt-6 pt-4 border-t border-slate-600">
+//               <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500 flex items-center space-x-2">
+//                 <AlertTriangle className="w-4 h-4" />
+//                 <span>Deploy Emergency Response</span>
+//               </button>
+//               <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 flex items-center space-x-2">
+//                 <Users className="w-4 h-4" />
+//                 <span>Request Backup</span>
+//               </button>
+//               <button className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-500 flex items-center space-x-2">
+//                 <Eye className="w-4 h-4" />
+//                 <span>Mark Investigating</span>
+//               </button>
+//               <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-500">
+//                 Mark Resolved
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default EnhancedBorderSurveillance;

@@ -1,9 +1,12 @@
-import CommandCenter from "./components/command";
+import EnhancedBorderSurveillance from "./components/command";
+import ErrorBoundary from "./components/ErrorBounadry";
 
 const App = () => {
   return (
     <div>
-      <CommandCenter />
+      <ErrorBoundary>
+        <EnhancedBorderSurveillance />
+      </ErrorBoundary>
     </div>
   );
 };
