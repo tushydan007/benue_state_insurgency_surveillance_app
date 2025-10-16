@@ -1275,7 +1275,7 @@ const EnhancedBorderSurveillance: React.FC = () => {
                   aiDetectionEnabled ? "bg-green-400" : "bg-gray-600"
                 }`}
               />
-              <span>YOLO Active</span>
+              <span>Active</span>
             </div>
 
             <button
